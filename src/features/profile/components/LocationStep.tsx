@@ -3,6 +3,7 @@ import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { BASED_IN_OPTIONS, SERVES_AREAS_OPTIONS } from '../schemas/professional-profile.schema';
+import { SelectableList } from './SelectableList';
 
 interface LocationStepProps {
   basedIn: string;
@@ -29,24 +30,7 @@ export function LocationStep({
         <Text variant="overline" style={styles.sectionLabel}>
           Where are you based?
         </Text>
-        <View style={styles.list}>
-          {BASED_IN_OPTIONS.map((option) => {
-            const isSelected = basedIn === option;
-            return (
-              <TouchableOpacity
-                key={option}
-                onPress={() => onBasedInChange(option)}
-                activeOpacity={0.8}
-                style={[styles.item, isSelected && styles.itemSelected]}
-              >
-                <View style={[styles.dot, isSelected && styles.dotSelected]} />
-                <Text style={[styles.itemLabel, isSelected && styles.itemLabelSelected]}>
-                  {option}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        <SelectableList options={BASED_IN_OPTIONS} value={basedIn} onChange={onBasedInChange} />
         {basedInError !== undefined && basedInError.length > 0 && (
           <Text variant="caption" style={styles.error}>
             {basedInError}
@@ -90,41 +74,6 @@ const styles = StyleSheet.create({
   sectionLabel: {
     color: '#7b625b',
     marginBottom: spacing[1],
-  },
-  list: {
-    gap: spacing[1],
-  },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[3],
-    paddingVertical: spacing[3],
-    paddingHorizontal: spacing[4],
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  itemSelected: {
-    backgroundColor: colors.burgundy.raised,
-    borderColor: '#cdc1ad',
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.burgundy.mid,
-  },
-  dotSelected: {
-    backgroundColor: '#cdc1ad',
-  },
-  itemLabel: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: colors.burgundy.muted,
-  },
-  itemLabelSelected: {
-    color: '#cdc1ad',
-    fontWeight: '600',
   },
   chips: {
     flexDirection: 'row',
