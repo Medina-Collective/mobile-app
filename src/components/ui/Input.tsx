@@ -37,7 +37,7 @@ export function Input({
           hasError && styles.inputError,
           style,
         ]}
-        placeholderTextColor={colors.burgundy.muted}
+        placeholderTextColor="#7b625b"
         onFocus={(e) => {
           setIsFocused(true);
           onFocus?.(e);
@@ -63,19 +63,20 @@ const styles = StyleSheet.create({
   },
   label: {
     marginBottom: spacing[2],
+    color: '#7b625b',
   },
   input: {
     height: 52,
     borderBottomWidth: 1,
-    borderBottomColor: colors.burgundy.mid,
+    borderBottomColor: '#7b625b',
     paddingHorizontal: 0,
     paddingVertical: spacing[2],
     fontSize: fontSize.base,
-    color: colors.beige[200],
+    color: '#cdc1ad',
     backgroundColor: 'transparent',
   },
   inputFocused: {
-    borderBottomColor: colors.beige[200],
+    borderBottomColor: '#cdc1ad',
   },
   inputError: {
     borderBottomColor: colors.error[500],

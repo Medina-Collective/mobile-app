@@ -1,14 +1,13 @@
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 
 export function BackButton() {
   const router = useRouter();
   return (
     <TouchableOpacity onPress={() => router.back()} style={styles.button} hitSlop={12}>
-      <Ionicons name="arrow-back" size={22} color={colors.beige[300]} />
+      <Ionicons name="arrow-back" size={22} color="#7b625b" />
     </TouchableOpacity>
   );
 }

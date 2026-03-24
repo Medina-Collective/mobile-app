@@ -1,39 +1,29 @@
-import { View, Image, StyleSheet } from 'react-native';
+import { View, ImageBackground, StyleSheet, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, Button } from '@components/ui';
-import { colors } from '@theme/colors';
+import { Button } from '@components/ui';
 import { spacing } from '@theme/spacing';
 
-const logo = require('@assets/images/logo-compact.jpg') as number;
+const welcomeImage = require('@assets/images/welcome-page-design.png') as number;
+
+/** Soft beige matching the MC monogram in the Canva design */
+const MC_BEIGE = '#cdc1ad';
 
 export default function WelcomeScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-        {/* ── Brand mark ───────────────────────────────────────────── */}
-        <View style={styles.hero}>
-          {/* Brand logo */}
-          <Image source={logo} style={styles.logo} resizeMode="contain" />
-
-          {/* Crimson accent line + tagline */}
-          <View style={styles.dividerRow}>
-            <View style={styles.divider} />
-          </View>
-
-          <Text variant="bodySm" style={styles.tagline}>
-            A collective for events, brands, &amp; community.
-          </Text>
-        </View>
-
-        {/* ── Actions ──────────────────────────────────────────────── */}
+    <ImageBackground source={welcomeImage} style={styles.background} resizeMode="cover">
+      <View style={styles.cityOverlay}>
+        <View style={styles.divider} />
+        <Text style={styles.city}>Montreal</Text>
+      </View>
+      <SafeAreaView style={styles.safe}>
         <View style={styles.actions}>
           <Button
             title="Join the community"
             onPress={() => router.push('/(auth)/sign-up')}
-            style={styles.button}
+            style={styles.joinButton}
           />
           <Button
             title="Sign in"
@@ -42,55 +32,48 @@ export default function WelcomeScreen() {
             style={styles.button}
           />
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+  },
   safe: {
     flex: 1,
-    backgroundColor: colors.burgundy.deep,
+    justifyContent: 'flex-end',
   },
-  container: {
-    flex: 1,
-    paddingHorizontal: spacing[8],
-    paddingBottom: spacing[6],
-    justifyContent: 'space-between',
-  },
-
-  // Brand
-  hero: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing[5],
-  },
-  logo: {
-    width: 230,
-    height: 230,
-  },
-  dividerRow: {
-    alignItems: 'center',
-    paddingVertical: spacing[1],
-  },
-  divider: {
-    width: 40,
-    height: 1,
-    backgroundColor: colors.burgundy.mid,
-  },
-  tagline: {
-    color: colors.beige[400],
-    letterSpacing: 0.3,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-
-  // Actions
   actions: {
     gap: spacing[3],
+    paddingHorizontal: spacing[8],
+    paddingBottom: spacing[6],
+  },
+  joinButton: {
+    width: '100%',
+    backgroundColor: MC_BEIGE,
   },
   button: {
     width: '100%',
+  },
+  cityOverlay: {
+    position: 'absolute',
+    top: '60%',
+    alignSelf: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  divider: {
+    width: 32,
+    height: 1,
+    backgroundColor: '#7b625b',
+  },
+  city: {
+    color: '#7b625b',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 3,
+    textTransform: 'uppercase',
   },
 });
