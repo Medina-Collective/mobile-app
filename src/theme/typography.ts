@@ -8,19 +8,19 @@ import { colors } from './colors';
  * Weights are warm and present — not thin/chic, but inviting.
  */
 export const fontFamily = {
-  regular:  'System',
-  medium:   'System',
+  regular: 'System',
+  medium: 'System',
   semiBold: 'System',
-  bold:     'System',
+  bold: 'System',
 } as const;
 
 export const fontSize = {
-  xs:    11,
-  sm:    13,
-  base:  15,
-  md:    17,
-  lg:    20,
-  xl:    24,
+  xs: 11,
+  sm: 13,
+  base: 15,
+  md: 17,
+  lg: 20,
+  xl: 24,
   '2xl': 28,
   '3xl': 34,
   '4xl': 40,

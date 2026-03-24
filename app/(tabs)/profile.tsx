@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Screen } from '@components/layout';
 import { Text, Button } from '@components/ui';
 import { colors } from '@theme/colors';
@@ -58,13 +58,13 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.burgundy.surface,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing[2],
   },
   avatarInitial: {
-    color: colors.primary[600],
+    color: colors.beige[200],
   },
   email: {
     color: colors.neutral[500],
@@ -72,11 +72,11 @@ const styles = StyleSheet.create({
   roleBadge: {
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[1],
-    backgroundColor: colors.primary[50],
+    backgroundColor: colors.burgundy.raised,
     borderRadius: 20,
   },
   roleText: {
-    color: colors.primary[600],
+    color: colors.beige[300],
     textTransform: 'capitalize',
   },
   footer: {

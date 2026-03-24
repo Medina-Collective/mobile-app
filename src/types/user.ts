@@ -1,6 +1,5 @@
 import type { UserRole } from '@constants/index';
 
-
 export interface User {
   id: string;
   email: string;

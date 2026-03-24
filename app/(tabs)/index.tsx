@@ -14,9 +14,7 @@ export default function HomeScreen() {
         <Text variant="overline" style={styles.greeting}>
           Welcome back
         </Text>
-        <Text variant="heading2">
-          {user?.displayName ?? 'Medina'}
-        </Text>
+        <Text variant="heading2">{user?.displayName ?? 'Medina'}</Text>
       </View>
 
       <View style={styles.placeholder}>

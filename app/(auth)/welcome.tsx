@@ -13,7 +13,6 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-
         {/* ── Brand mark ───────────────────────────────────────────── */}
         <View style={styles.hero}>
           {/* Brand logo */}
@@ -25,7 +24,7 @@ export default function WelcomeScreen() {
           </View>
 
           <Text variant="bodySm" style={styles.tagline}>
-            For Muslim women's events, brands &amp; community.
+            A collective for events, brands, &amp; community.
           </Text>
         </View>
 
@@ -43,7 +42,6 @@ export default function WelcomeScreen() {
             style={styles.button}
           />
         </View>
-
       </View>
     </SafeAreaView>
   );

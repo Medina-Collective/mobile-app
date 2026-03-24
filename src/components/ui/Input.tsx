@@ -38,8 +38,14 @@ export function Input({
           style,
         ]}
         placeholderTextColor={colors.burgundy.muted}
-        onFocus={(e) => { setIsFocused(true); onFocus?.(e); }}
-        onBlur={(e) => { setIsFocused(false); onBlur?.(e); }}
+        onFocus={(e) => {
+          setIsFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setIsFocused(false);
+          onBlur?.(e);
+        }}
         {...props}
       />
       {hasError && (

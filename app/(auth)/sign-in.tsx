@@ -3,8 +3,7 @@ import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { Text, Button, Input } from '@components/ui';
+import { Text, Button, Input, BackButton } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { useAuth } from '@features/auth';
@@ -34,13 +33,9 @@ export default function SignInScreen() {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        {/* ── Back ─────────────────────────────────────────────────── */}
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton} hitSlop={12}>
-          <Ionicons name="arrow-back" size={22} color={colors.beige[300]} />
-        </TouchableOpacity>
+        <BackButton />
 
         <View style={styles.content}>
-          {/* ── Heading ────────────────────────────────────────────── */}
           <View style={styles.header}>
             <Text variant="heading1">{'Welcome\nback ♡'}</Text>
             <Text variant="bodySm" style={styles.subtitle}>
@@ -48,7 +43,6 @@ export default function SignInScreen() {
             </Text>
           </View>
 
-          {/* ── Form ───────────────────────────────────────────────── */}
           <View>
             <Controller
               control={control}
@@ -66,7 +60,6 @@ export default function SignInScreen() {
                 />
               )}
             />
-
             <Controller
               control={control}
               name="password"
@@ -82,11 +75,8 @@ export default function SignInScreen() {
                 />
               )}
             />
-
             <TouchableOpacity style={styles.forgotLink}>
-              <Text variant="caption" style={styles.forgotText}>
-                Forgot password?
-              </Text>
+              <Text variant="caption" style={styles.forgotText}>Forgot password?</Text>
             </TouchableOpacity>
           </View>
 
@@ -98,7 +88,6 @@ export default function SignInScreen() {
           />
         </View>
 
-        {/* ── Footer ───────────────────────────────────────────────── */}
         <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')} style={styles.footer}>
           <Text variant="caption">
             {"Don't have an account?  "}
@@ -113,7 +102,6 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   safe:       { flex: 1, backgroundColor: colors.burgundy.deep },
   flex:       { flex: 1 },
-  backButton: { marginTop: spacing[2], marginLeft: spacing[6], width: 40, height: 40, justifyContent: 'center' },
   content:    { flex: 1, paddingHorizontal: spacing[8], paddingTop: spacing[10] },
   header:     { marginBottom: spacing[12], gap: spacing[3] },
   subtitle:   { color: colors.beige[400] },

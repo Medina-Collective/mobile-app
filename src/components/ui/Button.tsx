@@ -41,10 +41,7 @@ export function Button({
           size="small"
         />
       ) : (
-        <Text
-          variant="label"
-          style={[styles.label, variant !== 'solid' && styles.labelAlt]}
-        >
+        <Text variant="label" style={[styles.label, variant !== 'solid' && styles.labelAlt]}>
           {title}
         </Text>
       )}
@@ -52,6 +49,7 @@ export function Button({
   );
 }
 
+/* eslint-disable react-native/no-unused-styles -- solid/outline/ghost accessed dynamically via styles[variant] */
 const styles = StyleSheet.create({
   base: {
     height: 56,
