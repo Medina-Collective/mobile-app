@@ -17,9 +17,7 @@ describe('Button', () => {
   });
 
   it('shows ActivityIndicator and hides title when loading', () => {
-    const { UNSAFE_getByType, queryByText } = render(
-      <Button title="Press me" loading />,
-    );
+    const { UNSAFE_getByType, queryByText } = render(<Button title="Press me" loading />);
     expect(queryByText('Press me')).toBeNull();
     expect(UNSAFE_getByType(ActivityIndicator)).toBeTruthy();
   });

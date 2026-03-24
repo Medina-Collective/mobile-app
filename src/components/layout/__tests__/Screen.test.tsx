@@ -4,11 +4,12 @@ import { render } from '@testing-library/react-native';
 import { Screen } from '../Screen';
 
 jest.mock('react-native-safe-area-context', () => {
+  /* eslint-disable @typescript-eslint/no-require-imports */
   const ReactModule = require('react');
   const { View } = require('react-native');
+  /* eslint-enable @typescript-eslint/no-require-imports */
   return {
-    SafeAreaView: ({ children, ...props }) =>
-      ReactModule.createElement(View, props, children),
+    SafeAreaView: ({ children, ...props }) => ReactModule.createElement(View, props, children),
   };
 });
 

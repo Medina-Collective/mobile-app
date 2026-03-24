@@ -30,18 +30,14 @@ describe('Input', () => {
 
   it('calls onFocus callback when focused', () => {
     const onFocus = jest.fn();
-    const { getByPlaceholderText } = render(
-      <Input placeholder="test-input" onFocus={onFocus} />,
-    );
+    const { getByPlaceholderText } = render(<Input placeholder="test-input" onFocus={onFocus} />);
     fireEvent(getByPlaceholderText('test-input'), 'focus');
     expect(onFocus).toHaveBeenCalled();
   });
 
   it('calls onBlur callback when blurred', () => {
     const onBlur = jest.fn();
-    const { getByPlaceholderText } = render(
-      <Input placeholder="test-input" onBlur={onBlur} />,
-    );
+    const { getByPlaceholderText } = render(<Input placeholder="test-input" onBlur={onBlur} />);
     fireEvent(getByPlaceholderText('test-input'), 'blur');
     expect(onBlur).toHaveBeenCalled();
   });
