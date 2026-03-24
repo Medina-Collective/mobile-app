@@ -37,5 +37,7 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
-        run: npm test --if-present
+      - name: Test with coverage
+        # Runs jest --coverage, enforcing the 80% threshold defined in jest.config.js.
+        # CI=true disables interactive watch mode and treats warnings as errors.
+        run: CI=true npm run test:coverage
