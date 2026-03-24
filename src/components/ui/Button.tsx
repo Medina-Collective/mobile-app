@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   labelAlt: {
-    color: colors.beige[300],
+    color: '#7b625b',
     fontWeight: '400',
   },
 });
