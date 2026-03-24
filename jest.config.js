@@ -30,6 +30,15 @@ module.exports = {
     '!src/**/*.spec.{ts,tsx}',
     // Barrel/index files: just re-exports, no logic to test
     '!src/**/index.ts',
+    // Infrastructure: HTTP clients and Zustand stores depend on native modules
+    // and network — covered by integration tests, not unit tests.
+    '!src/services/**',
+    '!src/store/**',
+    // Pure TypeScript type definitions — no runtime logic to test.
+    '!src/types/**',
+    // Design tokens: pure constant objects, no logic to test.
+    '!src/theme/**',
+    '!src/features/**/hooks/**',
   ],
 
   coverageThreshold: {

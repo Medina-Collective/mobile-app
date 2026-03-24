@@ -1,77 +1,92 @@
-import { View, StyleSheet, Image } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+
+const logo = require('@assets/images/logo-compact.jpg') as number;
 
 export default function WelcomeScreen() {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
-      <View style={styles.hero}>
-        <View style={styles.logoPlaceholder}>
-          <Text variant="heading1" style={styles.logoText}>
-            M
+    <SafeAreaView style={styles.safe}>
+      <View style={styles.container}>
+        {/* ── Brand mark ───────────────────────────────────────────── */}
+        <View style={styles.hero}>
+          {/* Brand logo */}
+          <Image source={logo} style={styles.logo} resizeMode="contain" />
+
+          {/* Crimson accent line + tagline */}
+          <View style={styles.dividerRow}>
+            <View style={styles.divider} />
+          </View>
+
+          <Text variant="bodySm" style={styles.tagline}>
+            A collective for events, brands, &amp; community.
           </Text>
         </View>
-        <Text variant="heading1" style={styles.appName}>
-          Medina
-        </Text>
-        <Text variant="body" style={styles.tagline}>
-          Your community. Your culture.
-        </Text>
-      </View>
 
-      <View style={styles.actions}>
-        <Button
-          title="Get Started"
-          onPress={() => router.push('/(auth)/sign-up')}
-          style={styles.button}
-        />
-        <Button
-          title="Sign In"
-          variant="outline"
-          onPress={() => router.push('/(auth)/sign-in')}
-          style={styles.button}
-        />
+        {/* ── Actions ──────────────────────────────────────────────── */}
+        <View style={styles.actions}>
+          <Button
+            title="Join the community"
+            onPress={() => router.push('/(auth)/sign-up')}
+            style={styles.button}
+          />
+          <Button
+            title="Sign in"
+            variant="ghost"
+            onPress={() => router.push('/(auth)/sign-in')}
+            style={styles.button}
+          />
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: colors.burgundy.deep,
+  },
   container: {
     flex: 1,
-    backgroundColor: colors.neutral[0],
+    paddingHorizontal: spacing[8],
+    paddingBottom: spacing[6],
     justifyContent: 'space-between',
-    padding: spacing[6],
-    paddingTop: spacing[16],
-    paddingBottom: spacing[10],
   },
+
+  // Brand
   hero: {
-    alignItems: 'center',
-    gap: spacing[3],
-  },
-  logoPlaceholder: {
-    width: 80,
-    height: 80,
-    borderRadius: 20,
-    backgroundColor: colors.primary[500],
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing[2],
+    gap: spacing[5],
   },
-  logoText: {
-    color: colors.neutral[0],
+  logo: {
+    width: 230,
+    height: 230,
   },
-  appName: {
-    color: colors.neutral[900],
+  dividerRow: {
+    alignItems: 'center',
+    paddingVertical: spacing[1],
+  },
+  divider: {
+    width: 40,
+    height: 1,
+    backgroundColor: colors.burgundy.mid,
   },
   tagline: {
-    color: colors.neutral[500],
+    color: colors.beige[400],
+    letterSpacing: 0.3,
     textAlign: 'center',
+    lineHeight: 22,
   },
+
+  // Actions
   actions: {
     gap: spacing[3],
   },

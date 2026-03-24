@@ -2,7 +2,8 @@ import { View, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } fr
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Text, Button, Input } from '@components/ui';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, Button, Input, BackButton } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { useAuth } from '@features/auth';
@@ -27,106 +28,90 @@ export default function SignInScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text variant="heading2">Welcome back</Text>
-          <Text variant="body" style={styles.subtitle}>
-            Sign in to your Medina account
-          </Text>
-        </View>
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <BackButton />
 
-        <View style={styles.form}>
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label="Email"
-                placeholder="you@example.com"
-                value={value}
-                onChangeText={onChange}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                error={errors.email?.message}
-              />
-            )}
-          />
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <Text variant="heading1">{'Welcome\nback ♡'}</Text>
+            <Text variant="bodySm" style={styles.subtitle}>
+              So glad you're here. Sign in to continue.
+            </Text>
+          </View>
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label="Password"
-                placeholder="••••••••"
-                value={value}
-                onChangeText={onChange}
-                secureTextEntry
-                autoComplete="current-password"
-                error={errors.password?.message}
-              />
-            )}
-          />
+          <View>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label="Email"
+                  placeholder="you@example.com"
+                  value={value}
+                  onChangeText={onChange}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  error={errors.email?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label="Password"
+                  placeholder="••••••••"
+                  value={value}
+                  onChangeText={onChange}
+                  secureTextEntry
+                  autoComplete="current-password"
+                  error={errors.password?.message}
+                />
+              )}
+            />
+            <TouchableOpacity style={styles.forgotLink}>
+              <Text variant="caption" style={styles.forgotText}>
+                Forgot password?
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           <Button
-            title="Sign In"
+            title="Continue"
             onPress={() => void handleSubmit(onSubmit)()}
             loading={isLoading}
-            style={styles.submitButton}
+            style={styles.cta}
           />
         </View>
 
-        <TouchableOpacity
-          onPress={() => router.push('/(auth)/sign-up')}
-          style={styles.signUpLink}
-        >
-          <Text variant="caption" style={styles.linkText}>
-            Don't have an account?{' '}
-            <Text variant="caption" style={styles.linkTextBold}>
+        <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')} style={styles.footer}>
+          <Text variant="caption">
+            {"Don't have an account?  "}
+            <Text variant="caption" style={styles.footerLink}>
               Sign up
             </Text>
           </Text>
         </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.burgundy.deep },
   flex: { flex: 1 },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing[6],
-    backgroundColor: colors.neutral[0],
-  },
-  header: {
-    marginBottom: spacing[8],
-    gap: spacing[1],
-  },
-  subtitle: {
-    color: colors.neutral[500],
-  },
-  form: {
-    gap: spacing[1],
-  },
-  submitButton: {
-    marginTop: spacing[2],
-  },
-  signUpLink: {
-    marginTop: spacing[6],
-    alignItems: 'center',
-  },
-  linkText: {
-    color: colors.neutral[500],
-  },
-  linkTextBold: {
-    color: colors.primary[500],
-    fontWeight: '600',
-  },
+  content: { flex: 1, paddingHorizontal: spacing[8], paddingTop: spacing[10] },
+  header: { marginBottom: spacing[12], gap: spacing[3] },
+  subtitle: { color: colors.beige[400] },
+  forgotLink: { alignSelf: 'flex-end', marginTop: -spacing[2] },
+  forgotText: { color: colors.crimson[400] },
+  cta: { marginTop: spacing[10], width: '100%' },
+  footer: { paddingBottom: spacing[6], alignItems: 'center' },
+  footerLink: { color: colors.beige[200], fontWeight: '600' },
 });
