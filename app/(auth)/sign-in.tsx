@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   subtitle: { color: '#7b625b' },
   forgotLink: { alignSelf: 'flex-end', marginTop: -spacing[2] },
   forgotText: { color: '#7b625b' },
-  cta: { marginTop: spacing[10], width: '100%' },
+  cta: { marginTop: spacing[10], width: '100%', backgroundColor: '#cdc1ad' },
   footer: { paddingBottom: spacing[6], alignItems: 'center' },
   footerText: { color: '#7b625b' },
   footerLink: { color: '#cdc1ad', fontWeight: '600' },
