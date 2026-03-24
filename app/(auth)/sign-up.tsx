@@ -40,7 +40,11 @@ export default function SignUpScreen() {
 
   const onSubmit = async (data: SignUpFormData) => {
     await signIn(data.email, data.password);
-    router.replace('/(tabs)');
+    if (data.role === 'professional') {
+      router.replace('/(auth)/professional-profile');
+    } else {
+      router.replace('/(tabs)');
+    }
   };
 
   return (
