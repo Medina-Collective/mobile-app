@@ -5,7 +5,7 @@ import { Text, Button } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 
-const logo = require('@assets/images/logo.jpg') as number;
+const logo = require('@assets/images/logo-compact.jpg') as number;
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -25,7 +25,7 @@ export default function WelcomeScreen() {
           </View>
 
           <Text variant="bodySm" style={styles.tagline}>
-            A space for connection, culture &amp; community.
+            For Muslim women's events, brands &amp; community.
           </Text>
         </View>
 
@@ -69,12 +69,12 @@ const styles = StyleSheet.create({
     gap: spacing[5],
   },
   logo: {
-    width: 260,
-    height: 260,
+    width: 230,
+    height: 230,
   },
   dividerRow: {
     alignItems: 'center',
-    paddingVertical: spacing[2],
+    paddingVertical: spacing[1],
   },
   divider: {
     width: 40,
