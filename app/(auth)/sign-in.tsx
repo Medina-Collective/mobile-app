@@ -76,7 +76,9 @@ export default function SignInScreen() {
               )}
             />
             <TouchableOpacity style={styles.forgotLink}>
-              <Text variant="caption" style={styles.forgotText}>Forgot password?</Text>
+              <Text variant="caption" style={styles.forgotText}>
+                Forgot password?
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -91,7 +93,9 @@ export default function SignInScreen() {
         <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')} style={styles.footer}>
           <Text variant="caption">
             {"Don't have an account?  "}
-            <Text variant="caption" style={styles.footerLink}>Sign up</Text>
+            <Text variant="caption" style={styles.footerLink}>
+              Sign up
+            </Text>
           </Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -100,14 +104,14 @@ export default function SignInScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe:       { flex: 1, backgroundColor: colors.burgundy.deep },
-  flex:       { flex: 1 },
-  content:    { flex: 1, paddingHorizontal: spacing[8], paddingTop: spacing[10] },
-  header:     { marginBottom: spacing[12], gap: spacing[3] },
-  subtitle:   { color: colors.beige[400] },
+  safe: { flex: 1, backgroundColor: colors.burgundy.deep },
+  flex: { flex: 1 },
+  content: { flex: 1, paddingHorizontal: spacing[8], paddingTop: spacing[10] },
+  header: { marginBottom: spacing[12], gap: spacing[3] },
+  subtitle: { color: colors.beige[400] },
   forgotLink: { alignSelf: 'flex-end', marginTop: -spacing[2] },
   forgotText: { color: colors.crimson[400] },
-  cta:        { marginTop: spacing[10], width: '100%' },
-  footer:     { paddingBottom: spacing[6], alignItems: 'center' },
+  cta: { marginTop: spacing[10], width: '100%' },
+  footer: { paddingBottom: spacing[6], alignItems: 'center' },
   footerLink: { color: colors.beige[200], fontWeight: '600' },
 });
