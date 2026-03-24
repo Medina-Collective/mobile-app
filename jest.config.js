@@ -38,9 +38,6 @@ module.exports = {
     '!src/types/**',
     // Design tokens: pure constant objects, no logic to test.
     '!src/theme/**',
-    // UI components and hooks require a render environment (React Native Testing
-    // Library) — covered by component tests added in Epic 8.
-    '!src/components/**',
     '!src/features/**/hooks/**',
   ],
 
