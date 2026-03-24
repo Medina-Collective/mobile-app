@@ -9,7 +9,8 @@ jest.mock('react-native-safe-area-context', () => {
   const { View } = require('react-native');
   /* eslint-enable @typescript-eslint/no-require-imports */
   return {
-    SafeAreaView: ({ children, ...props }) => ReactModule.createElement(View, props, children),
+    SafeAreaView: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) =>
+      ReactModule.createElement(View, props, children),
   };
 });
 
