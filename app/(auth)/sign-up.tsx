@@ -15,6 +15,8 @@ import { spacing } from '@theme/spacing';
 import { useAuth } from '@features/auth';
 import { signUpSchema, type SignUpFormData } from '@features/auth/schemas/auth.schema';
 
+const MC_BEIGE = '#cdc1ad';
+
 type Role = 'user' | 'professional';
 const ROLES: { value: Role; label: string; description: string }[] = [
   { value: 'user', label: 'Member', description: 'Discover events & professionals' },
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
   roleDesc: { fontSize: 11, color: '#7b625b', lineHeight: 15, opacity: 0.7 },
   roleDescSelected: { color: '#cdc1ad', opacity: 1 },
 
-  cta: { width: '100%', marginTop: spacing[4] },
+  cta: { width: '100%', marginTop: spacing[4], backgroundColor: '#cdc1ad' },
   footer: { marginTop: spacing[8], alignItems: 'center' },
   footerText: { color: '#7b625b' },
   footerLink: { color: '#cdc1ad', fontWeight: '600' },
