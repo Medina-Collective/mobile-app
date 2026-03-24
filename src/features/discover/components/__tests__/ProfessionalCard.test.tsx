@@ -38,9 +38,7 @@ describe('ProfessionalCard', () => {
   });
 
   it('shows "?" when business name is empty', () => {
-    const { getByText } = render(
-      <ProfessionalCard professional={{ ...base, businessName: '' }} />,
-    );
+    const { getByText } = render(<ProfessionalCard professional={{ ...base, businessName: '' }} />);
     expect(getByText('?')).toBeTruthy();
   });
 
