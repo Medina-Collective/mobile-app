@@ -7,7 +7,7 @@ import { BASED_IN_OPTIONS, SERVES_AREAS_OPTIONS } from '../schemas/professional-
 interface LocationStepProps {
   basedIn: string;
   onBasedInChange: (value: string) => void;
-  basedInError?: string;
+  basedInError?: string | undefined;
   servesAreas: string[];
   onServesAreasChange: (value: string[]) => void;
 }

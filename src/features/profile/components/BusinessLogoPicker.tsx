@@ -7,7 +7,7 @@ import { fontSize } from '@theme/typography';
 
 interface BusinessLogoPickerProps {
   businessName: string;
-  logoUri?: string;
+  logoUri?: string | undefined;
   onPress: () => void;
 }
 

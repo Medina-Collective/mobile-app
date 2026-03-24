@@ -7,7 +7,7 @@ import { PROFILE_TYPES, type ProfileType } from '../schemas/professional-profile
 interface BusinessTypeSelectorProps {
   value: ProfileType | undefined;
   onChange: (value: ProfileType) => void;
-  error?: string;
+  error?: string | undefined;
 }
 
 export function BusinessTypeSelector({

@@ -8,7 +8,7 @@ import {
   TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button, Input } from '@components/ui';
@@ -49,9 +49,7 @@ export default function ProfessionalProfileScreen() {
   } = useForm<ProfessionalProfileFormData>({
     resolver: zodResolver(professionalProfileSchema),
     defaultValues: {
-      logoUri: undefined,
       businessName: '',
-      profileType: undefined,
       category: '',
       subcategories: [],
       serviceTypes: [],
@@ -63,7 +61,6 @@ export default function ProfessionalProfileScreen() {
       website: '',
       phone: '',
       bookingLink: '',
-      priceRange: undefined,
       startingPrice: '',
     },
   });
@@ -100,7 +97,7 @@ export default function ProfessionalProfileScreen() {
     setCurrentStep(resolvedPrev);
   };
 
-  const onSubmit = async (_data: ProfessionalProfileFormData) => {
+  const onSubmit: SubmitHandler<ProfessionalProfileFormData> = async (_data) => {
     setIsSubmitting(true);
     try {
       // API call to submit profile for review goes here

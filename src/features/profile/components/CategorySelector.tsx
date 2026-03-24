@@ -8,7 +8,7 @@ interface CategorySelectorProps {
   profileType: ProfileType | undefined;
   value: string;
   onChange: (category: string) => void;
-  error?: string;
+  error?: string | undefined;
 }
 
 export function CategorySelector({
