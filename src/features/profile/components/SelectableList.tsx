@@ -22,9 +22,7 @@ export function SelectableList({ options, value, onChange }: Readonly<Selectable
             style={[styles.item, isSelected && styles.itemSelected]}
           >
             <View style={[styles.dot, isSelected && styles.dotSelected]} />
-            <Text style={[styles.itemLabel, isSelected && styles.itemLabelSelected]}>
-              {option}
-            </Text>
+            <Text style={[styles.itemLabel, isSelected && styles.itemLabelSelected]}>{option}</Text>
           </TouchableOpacity>
         );
       })}
