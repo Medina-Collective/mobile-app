@@ -7,23 +7,46 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@features/*": ["./src/features/*"],
-      "@hooks/*": ["./src/hooks/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@constants/*": ["./src/constants/*"],
-      "@app-types/*": ["./src/types/*"],
-      "@theme/*": ["./src/theme/*"],
-      "@services/*": ["./src/services/*"],
-      "@store/*": ["./src/store/*"],
-      "@assets/*": ["./assets/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@features/*": [
+        "./src/features/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@constants/*": [
+        "./src/constants/*"
+      ],
+      "@app-types/*": [
+        "./src/types/*"
+      ],
+      "@theme/*": [
+        "./src/theme/*"
+      ],
+      "@services/*": [
+        "./src/services/*"
+      ],
+      "@store/*": [
+        "./src/store/*"
+      ],
+      "@assets/*": [
+        "./assets/*"
+      ]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.d.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    ".expo/types/**/*.ts"
   ]
 }
