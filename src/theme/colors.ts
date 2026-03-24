@@ -6,6 +6,13 @@
  * Semantic: Success, Warning, Error, Info
  */
 export const colors = {
+  /** Warm off-white — used as the main app background throughout auth & core screens */
+  sand: {
+    50:  '#fdfbf8',
+    100: '#f7f4f0',
+    200: '#ede8e1',
+    300: '#ddd5cb',
+  },
   primary: {
     50:  '#fdf4ee',
     100: '#fae2cc',

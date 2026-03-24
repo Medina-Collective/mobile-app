@@ -32,18 +32,27 @@ export const fontSize = {
  * Reference via variant="heading1", variant="body", etc.
  */
 export const textStyles = StyleSheet.create({
+  /** Large editorial wordmark — thin weight, wide tracking */
+  display: {
+    fontSize: fontSize['4xl'],
+    fontWeight: '200',
+    color: colors.neutral[900],
+    letterSpacing: 8,
+    lineHeight: fontSize['4xl'] * 1.1,
+  },
   heading1: {
     fontSize: fontSize['3xl'],
-    fontWeight: '700',
+    fontWeight: '300',
     color: colors.neutral[900],
-    letterSpacing: -0.5,
-    lineHeight: fontSize['3xl'] * 1.2,
+    letterSpacing: 0.5,
+    lineHeight: fontSize['3xl'] * 1.25,
   },
   heading2: {
     fontSize: fontSize['2xl'],
-    fontWeight: '700',
+    fontWeight: '300',
     color: colors.neutral[900],
-    lineHeight: fontSize['2xl'] * 1.25,
+    letterSpacing: 0.3,
+    lineHeight: fontSize['2xl'] * 1.3,
   },
   heading3: {
     fontSize: fontSize.xl,

@@ -13,9 +13,9 @@ type ButtonVariant = 'solid' | 'outline' | 'ghost';
 
 interface ButtonProps extends Omit<TouchableOpacityProps, 'style'> {
   title: string;
-  variant?: ButtonVariant;
-  loading?: boolean;
-  style?: ViewStyle;
+  variant?: ButtonVariant | undefined;
+  loading?: boolean | undefined;
+  style?: ViewStyle | undefined;
 }
 
 export function Button({
@@ -25,24 +25,24 @@ export function Button({
   style,
   disabled,
   ...props
-}: ButtonProps) {
+}: Readonly<ButtonProps>) {
   const isDisabled = disabled === true || loading;
 
   return (
     <TouchableOpacity
       style={[styles.base, styles[variant], isDisabled && styles.disabled, style]}
       disabled={isDisabled}
-      activeOpacity={0.75}
+      activeOpacity={0.7}
       {...props}
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'solid' ? colors.neutral[0] : colors.primary[500]}
+          color={variant === 'solid' ? colors.neutral[0] : colors.neutral[900]}
           size="small"
         />
       ) : (
         <Text
-          variant="bodyBold"
+          variant="label"
           style={[styles.label, variant !== 'solid' && styles.labelAlt]}
         >
           {title}
@@ -54,30 +54,32 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    height: 52,
-    borderRadius: 12,
+    height: 56,
+    borderRadius: 4,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing[6],
   },
   solid: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.neutral[900],
   },
   outline: {
     backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: colors.primary[500],
+    borderWidth: 1,
+    borderColor: colors.neutral[900],
   },
   ghost: {
     backgroundColor: 'transparent',
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.35,
   },
   label: {
     color: colors.neutral[0],
+    letterSpacing: 0.8,
+    fontSize: 13,
   },
   labelAlt: {
-    color: colors.primary[500],
+    color: colors.neutral[900],
   },
 });

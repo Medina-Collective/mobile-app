@@ -2,6 +2,8 @@ import { View, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } fr
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { Text, Button, Input } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
@@ -27,106 +29,147 @@ export default function SignInScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text variant="heading2">Welcome back</Text>
-          <Text variant="body" style={styles.subtitle}>
-            Sign in to your Medina account
-          </Text>
-        </View>
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        {/* ── Back navigation ──────────────────────────────────────── */}
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton} hitSlop={12}>
+          <Ionicons name="arrow-back" size={22} color={colors.neutral[700]} />
+        </TouchableOpacity>
 
-        <View style={styles.form}>
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label="Email"
-                placeholder="you@example.com"
-                value={value}
-                onChangeText={onChange}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                error={errors.email?.message}
-              />
-            )}
-          />
+        <View style={styles.content}>
+          {/* ── Heading ────────────────────────────────────────────── */}
+          <View style={styles.header}>
+            <Text variant="heading1" style={styles.heading}>
+              {'Welcome\nback.'}
+            </Text>
+            <Text variant="bodySm" style={styles.subtitle}>
+              Sign in to continue to Medina.
+            </Text>
+          </View>
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label="Password"
-                placeholder="••••••••"
-                value={value}
-                onChangeText={onChange}
-                secureTextEntry
-                autoComplete="current-password"
-                error={errors.password?.message}
-              />
-            )}
-          />
+          {/* ── Form ───────────────────────────────────────────────── */}
+          <View style={styles.form}>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label="Email"
+                  placeholder="you@example.com"
+                  value={value}
+                  onChangeText={onChange}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  error={errors.email?.message}
+                />
+              )}
+            />
 
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label="Password"
+                  placeholder="••••••••"
+                  value={value}
+                  onChangeText={onChange}
+                  secureTextEntry
+                  autoComplete="current-password"
+                  error={errors.password?.message}
+                />
+              )}
+            />
+
+            <TouchableOpacity style={styles.forgotLink}>
+              <Text variant="caption" style={styles.forgotText}>
+                Forgot password?
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* ── CTA ────────────────────────────────────────────────── */}
           <Button
-            title="Sign In"
+            title="Continue"
             onPress={() => void handleSubmit(onSubmit)()}
             loading={isLoading}
-            style={styles.submitButton}
+            style={styles.cta}
           />
         </View>
 
+        {/* ── Footer link ──────────────────────────────────────────── */}
         <TouchableOpacity
           onPress={() => router.push('/(auth)/sign-up')}
-          style={styles.signUpLink}
+          style={styles.footer}
         >
-          <Text variant="caption" style={styles.linkText}>
-            Don't have an account?{' '}
-            <Text variant="caption" style={styles.linkTextBold}>
+          <Text variant="caption" style={styles.footerText}>
+            Don't have an account?{'  '}
+            <Text variant="caption" style={styles.footerLink}>
               Sign up
             </Text>
           </Text>
         </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  container: {
+  safe: {
     flex: 1,
+    backgroundColor: colors.sand[100],
+  },
+  flex: { flex: 1 },
+  backButton: {
+    marginTop: spacing[2],
+    marginLeft: spacing[6],
+    width: 40,
+    height: 40,
     justifyContent: 'center',
-    padding: spacing[6],
-    backgroundColor: colors.neutral[0],
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: spacing[8],
+    paddingTop: spacing[10],
   },
   header: {
-    marginBottom: spacing[8],
-    gap: spacing[1],
+    marginBottom: spacing[12],
+    gap: spacing[2],
+  },
+  heading: {
+    color: colors.neutral[900],
   },
   subtitle: {
-    color: colors.neutral[500],
+    color: colors.neutral[400],
+    letterSpacing: 0.2,
   },
   form: {
-    gap: spacing[1],
+    marginBottom: spacing[2],
   },
-  submitButton: {
-    marginTop: spacing[2],
+  forgotLink: {
+    alignSelf: 'flex-end',
+    marginTop: -spacing[2],
   },
-  signUpLink: {
-    marginTop: spacing[6],
+  forgotText: {
+    color: colors.neutral[400],
+  },
+  cta: {
+    marginTop: spacing[10],
+    width: '100%',
+  },
+  footer: {
+    paddingBottom: spacing[6],
     alignItems: 'center',
   },
-  linkText: {
-    color: colors.neutral[500],
+  footerText: {
+    color: colors.neutral[400],
   },
-  linkTextBold: {
-    color: colors.primary[500],
+  footerLink: {
+    color: colors.neutral[900],
     fontWeight: '600',
   },
 });

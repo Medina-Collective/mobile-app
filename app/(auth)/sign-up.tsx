@@ -1,12 +1,28 @@
-import { View, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { Text, Button, Input } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { useAuth } from '@features/auth';
 import { signUpSchema, type SignUpFormData } from '@features/auth/schemas/auth.schema';
+
+type Role = 'user' | 'professional';
+
+const ROLES: { value: Role; label: string; description: string }[] = [
+  { value: 'user', label: 'Member', description: 'Discover events & professionals' },
+  { value: 'professional', label: 'Professional', description: 'Publish events & a profile' },
+];
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -15,159 +31,264 @@ export default function SignUpScreen() {
   const {
     control,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       displayName: '',
       email: '',
+      role: 'user',
       password: '',
       confirmPassword: '',
     },
   });
 
+  const selectedRole = watch('role');
+
   const onSubmit = async (data: SignUpFormData) => {
-    // TODO: call API to create account, then sign in
+    // Calls POST /auth/register (wired up in US 1.1 API integration task)
     await signIn(data.email, data.password);
     router.replace('/(tabs)');
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled"
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.header}>
-          <Text variant="heading2">Create account</Text>
-          <Text variant="body" style={styles.subtitle}>
-            Join the Medina community
-          </Text>
-        </View>
+        {/* ── Back navigation ──────────────────────────────────────── */}
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton} hitSlop={12}>
+          <Ionicons name="arrow-back" size={22} color={colors.neutral[700]} />
+        </TouchableOpacity>
 
-        <View style={styles.form}>
-          <Controller
-            control={control}
-            name="displayName"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label="Full Name"
-                placeholder="Your name"
-                value={value}
-                onChangeText={onChange}
-                autoCapitalize="words"
-                autoComplete="name"
-                error={errors.displayName?.message}
-              />
-            )}
-          />
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* ── Heading ────────────────────────────────────────────── */}
+          <View style={styles.header}>
+            <Text variant="heading1" style={styles.heading}>
+              {'Create\naccount.'}
+            </Text>
+            <Text variant="bodySm" style={styles.subtitle}>
+              Join the Medina community.
+            </Text>
+          </View>
 
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label="Email"
-                placeholder="you@example.com"
-                value={value}
-                onChangeText={onChange}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                error={errors.email?.message}
-              />
-            )}
-          />
+          {/* ── Role selector ──────────────────────────────────────── */}
+          <View style={styles.roleSection}>
+            <Text variant="overline" style={styles.roleLabel}>
+              I am joining as
+            </Text>
+            <View style={styles.roleRow}>
+              {ROLES.map(({ value, label, description }) => {
+                const isSelected = selectedRole === value;
+                return (
+                  <TouchableOpacity
+                    key={value}
+                    onPress={() => setValue('role', value)}
+                    style={[styles.roleCard, isSelected && styles.roleCardSelected]}
+                    activeOpacity={0.75}
+                  >
+                    <Text style={[styles.roleCardLabel, isSelected && styles.roleCardLabelSelected]}>
+                      {label}
+                    </Text>
+                    <Text style={[styles.roleCardDesc, isSelected && styles.roleCardDescSelected]}>
+                      {description}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label="Password"
-                placeholder="Min. 8 characters"
-                value={value}
-                onChangeText={onChange}
-                secureTextEntry
-                autoComplete="new-password"
-                error={errors.password?.message}
-              />
-            )}
-          />
+          {/* ── Form ───────────────────────────────────────────────── */}
+          <View style={styles.form}>
+            <Controller
+              control={control}
+              name="displayName"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label="Full name"
+                  placeholder="Your name"
+                  value={value}
+                  onChangeText={onChange}
+                  autoCapitalize="words"
+                  autoComplete="name"
+                  error={errors.displayName?.message}
+                />
+              )}
+            />
 
-          <Controller
-            control={control}
-            name="confirmPassword"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label="Confirm Password"
-                placeholder="Repeat your password"
-                value={value}
-                onChangeText={onChange}
-                secureTextEntry
-                autoComplete="new-password"
-                error={errors.confirmPassword?.message}
-              />
-            )}
-          />
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label="Email"
+                  placeholder="you@example.com"
+                  value={value}
+                  onChangeText={onChange}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  error={errors.email?.message}
+                />
+              )}
+            />
 
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label="Password"
+                  placeholder="Min. 8 characters"
+                  value={value}
+                  onChangeText={onChange}
+                  secureTextEntry
+                  autoComplete="new-password"
+                  error={errors.password?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="confirmPassword"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label="Confirm password"
+                  placeholder="Repeat your password"
+                  value={value}
+                  onChangeText={onChange}
+                  secureTextEntry
+                  autoComplete="new-password"
+                  error={errors.confirmPassword?.message}
+                />
+              )}
+            />
+          </View>
+
+          {/* ── CTA ────────────────────────────────────────────────── */}
           <Button
-            title="Create Account"
+            title="Create account"
             onPress={() => void handleSubmit(onSubmit)()}
             loading={isLoading}
-            style={styles.submitButton}
+            style={styles.cta}
           />
-        </View>
 
-        <TouchableOpacity
-          onPress={() => router.push('/(auth)/sign-in')}
-          style={styles.signInLink}
-        >
-          <Text variant="caption" style={styles.linkText}>
-            Already have an account?{' '}
-            <Text variant="caption" style={styles.linkTextBold}>
-              Sign in
+          {/* ── Footer link ──────────────────────────────────────────── */}
+          <TouchableOpacity
+            onPress={() => router.push('/(auth)/sign-in')}
+            style={styles.footer}
+          >
+            <Text variant="caption" style={styles.footerText}>
+              Already have an account?{'  '}
+              <Text variant="caption" style={styles.footerLink}>
+                Sign in
+              </Text>
             </Text>
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: colors.sand[100],
+  },
   flex: { flex: 1 },
-  container: {
-    flexGrow: 1,
+  backButton: {
+    marginTop: spacing[2],
+    marginLeft: spacing[6],
+    width: 40,
+    height: 40,
     justifyContent: 'center',
-    padding: spacing[6],
-    backgroundColor: colors.neutral[0],
+  },
+  scroll: {
+    paddingHorizontal: spacing[8],
+    paddingTop: spacing[8],
+    paddingBottom: spacing[10],
   },
   header: {
-    marginBottom: spacing[8],
-    gap: spacing[1],
+    marginBottom: spacing[10],
+    gap: spacing[2],
+  },
+  heading: {
+    color: colors.neutral[900],
   },
   subtitle: {
-    color: colors.neutral[500],
+    color: colors.neutral[400],
+    letterSpacing: 0.2,
   },
-  form: {
+
+  // Role selector
+  roleSection: {
+    marginBottom: spacing[10],
+    gap: spacing[3],
+  },
+  roleLabel: {
+    color: colors.neutral[400],
+  },
+  roleRow: {
+    flexDirection: 'row',
+    gap: spacing[3],
+  },
+  roleCard: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: colors.neutral[300],
+    borderRadius: 4,
+    padding: spacing[4],
     gap: spacing[1],
   },
-  submitButton: {
-    marginTop: spacing[2],
+  roleCardSelected: {
+    borderColor: colors.neutral[900],
+    backgroundColor: colors.neutral[900],
   },
-  signInLink: {
-    marginTop: spacing[6],
+  roleCardLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.neutral[700],
+    letterSpacing: 0.3,
+  },
+  roleCardLabelSelected: {
+    color: colors.neutral[0],
+  },
+  roleCardDesc: {
+    fontSize: 11,
+    color: colors.neutral[400],
+    lineHeight: 15,
+  },
+  roleCardDescSelected: {
+    color: colors.neutral[300],
+  },
+
+  // Form
+  form: {
+    marginBottom: spacing[2],
+  },
+  cta: {
+    width: '100%',
+    marginTop: spacing[4],
+  },
+  footer: {
+    marginTop: spacing[8],
     alignItems: 'center',
   },
-  linkText: {
-    color: colors.neutral[500],
+  footerText: {
+    color: colors.neutral[400],
   },
-  linkTextBold: {
-    color: colors.primary[500],
+  footerLink: {
+    color: colors.neutral[900],
     fontWeight: '600',
   },
 });
