@@ -183,14 +183,14 @@ export default function ProfessionalProfileScreen() {
             <View>
               <View style={styles.stepHeader}>
                 <Text variant="heading2" style={styles.stepTitle}>
-                  {watchedValues.profileType !== undefined
-                    ? CATEGORY_STEP_COPY[watchedValues.profileType].title
-                    : 'Your category'}
+                  {watchedValues.profileType === undefined
+                    ? 'Your category'
+                    : CATEGORY_STEP_COPY[watchedValues.profileType].title}
                 </Text>
                 <Text variant="bodySm" style={styles.stepSubtitle}>
-                  {watchedValues.profileType !== undefined
-                    ? CATEGORY_STEP_COPY[watchedValues.profileType].subtitle
-                    : 'Select one category.'}
+                  {watchedValues.profileType === undefined
+                    ? 'Select one category.'
+                    : CATEGORY_STEP_COPY[watchedValues.profileType].subtitle}
                 </Text>
               </View>
 
