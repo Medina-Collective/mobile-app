@@ -33,7 +33,14 @@ export const CATEGORIES_BY_TYPE: Record<ProfileType, string[]> = {
   ],
   service: ['Beauty', 'Fitness', 'Photography', 'Event Services', 'Food Services'],
   organizer: ['Eid Events', 'Bazaars', 'Sisters Events', 'Workshops', 'Community Events'],
-  classes_circles: ['Quran', 'Islamic Studies', 'Halaqa', 'Workshops', 'Book Club', 'Skill Classes'],
+  classes_circles: [
+    'Quran',
+    'Islamic Studies',
+    'Halaqa',
+    'Workshops',
+    'Book Club',
+    'Skill Classes',
+  ],
 };
 
 // ── Subcategories (service providers only) ────────────────────────────────────
@@ -78,12 +85,7 @@ export const QC_AREAS = [
 
 export const BASED_IN_OPTIONS = [...QC_AREAS, 'Online only'];
 
-export const SERVES_AREAS_OPTIONS = [
-  ...QC_AREAS,
-  'Online',
-  "At client's home",
-  'At my location',
-];
+export const SERVES_AREAS_OPTIONS = [...QC_AREAS, 'Online', "At client's home", 'At my location'];
 
 // ── Price ranges ──────────────────────────────────────────────────────────────
 
@@ -147,10 +149,7 @@ export const professionalProfileSchema = z.object({
   servesAreas: z.array(z.string()),
 
   // Step 6 — About & Contact
-  description: z
-    .string()
-    .min(10, 'Please add a short description')
-    .max(300, 'Max 300 characters'),
+  description: z.string().min(10, 'Please add a short description').max(300, 'Max 300 characters'),
   instagram: z.string().optional(),
   phone: z.string().optional(),
   inquiryEmail: z.email(),
@@ -166,10 +165,10 @@ export type ProfessionalProfileFormData = z.infer<typeof professionalProfileSche
 
 export const STEP_FIELDS: (keyof ProfessionalProfileFormData)[][] = [
   ['businessName', 'profileType'], // 0 — Profile Type
-  ['category'],                    // 1 — Category
-  [],                              // 2 — Subcategory (optional)
-  [],                              // 3 — Service Type (optional)
-  ['basedIn'],                     // 4 — Location
+  ['category'], // 1 — Category
+  [], // 2 — Subcategory (optional)
+  [], // 3 — Service Type (optional)
+  ['basedIn'], // 4 — Location
   ['description', 'inquiryEmail'], // 5 — About & Contact
-  [],                              // 6 — Review
+  [], // 6 — Review
 ];

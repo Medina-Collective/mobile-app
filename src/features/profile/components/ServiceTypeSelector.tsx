@@ -2,7 +2,7 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
-import { SERVICE_TYPE_OPTIONS, type ServiceTypeValue } from '../schemas/professional-profile.schema';
+import { SERVICE_TYPE_OPTIONS } from '../schemas/professional-profile.schema';
 
 interface ServiceTypeSelectorProps {
   value: string[];
@@ -13,10 +13,7 @@ function toggleItem(arr: string[], item: string): string[] {
   return arr.includes(item) ? arr.filter((i) => i !== item) : [...arr, item];
 }
 
-export function ServiceTypeSelector({
-  value,
-  onChange,
-}: Readonly<ServiceTypeSelectorProps>) {
+export function ServiceTypeSelector({ value, onChange }: Readonly<ServiceTypeSelectorProps>) {
   return (
     <View style={styles.grid}>
       {SERVICE_TYPE_OPTIONS.map(({ value: optValue, label }) => {
@@ -28,9 +25,7 @@ export function ServiceTypeSelector({
             activeOpacity={0.8}
             style={[styles.chip, isSelected && styles.chipSelected]}
           >
-            <Text style={[styles.chipLabel, isSelected && styles.chipLabelSelected]}>
-              {label}
-            </Text>
+            <Text style={[styles.chipLabel, isSelected && styles.chipLabelSelected]}>{label}</Text>
           </TouchableOpacity>
         );
       })}

@@ -36,9 +36,7 @@ export function SubcategorySelector({
             activeOpacity={0.8}
             style={[styles.tag, isSelected && styles.tagSelected]}
           >
-            <Text style={[styles.tagLabel, isSelected && styles.tagLabelSelected]}>
-              {sub}
-            </Text>
+            <Text style={[styles.tagLabel, isSelected && styles.tagLabelSelected]}>{sub}</Text>
           </TouchableOpacity>
         );
       })}

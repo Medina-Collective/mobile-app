@@ -2,10 +2,7 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
-import {
-  CATEGORIES_BY_TYPE,
-  type ProfileType,
-} from '../schemas/professional-profile.schema';
+import { CATEGORIES_BY_TYPE, type ProfileType } from '../schemas/professional-profile.schema';
 
 interface CategorySelectorProps {
   profileType: ProfileType | undefined;
@@ -43,9 +40,7 @@ export function CategorySelector({
               style={[styles.item, isSelected && styles.itemSelected]}
             >
               <View style={[styles.dot, isSelected && styles.dotSelected]} />
-              <Text style={[styles.itemLabel, isSelected && styles.itemLabelSelected]}>
-                {cat}
-              </Text>
+              <Text style={[styles.itemLabel, isSelected && styles.itemLabelSelected]}>{cat}</Text>
             </TouchableOpacity>
           );
         })}

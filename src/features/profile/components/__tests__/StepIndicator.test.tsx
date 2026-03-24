@@ -28,10 +28,8 @@ describe('StepIndicator', () => {
     expect(getByText(/Review/)).toBeTruthy();
   });
 
-  it('renders the correct number of bar segments', () => {
-    const { UNSAFE_getAllByType } = render(<StepIndicator currentStep={0} totalSteps={4} />);
-    const { View } = require('react-native');
-    // 1 container + 1 bars wrapper + 4 bar segments + 1 text wrapper = variable; just check renders
-    expect(UNSAFE_getAllByType(View).length).toBeGreaterThan(0);
+  it('renders with a custom totalSteps without crashing', () => {
+    const { toJSON } = render(<StepIndicator currentStep={0} totalSteps={4} />);
+    expect(toJSON()).not.toBeNull();
   });
 });

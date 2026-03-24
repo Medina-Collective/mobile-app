@@ -53,8 +53,9 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
   const profileTypeLabel =
     PROFILE_TYPES.find((t) => t.value === data.profileType)?.label ?? data.profileType;
 
-  const serviceTypeLabels = data.serviceTypes
-    .map((v) => SERVICE_TYPE_OPTIONS.find((o) => o.value === v)?.label ?? v);
+  const serviceTypeLabels = data.serviceTypes.map(
+    (v) => SERVICE_TYPE_OPTIONS.find((o) => o.value === v)?.label ?? v,
+  );
 
   return (
     <View>

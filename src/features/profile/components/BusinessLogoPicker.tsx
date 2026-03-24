@@ -19,10 +19,7 @@ function getInitials(name: string): string {
     .join('');
 }
 
-export function BusinessLogoPicker({
-  businessName,
-  onPress,
-}: Readonly<BusinessLogoPickerProps>) {
+export function BusinessLogoPicker({ businessName, onPress }: Readonly<BusinessLogoPickerProps>) {
   const initials = getInitials(businessName) || '?';
 
   return (

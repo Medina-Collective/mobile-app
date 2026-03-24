@@ -18,16 +18,12 @@ describe('BusinessLogoPicker', () => {
   });
 
   it('displays initials for a single-word name', () => {
-    const { getByText } = render(
-      <BusinessLogoPicker businessName="Fatima" onPress={jest.fn()} />,
-    );
+    const { getByText } = render(<BusinessLogoPicker businessName="Fatima" onPress={jest.fn()} />);
     expect(getByText('F')).toBeTruthy();
   });
 
   it('displays ? when businessName is empty', () => {
-    const { getByText } = render(
-      <BusinessLogoPicker businessName="" onPress={jest.fn()} />,
-    );
+    const { getByText } = render(<BusinessLogoPicker businessName="" onPress={jest.fn()} />);
     expect(getByText('?')).toBeTruthy();
   });
 

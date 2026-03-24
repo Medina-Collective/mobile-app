@@ -100,11 +100,10 @@ export default function ProfessionalProfileScreen() {
     setCurrentStep(resolvedPrev);
   };
 
-  const onSubmit = async (data: ProfessionalProfileFormData) => {
+  const onSubmit = async (_data: ProfessionalProfileFormData) => {
     setIsSubmitting(true);
     try {
       // API call to submit profile for review goes here
-      console.log('[ProfessionalProfile] submit for review:', data);
       router.replace('/(tabs)');
     } finally {
       setIsSubmitting(false);
@@ -348,10 +347,7 @@ export default function ProfessionalProfileScreen() {
                           >
                             <Text
                               onPress={() => onChange(isSelected ? undefined : range)}
-                              style={[
-                                styles.priceLabel,
-                                isSelected && styles.priceLabelSelected,
-                              ]}
+                              style={[styles.priceLabel, isSelected && styles.priceLabelSelected]}
                             >
                               {range}
                             </Text>
@@ -516,11 +512,7 @@ export default function ProfessionalProfileScreen() {
               style={styles.nextBtn}
             />
           ) : (
-            <Button
-              title="Next"
-              onPress={() => void handleNext()}
-              style={styles.nextBtn}
-            />
+            <Button title="Next" onPress={() => void handleNext()} style={styles.nextBtn} />
           )}
         </View>
       </KeyboardAvoidingView>
