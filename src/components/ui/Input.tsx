@@ -37,15 +37,9 @@ export function Input({
           hasError && styles.inputError,
           style,
         ]}
-        placeholderTextColor={colors.maroon[300]}
-        onFocus={(e) => {
-          setIsFocused(true);
-          onFocus?.(e);
-        }}
-        onBlur={(e) => {
-          setIsFocused(false);
-          onBlur?.(e);
-        }}
+        placeholderTextColor={colors.burgundy.muted}
+        onFocus={(e) => { setIsFocused(true); onFocus?.(e); }}
+        onBlur={(e) => { setIsFocused(false); onBlur?.(e); }}
         {...props}
       />
       {hasError && (
@@ -67,15 +61,15 @@ const styles = StyleSheet.create({
   input: {
     height: 52,
     borderBottomWidth: 1,
-    borderBottomColor: colors.maroon[500],
+    borderBottomColor: colors.burgundy.mid,
     paddingHorizontal: 0,
     paddingVertical: spacing[2],
     fontSize: fontSize.base,
-    color: colors.cream[100],
+    color: colors.beige[200],
     backgroundColor: 'transparent',
   },
   inputFocused: {
-    borderBottomColor: colors.cream[300],
+    borderBottomColor: colors.beige[200],
   },
   inputError: {
     borderBottomColor: colors.error[500],

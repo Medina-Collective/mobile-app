@@ -4,8 +4,8 @@ import { colors } from './colors';
 /**
  * Medina Collective Design System — Typography
  *
- * All default text colors are tuned for dark (maroon) backgrounds.
- * Font families are placeholders — replace when custom fonts are added.
+ * Colors tuned for dark burgundy backgrounds.
+ * Weights are warm and present — not thin/chic, but inviting.
  */
 export const fontFamily = {
   regular:  'System',
@@ -27,80 +27,76 @@ export const fontSize = {
   '5xl': 48,
 } as const;
 
-/**
- * Pre-built text style variants for the <Text> component.
- * Default colors are warm cream — designed for dark backgrounds.
- */
 export const textStyles = StyleSheet.create({
-  /** Editorial wordmark — ultra-thin, wide tracking */
+  /** Large editorial wordmark */
   display: {
     fontSize: fontSize['4xl'],
-    fontWeight: '200',
-    color: colors.cream[100],
-    letterSpacing: 8,
-    lineHeight: fontSize['4xl'] * 1.1,
+    fontWeight: '700',
+    color: colors.beige[200],
+    letterSpacing: 4,
+    lineHeight: fontSize['4xl'] * 1.15,
   },
   heading1: {
     fontSize: fontSize['3xl'],
-    fontWeight: '300',
-    color: colors.cream[100],
-    letterSpacing: 0.5,
+    fontWeight: '700',
+    color: colors.beige[200],
+    letterSpacing: 0.3,
     lineHeight: fontSize['3xl'] * 1.25,
   },
   heading2: {
     fontSize: fontSize['2xl'],
-    fontWeight: '300',
-    color: colors.cream[100],
-    letterSpacing: 0.3,
+    fontWeight: '600',
+    color: colors.beige[200],
+    letterSpacing: 0.2,
     lineHeight: fontSize['2xl'] * 1.3,
   },
   heading3: {
     fontSize: fontSize.xl,
-    fontWeight: '500',
-    color: colors.cream[100],
-    lineHeight: fontSize.xl * 1.3,
+    fontWeight: '600',
+    color: colors.beige[200],
+    lineHeight: fontSize.xl * 1.35,
   },
   heading4: {
     fontSize: fontSize.lg,
-    fontWeight: '500',
-    color: colors.cream[100],
-    lineHeight: fontSize.lg * 1.35,
+    fontWeight: '600',
+    color: colors.beige[200],
+    lineHeight: fontSize.lg * 1.4,
   },
   body: {
     fontSize: fontSize.base,
     fontWeight: '400',
-    color: colors.cream[200],
-    lineHeight: fontSize.base * 1.6,
+    color: colors.beige[300],
+    lineHeight: fontSize.base * 1.65,
   },
   bodyBold: {
     fontSize: fontSize.base,
     fontWeight: '600',
-    color: colors.cream[200],
-    lineHeight: fontSize.base * 1.6,
+    color: colors.beige[200],
+    lineHeight: fontSize.base * 1.65,
   },
   bodySm: {
     fontSize: fontSize.sm,
     fontWeight: '400',
-    color: colors.cream[300],
-    lineHeight: fontSize.sm * 1.6,
+    color: colors.beige[300],
+    lineHeight: fontSize.sm * 1.65,
   },
   caption: {
     fontSize: fontSize.xs,
     fontWeight: '400',
-    color: colors.cream[500],
-    lineHeight: fontSize.xs * 1.5,
+    color: colors.beige[400],
+    lineHeight: fontSize.xs * 1.6,
   },
   label: {
     fontSize: fontSize.sm,
     fontWeight: '600',
-    color: colors.cream[200],
-    letterSpacing: 0.1,
+    color: colors.beige[200],
+    letterSpacing: 0.2,
   },
   overline: {
     fontSize: fontSize.xs,
     fontWeight: '600',
-    color: colors.cream[500],
-    letterSpacing: 1.5,
+    color: colors.beige[400],
+    letterSpacing: 1.8,
     textTransform: 'uppercase',
   },
 });

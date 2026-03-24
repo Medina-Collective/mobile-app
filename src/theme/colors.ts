@@ -1,69 +1,51 @@
 /**
  * Medina Collective Design System — Color Tokens
  *
- * Aesthetic: Rich dark burgundy backgrounds, warm cream typography, gold accents.
- * Inspired by the brand identity — deep maroon, candlelight, cultural warmth.
+ * Palette sourced directly from the brand identity:
+ *   Deep Burgundy  #330b14  — page background
+ *   Dark Merlot    #541623  — cards, surfaces
+ *   Beige          #ffd3c0  — primary text & warm highlights
+ *   Light Crimson  #ff6f97  — accent, active states, decorative
+ *   Cranberry Red  #8c1e29  — mid-tones, borders, secondary surfaces
  */
 export const colors = {
-  /**
-   * Maroon — the app's signature dark background scale.
-   * 900 is the deepest (page bg), values rise toward surface/border.
-   */
-  maroon: {
-    900: '#1a0808', // page background (deepest)
-    800: '#220e0e', // slight lift
-    700: '#2e1414', // card / surface
-    600: '#3d1c1c', // elevated surface
-    500: '#561f1f', // borders, dividers
-    400: '#7a3030', // muted borders
-    300: '#a05050', // muted text on dark
-    200: '#c48080', // secondary text
-    100: '#e0b5b5', // light decorative
-    50:  '#f5e5e5', // barely-there tint
+  // ── Brand palette ──────────────────────────────────────────────────────────
+  burgundy: {
+    /** Page background — the deepest tone */
+    deep:    '#330b14',
+    /** Card / surface background */
+    surface: '#541623',
+    /** Elevated surface, hover states */
+    raised:  '#6a2030',
+    /** Mid-tone — borders, dividers */
+    mid:     '#8c1e29',
+    /** Muted text / decorative */
+    muted:   '#b05060',
+    /** Subtle tint over background */
+    tint:    '#7a3045',
   },
 
-  /**
-   * Cream — warm off-white text and surface scale for dark backgrounds.
-   */
-  cream: {
-    50:  '#fefaf4',
-    100: '#f8eddb',
-    200: '#eedcbf',
-    300: '#e0c49e',
-    400: '#c9a87a',
-    500: '#a8844f', // muted cream (captions, labels)
-    600: '#7a5e35',
+  /** Warm peachy beige — primary text on dark backgrounds */
+  beige: {
+    50:  '#fff8f5',
+    100: '#ffe8dc',
+    200: '#ffd3c0', // ← exact brand beige (R255 G211 B192)
+    300: '#f5b89a',
+    400: '#e09070',
+    500: '#c06848',
+    600: '#9a4828',
   },
 
-  /**
-   * Gold — accent for active states, highlights, and key CTAs.
-   */
-  gold: {
-    300: '#e8c882',
-    400: '#d4a855',
-    500: '#b8882a', // primary accent
-    600: '#9a6e18',
+  /** Light crimson — accent, active states, highlights */
+  crimson: {
+    200: '#ffb8cc',
+    300: '#ff8fb0',
+    400: '#ff6f97', // ← exact brand light crimson (R255 G111 B151)
+    500: '#e0406a',
+    600: '#c02050',
   },
 
-  /**
-   * Primary — warm terracotta, used for the brand dot separator and accents.
-   */
-  primary: {
-    50:  '#fdf4ee',
-    100: '#fae2cc',
-    200: '#f5c499',
-    300: '#ee9d5e',
-    400: '#e87630',
-    500: '#d45e1a', // brand terracotta — dot separator, focus rings
-    600: '#b04915',
-    700: '#8a3712',
-    800: '#6a2b10',
-    900: '#4e200d',
-  },
-
-  /**
-   * Neutral — kept for utility (errors, info badges, etc.)
-   */
+  // ── Utility ────────────────────────────────────────────────────────────────
   neutral: {
     0:    '#ffffff',
     50:   '#f9fafb',
@@ -84,12 +66,26 @@ export const colors = {
   error:   { 50: '#fef2f2', 500: '#ef4444', 700: '#b91c1c' },
   info:    { 50: '#eff6ff', 500: '#3b82f6', 700: '#1d4ed8' },
 
-  /** @deprecated use maroon.900 for backgrounds */
+  /** @deprecated */
+  primary: {
+    50:  '#fdf4ee', 100: '#fae2cc', 200: '#f5c499', 300: '#ee9d5e',
+    400: '#e87630', 500: '#d45e1a', 600: '#b04915', 700: '#8a3712',
+    800: '#6a2b10', 900: '#4e200d',
+  },
+  /** @deprecated use burgundy */
+  maroon: {
+    900: '#330b14', 800: '#3d0f1a', 700: '#541623', 600: '#6a2030',
+    500: '#8c1e29', 400: '#b05060', 300: '#c47a88', 200: '#daa8b4',
+    100: '#edd4d9', 50:  '#f9edef',
+  },
+  /** @deprecated use beige */
+  cream: {
+    50:  '#fff8f5', 100: '#ffe8dc', 200: '#ffd3c0', 300: '#f5b89a',
+    400: '#e09070', 500: '#c06848', 600: '#9a4828',
+  },
+  /** @deprecated */
   sand: {
-    50:  '#fdfbf8',
-    100: '#f7f4f0',
-    200: '#ede8e1',
-    300: '#ddd5cb',
+    50: '#fdfbf8', 100: '#f7f4f0', 200: '#ede8e1', 300: '#ddd5cb',
   },
 } as const;
 

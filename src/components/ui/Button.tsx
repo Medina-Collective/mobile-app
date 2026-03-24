@@ -32,12 +32,12 @@ export function Button({
     <TouchableOpacity
       style={[styles.base, styles[variant], isDisabled && styles.disabled, style]}
       disabled={isDisabled}
-      activeOpacity={0.75}
+      activeOpacity={0.8}
       {...props}
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'solid' ? colors.maroon[900] : colors.cream[200]}
+          color={variant === 'solid' ? colors.burgundy.deep : colors.beige[200]}
           size="small"
         />
       ) : (
@@ -55,35 +55,35 @@ export function Button({
 const styles = StyleSheet.create({
   base: {
     height: 56,
-    borderRadius: 4,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing[6],
   },
-  /** Warm cream fill with deep maroon text — the premium CTA */
+  /** Warm beige fill — the primary welcoming CTA */
   solid: {
-    backgroundColor: colors.cream[100],
+    backgroundColor: colors.beige[200],
   },
-  /** Cream border, transparent — secondary action */
+  /** Subtle merlot border — secondary action */
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: colors.maroon[400],
+    borderColor: colors.burgundy.mid,
   },
   ghost: {
     backgroundColor: 'transparent',
   },
   disabled: {
-    opacity: 0.35,
+    opacity: 0.4,
   },
   label: {
-    color: colors.maroon[900],
-    letterSpacing: 0.8,
-    fontSize: 13,
-    fontWeight: '600',
+    color: colors.burgundy.deep,
+    letterSpacing: 0.5,
+    fontSize: 14,
+    fontWeight: '700',
   },
   labelAlt: {
-    color: colors.cream[300],
+    color: colors.beige[300],
     fontWeight: '400',
   },
 });

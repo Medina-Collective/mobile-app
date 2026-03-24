@@ -34,22 +34,22 @@ export default function SignInScreen() {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        {/* ── Back navigation ──────────────────────────────────────── */}
+        {/* ── Back ─────────────────────────────────────────────────── */}
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton} hitSlop={12}>
-          <Ionicons name="arrow-back" size={22} color={colors.maroon[200]} />
+          <Ionicons name="arrow-back" size={22} color={colors.beige[300]} />
         </TouchableOpacity>
 
         <View style={styles.content}>
           {/* ── Heading ────────────────────────────────────────────── */}
           <View style={styles.header}>
-            <Text variant="heading1">{'Welcome\nback.'}</Text>
+            <Text variant="heading1">{'Welcome\nback ♡'}</Text>
             <Text variant="bodySm" style={styles.subtitle}>
-              Sign in to continue to Medina.
+              So glad you're here. Sign in to continue.
             </Text>
           </View>
 
           {/* ── Form ───────────────────────────────────────────────── */}
-          <View style={styles.form}>
+          <View>
             <Controller
               control={control}
               name="email"
@@ -90,7 +90,6 @@ export default function SignInScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* ── CTA ────────────────────────────────────────────────── */}
           <Button
             title="Continue"
             onPress={() => void handleSubmit(onSubmit)()}
@@ -100,15 +99,10 @@ export default function SignInScreen() {
         </View>
 
         {/* ── Footer ───────────────────────────────────────────────── */}
-        <TouchableOpacity
-          onPress={() => router.push('/(auth)/sign-up')}
-          style={styles.footer}
-        >
+        <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')} style={styles.footer}>
           <Text variant="caption">
             {"Don't have an account?  "}
-            <Text variant="caption" style={styles.footerLink}>
-              Sign up
-            </Text>
+            <Text variant="caption" style={styles.footerLink}>Sign up</Text>
           </Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -117,51 +111,15 @@ export default function SignInScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.maroon[900],
-  },
-  flex: { flex: 1 },
-  backButton: {
-    marginTop: spacing[2],
-    marginLeft: spacing[6],
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: spacing[8],
-    paddingTop: spacing[10],
-  },
-  header: {
-    marginBottom: spacing[12],
-    gap: spacing[3],
-  },
-  subtitle: {
-    color: colors.maroon[200],
-    letterSpacing: 0.2,
-  },
-  form: {
-    marginBottom: spacing[2],
-  },
-  forgotLink: {
-    alignSelf: 'flex-end',
-    marginTop: -spacing[2],
-  },
-  forgotText: {
-    color: colors.maroon[200],
-  },
-  cta: {
-    marginTop: spacing[10],
-    width: '100%',
-  },
-  footer: {
-    paddingBottom: spacing[6],
-    alignItems: 'center',
-  },
-  footerLink: {
-    color: colors.cream[200],
-    fontWeight: '600',
-  },
+  safe:       { flex: 1, backgroundColor: colors.burgundy.deep },
+  flex:       { flex: 1 },
+  backButton: { marginTop: spacing[2], marginLeft: spacing[6], width: 40, height: 40, justifyContent: 'center' },
+  content:    { flex: 1, paddingHorizontal: spacing[8], paddingTop: spacing[10] },
+  header:     { marginBottom: spacing[12], gap: spacing[3] },
+  subtitle:   { color: colors.beige[400] },
+  forgotLink: { alignSelf: 'flex-end', marginTop: -spacing[2] },
+  forgotText: { color: colors.crimson[400] },
+  cta:        { marginTop: spacing[10], width: '100%' },
+  footer:     { paddingBottom: spacing[6], alignItems: 'center' },
+  footerLink: { color: colors.beige[200], fontWeight: '600' },
 });
