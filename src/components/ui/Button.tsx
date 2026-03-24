@@ -13,9 +13,9 @@ type ButtonVariant = 'solid' | 'outline' | 'ghost';
 
 interface ButtonProps extends Omit<TouchableOpacityProps, 'style'> {
   title: string;
-  variant?: ButtonVariant;
-  loading?: boolean;
-  style?: ViewStyle;
+  variant?: ButtonVariant | undefined;
+  loading?: boolean | undefined;
+  style?: ViewStyle | undefined;
 }
 
 export function Button({
@@ -25,26 +25,23 @@ export function Button({
   style,
   disabled,
   ...props
-}: ButtonProps) {
+}: Readonly<ButtonProps>) {
   const isDisabled = disabled === true || loading;
 
   return (
     <TouchableOpacity
       style={[styles.base, styles[variant], isDisabled && styles.disabled, style]}
       disabled={isDisabled}
-      activeOpacity={0.75}
+      activeOpacity={0.8}
       {...props}
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'solid' ? colors.neutral[0] : colors.primary[500]}
+          color={variant === 'solid' ? colors.burgundy.deep : colors.beige[200]}
           size="small"
         />
       ) : (
-        <Text
-          variant="bodyBold"
-          style={[styles.label, variant !== 'solid' && styles.labelAlt]}
-        >
+        <Text variant="label" style={[styles.label, variant !== 'solid' && styles.labelAlt]}>
           {title}
         </Text>
       )}
@@ -52,32 +49,39 @@ export function Button({
   );
 }
 
+/* eslint-disable react-native/no-unused-styles -- solid/outline/ghost accessed dynamically via styles[variant] */
 const styles = StyleSheet.create({
   base: {
-    height: 52,
-    borderRadius: 12,
+    height: 56,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing[6],
   },
+  /** Warm beige fill — the primary welcoming CTA */
   solid: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.beige[200],
   },
+  /** Subtle merlot border — secondary action */
   outline: {
     backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: colors.primary[500],
+    borderWidth: 1,
+    borderColor: colors.burgundy.mid,
   },
   ghost: {
     backgroundColor: 'transparent',
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.4,
   },
   label: {
-    color: colors.neutral[0],
+    color: colors.burgundy.deep,
+    letterSpacing: 0.5,
+    fontSize: 14,
+    fontWeight: '700',
   },
   labelAlt: {
-    color: colors.primary[500],
+    color: '#7b625b',
+    fontWeight: '400',
   },
 });

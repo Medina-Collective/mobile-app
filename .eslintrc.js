@@ -10,6 +10,7 @@ module.exports = {
   parserOptions: {
     project: './tsconfig.json',
     tsconfigRootDir: __dirname,
+    EXPERIMENTAL_useProjectService: true,
   },
   plugins: ['@typescript-eslint', 'react-native', 'prettier'],
   rules: {
@@ -22,5 +23,5 @@ module.exports = {
     'react-native/no-inline-styles': 'warn',
     'no-console': ['warn', { allow: ['warn', 'error'] }],
   },
-  ignorePatterns: ['node_modules/', '.expo/', 'dist/'],
+  ignorePatterns: ['node_modules/', '.expo/', 'dist/', 'coverage/', '*.config.js', '*.config.ts', '.eslintrc.js'],
 };

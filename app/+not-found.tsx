@@ -36,6 +36,6 @@ const styles = StyleSheet.create({
     marginTop: spacing[6],
   },
   linkText: {
-    color: colors.primary[500],
+    color: colors.crimson[400],
   },
 });

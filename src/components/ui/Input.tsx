@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View, TextInput, StyleSheet, type TextInputProps, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { colors } from '@theme/colors';
@@ -10,19 +11,41 @@ interface InputProps extends TextInputProps {
   containerStyle?: ViewStyle | undefined;
 }
 
-export function Input({ label, error, containerStyle, style, ...props }: InputProps) {
+export function Input({
+  label,
+  error,
+  containerStyle,
+  style,
+  onFocus,
+  onBlur,
+  ...props
+}: Readonly<InputProps>) {
+  const [isFocused, setIsFocused] = useState(false);
   const hasError = error !== undefined && error.length > 0;
 
   return (
     <View style={[styles.wrapper, containerStyle]}>
       {label !== undefined && (
-        <Text variant="label" style={styles.label}>
+        <Text variant="overline" style={styles.label}>
           {label}
         </Text>
       )}
       <TextInput
-        style={[styles.input, hasError && styles.inputError, style]}
-        placeholderTextColor={colors.neutral[400]}
+        style={[
+          styles.input,
+          isFocused && styles.inputFocused,
+          hasError && styles.inputError,
+          style,
+        ]}
+        placeholderTextColor="#7b625b"
+        onFocus={(e) => {
+          setIsFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setIsFocused(false);
+          onBlur?.(e);
+        }}
         {...props}
       />
       {hasError && (
@@ -36,23 +59,27 @@ export function Input({ label, error, containerStyle, style, ...props }: InputPr
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: spacing[4],
+    marginBottom: spacing[6],
   },
   label: {
-    marginBottom: spacing[1],
+    marginBottom: spacing[2],
+    color: '#7b625b',
   },
   input: {
-    height: 48,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.neutral[300],
-    paddingHorizontal: spacing[4],
+    height: 52,
+    borderBottomWidth: 1,
+    borderBottomColor: '#7b625b',
+    paddingHorizontal: 0,
+    paddingVertical: spacing[2],
     fontSize: fontSize.base,
-    color: colors.neutral[900],
-    backgroundColor: colors.neutral[50],
+    color: '#cdc1ad',
+    backgroundColor: 'transparent',
+  },
+  inputFocused: {
+    borderBottomColor: '#cdc1ad',
   },
   inputError: {
-    borderColor: colors.error[500],
+    borderBottomColor: colors.error[500],
   },
   errorText: {
     marginTop: spacing[1],

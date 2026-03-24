@@ -1,4 +1,10 @@
-import { formatDate, formatEventDate, formatRelativeTime, truncate, capitalize } from '../formatting';
+import {
+  formatDate,
+  formatEventDate,
+  formatRelativeTime,
+  truncate,
+  capitalize,
+} from '../formatting';
 
 // Use the Date(year, monthIndex, day) constructor — this creates dates in LOCAL
 // time, unlike new Date('YYYY-MM-DD') which parses as UTC midnight and shifts

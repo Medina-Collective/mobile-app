@@ -11,7 +11,7 @@ export function formatDate(date: Date | string | number): string {
  * Format a date as "Mon, Mar 23 · 7:00 PM"
  */
 export function formatEventDate(date: Date | string | number): string {
-  return format(new Date(date), "EEE, MMM d · h:mm a");
+  return format(new Date(date), 'EEE, MMM d · h:mm a');
 }
 
 /**
