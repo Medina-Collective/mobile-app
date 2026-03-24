@@ -31,8 +31,13 @@ export function Input({
         </Text>
       )}
       <TextInput
-        style={[styles.input, isFocused && styles.inputFocused, hasError && styles.inputError, style]}
-        placeholderTextColor={colors.neutral[300]}
+        style={[
+          styles.input,
+          isFocused && styles.inputFocused,
+          hasError && styles.inputError,
+          style,
+        ]}
+        placeholderTextColor={colors.maroon[300]}
         onFocus={(e) => {
           setIsFocused(true);
           onFocus?.(e);
@@ -58,20 +63,19 @@ const styles = StyleSheet.create({
   },
   label: {
     marginBottom: spacing[2],
-    color: colors.neutral[400],
   },
   input: {
     height: 52,
     borderBottomWidth: 1,
-    borderBottomColor: colors.neutral[300],
+    borderBottomColor: colors.maroon[500],
     paddingHorizontal: 0,
     paddingVertical: spacing[2],
     fontSize: fontSize.base,
-    color: colors.neutral[900],
+    color: colors.cream[100],
     backgroundColor: 'transparent',
   },
   inputFocused: {
-    borderBottomColor: colors.neutral[900],
+    borderBottomColor: colors.cream[300],
   },
   inputError: {
     borderBottomColor: colors.error[500],

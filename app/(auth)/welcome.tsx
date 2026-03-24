@@ -14,20 +14,24 @@ export default function WelcomeScreen() {
 
         {/* ── Brand mark ───────────────────────────────────────────── */}
         <View style={styles.hero}>
+          {/* Monogram */}
           <View style={styles.monogram}>
-            <Text style={styles.monogramLetter}>M</Text>
+            <Text style={styles.monogramText}>MC</Text>
           </View>
 
-          <View style={styles.wordmarkRow}>
+          {/* Wordmark */}
+          <View style={styles.wordmarkBlock}>
             <Text style={styles.wordmark}>medina</Text>
-            <Text style={styles.dot}>·</Text>
-            <Text style={styles.wordmarkSub}>collective</Text>
+            <View style={styles.wordmarkRow}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.wordmarkSub}>collective</Text>
+              <View style={styles.dividerLine} />
+            </View>
           </View>
 
-          <View style={styles.divider} />
-
+          {/* Tagline */}
           <Text variant="bodySm" style={styles.tagline}>
-            Your community. Your culture.
+            A space of stillness, trust &amp; returning.
           </Text>
         </View>
 
@@ -54,7 +58,7 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.sand[100],
+    backgroundColor: colors.maroon[900],
   },
   container: {
     flex: 1,
@@ -68,63 +72,61 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: spacing[5],
+    gap: spacing[7],
   },
   monogram: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     borderWidth: 1,
-    borderColor: colors.neutral[400],
+    borderColor: colors.maroon[400],
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing[2],
   },
-  monogramLetter: {
-    fontSize: 22,
+  monogramText: {
+    fontSize: 24,
     fontWeight: '300',
-    color: colors.neutral[700],
-    letterSpacing: 1,
+    color: colors.cream[200],
+    letterSpacing: 3,
   },
-  wordmarkRow: {
-    flexDirection: 'row',
+  wordmarkBlock: {
     alignItems: 'center',
     gap: spacing[2],
   },
   wordmark: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: '200',
-    color: colors.neutral[900],
-    letterSpacing: 6,
+    color: colors.cream[100],
+    letterSpacing: 10,
+    textTransform: 'lowercase',
   },
-  dot: {
-    fontSize: 22,
-    color: colors.primary[500],
-    fontWeight: '300',
+  wordmarkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
   },
-  wordmarkSub: {
-    fontSize: 11,
-    fontWeight: '400',
-    color: colors.neutral[500],
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-    alignSelf: 'flex-end',
-    marginBottom: 4,
-  },
-  divider: {
-    width: 32,
+  dividerLine: {
+    width: 24,
     height: 1,
     backgroundColor: colors.primary[500],
   },
+  wordmarkSub: {
+    fontSize: 10,
+    fontWeight: '400',
+    color: colors.cream[500],
+    letterSpacing: 4,
+    textTransform: 'uppercase',
+  },
   tagline: {
-    color: colors.neutral[400],
+    color: colors.maroon[200],
     letterSpacing: 0.3,
     textAlign: 'center',
+    fontStyle: 'italic',
   },
 
   // Actions
   actions: {
-    gap: spacing[2],
+    gap: spacing[3],
   },
   button: {
     width: '100%',

@@ -32,12 +32,12 @@ export function Button({
     <TouchableOpacity
       style={[styles.base, styles[variant], isDisabled && styles.disabled, style]}
       disabled={isDisabled}
-      activeOpacity={0.7}
+      activeOpacity={0.75}
       {...props}
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'solid' ? colors.neutral[0] : colors.neutral[900]}
+          color={variant === 'solid' ? colors.maroon[900] : colors.cream[200]}
           size="small"
         />
       ) : (
@@ -60,13 +60,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[6],
   },
+  /** Warm cream fill with deep maroon text — the premium CTA */
   solid: {
-    backgroundColor: colors.neutral[900],
+    backgroundColor: colors.cream[100],
   },
+  /** Cream border, transparent — secondary action */
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: colors.neutral[900],
+    borderColor: colors.maroon[400],
   },
   ghost: {
     backgroundColor: 'transparent',
@@ -75,11 +77,13 @@ const styles = StyleSheet.create({
     opacity: 0.35,
   },
   label: {
-    color: colors.neutral[0],
+    color: colors.maroon[900],
     letterSpacing: 0.8,
     fontSize: 13,
+    fontWeight: '600',
   },
   labelAlt: {
-    color: colors.neutral[900],
+    color: colors.cream[300],
+    fontWeight: '400',
   },
 });

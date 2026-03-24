@@ -20,8 +20,8 @@ import { signUpSchema, type SignUpFormData } from '@features/auth/schemas/auth.s
 type Role = 'user' | 'professional';
 
 const ROLES: { value: Role; label: string; description: string }[] = [
-  { value: 'user', label: 'Member', description: 'Discover events & professionals' },
-  { value: 'professional', label: 'Professional', description: 'Publish events & a profile' },
+  { value: 'user',         label: 'Member',       description: 'Discover events & professionals' },
+  { value: 'professional', label: 'Professional',  description: 'Publish events & a profile' },
 ];
 
 export default function SignUpScreen() {
@@ -61,7 +61,7 @@ export default function SignUpScreen() {
       >
         {/* ── Back navigation ──────────────────────────────────────── */}
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton} hitSlop={12}>
-          <Ionicons name="arrow-back" size={22} color={colors.neutral[700]} />
+          <Ionicons name="arrow-back" size={22} color={colors.maroon[200]} />
         </TouchableOpacity>
 
         <ScrollView
@@ -71,9 +71,7 @@ export default function SignUpScreen() {
         >
           {/* ── Heading ────────────────────────────────────────────── */}
           <View style={styles.header}>
-            <Text variant="heading1" style={styles.heading}>
-              {'Create\naccount.'}
-            </Text>
+            <Text variant="heading1">{'Create\naccount.'}</Text>
             <Text variant="bodySm" style={styles.subtitle}>
               Join the Medina community.
             </Text>
@@ -81,9 +79,7 @@ export default function SignUpScreen() {
 
           {/* ── Role selector ──────────────────────────────────────── */}
           <View style={styles.roleSection}>
-            <Text variant="overline" style={styles.roleLabel}>
-              I am joining as
-            </Text>
+            <Text variant="overline">I am joining as</Text>
             <View style={styles.roleRow}>
               {ROLES.map(({ value, label, description }) => {
                 const isSelected = selectedRole === value;
@@ -94,10 +90,10 @@ export default function SignUpScreen() {
                     style={[styles.roleCard, isSelected && styles.roleCardSelected]}
                     activeOpacity={0.75}
                   >
-                    <Text style={[styles.roleCardLabel, isSelected && styles.roleCardLabelSelected]}>
+                    <Text style={[styles.roleLabel, isSelected && styles.roleLabelSelected]}>
                       {label}
                     </Text>
-                    <Text style={[styles.roleCardDesc, isSelected && styles.roleCardDescSelected]}>
+                    <Text style={[styles.roleDesc, isSelected && styles.roleDescSelected]}>
                       {description}
                     </Text>
                   </TouchableOpacity>
@@ -182,13 +178,10 @@ export default function SignUpScreen() {
             style={styles.cta}
           />
 
-          {/* ── Footer link ──────────────────────────────────────────── */}
-          <TouchableOpacity
-            onPress={() => router.push('/(auth)/sign-in')}
-            style={styles.footer}
-          >
-            <Text variant="caption" style={styles.footerText}>
-              Already have an account?{'  '}
+          {/* ── Footer ───────────────────────────────────────────────── */}
+          <TouchableOpacity onPress={() => router.push('/(auth)/sign-in')} style={styles.footer}>
+            <Text variant="caption">
+              {'Already have an account?  '}
               <Text variant="caption" style={styles.footerLink}>
                 Sign in
               </Text>
@@ -203,7 +196,7 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.sand[100],
+    backgroundColor: colors.maroon[900],
   },
   flex: { flex: 1 },
   backButton: {
@@ -220,23 +213,17 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: spacing[10],
-    gap: spacing[2],
-  },
-  heading: {
-    color: colors.neutral[900],
+    gap: spacing[3],
   },
   subtitle: {
-    color: colors.neutral[400],
+    color: colors.maroon[200],
     letterSpacing: 0.2,
   },
 
   // Role selector
   roleSection: {
     marginBottom: spacing[10],
-    gap: spacing[3],
-  },
-  roleLabel: {
-    color: colors.neutral[400],
+    gap: spacing[4],
   },
   roleRow: {
     flexDirection: 'row',
@@ -245,31 +232,32 @@ const styles = StyleSheet.create({
   roleCard: {
     flex: 1,
     borderWidth: 1,
-    borderColor: colors.neutral[300],
+    borderColor: colors.maroon[500],
     borderRadius: 4,
     padding: spacing[4],
     gap: spacing[1],
+    backgroundColor: colors.maroon[800],
   },
   roleCardSelected: {
-    borderColor: colors.neutral[900],
-    backgroundColor: colors.neutral[900],
+    borderColor: colors.cream[300],
+    backgroundColor: colors.maroon[700],
   },
-  roleCardLabel: {
+  roleLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.neutral[700],
+    color: colors.maroon[200],
     letterSpacing: 0.3,
   },
-  roleCardLabelSelected: {
-    color: colors.neutral[0],
+  roleLabelSelected: {
+    color: colors.cream[100],
   },
-  roleCardDesc: {
+  roleDesc: {
     fontSize: 11,
-    color: colors.neutral[400],
+    color: colors.maroon[300],
     lineHeight: 15,
   },
-  roleCardDescSelected: {
-    color: colors.neutral[300],
+  roleDescSelected: {
+    color: colors.cream[400],
   },
 
   // Form
@@ -284,11 +272,8 @@ const styles = StyleSheet.create({
     marginTop: spacing[8],
     alignItems: 'center',
   },
-  footerText: {
-    color: colors.neutral[400],
-  },
   footerLink: {
-    color: colors.neutral[900],
+    color: colors.cream[200],
     fontWeight: '600',
   },
 });

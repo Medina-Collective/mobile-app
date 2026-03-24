@@ -36,15 +36,13 @@ export default function SignInScreen() {
       >
         {/* ── Back navigation ──────────────────────────────────────── */}
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton} hitSlop={12}>
-          <Ionicons name="arrow-back" size={22} color={colors.neutral[700]} />
+          <Ionicons name="arrow-back" size={22} color={colors.maroon[200]} />
         </TouchableOpacity>
 
         <View style={styles.content}>
           {/* ── Heading ────────────────────────────────────────────── */}
           <View style={styles.header}>
-            <Text variant="heading1" style={styles.heading}>
-              {'Welcome\nback.'}
-            </Text>
+            <Text variant="heading1">{'Welcome\nback.'}</Text>
             <Text variant="bodySm" style={styles.subtitle}>
               Sign in to continue to Medina.
             </Text>
@@ -101,13 +99,13 @@ export default function SignInScreen() {
           />
         </View>
 
-        {/* ── Footer link ──────────────────────────────────────────── */}
+        {/* ── Footer ───────────────────────────────────────────────── */}
         <TouchableOpacity
           onPress={() => router.push('/(auth)/sign-up')}
           style={styles.footer}
         >
-          <Text variant="caption" style={styles.footerText}>
-            Don't have an account?{'  '}
+          <Text variant="caption">
+            {"Don't have an account?  "}
             <Text variant="caption" style={styles.footerLink}>
               Sign up
             </Text>
@@ -121,7 +119,7 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.sand[100],
+    backgroundColor: colors.maroon[900],
   },
   flex: { flex: 1 },
   backButton: {
@@ -138,13 +136,10 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: spacing[12],
-    gap: spacing[2],
-  },
-  heading: {
-    color: colors.neutral[900],
+    gap: spacing[3],
   },
   subtitle: {
-    color: colors.neutral[400],
+    color: colors.maroon[200],
     letterSpacing: 0.2,
   },
   form: {
@@ -155,7 +150,7 @@ const styles = StyleSheet.create({
     marginTop: -spacing[2],
   },
   forgotText: {
-    color: colors.neutral[400],
+    color: colors.maroon[200],
   },
   cta: {
     marginTop: spacing[10],
@@ -165,11 +160,8 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[6],
     alignItems: 'center',
   },
-  footerText: {
-    color: colors.neutral[400],
-  },
   footerLink: {
-    color: colors.neutral[900],
+    color: colors.cream[200],
     fontWeight: '600',
   },
 });
