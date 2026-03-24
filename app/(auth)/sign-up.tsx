@@ -15,8 +15,6 @@ import { spacing } from '@theme/spacing';
 import { useAuth } from '@features/auth';
 import { signUpSchema, type SignUpFormData } from '@features/auth/schemas/auth.schema';
 
-const MC_BEIGE = '#cdc1ad';
-
 type Role = 'user' | 'professional';
 const ROLES: { value: Role; label: string; description: string }[] = [
   { value: 'user', label: 'Member', description: 'Discover events & professionals' },
