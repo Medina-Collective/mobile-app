@@ -71,11 +71,15 @@ export default function ProfessionalProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { data: professional, isLoading, isError, refetch } = useGetProfessional(id);
-  const { isFavorited, toggle, isToggling } = useFavorite(professional?.isFavorited ?? false);
+  const { isFavorited, toggle } = useFavorite(id);
 
   const handleBack = useCallback(() => {
     router.back();
   }, [router]);
+
+  const handleRetry = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   // ── Loading ────────────────────────────────────────────────────────────────
 
@@ -120,7 +124,7 @@ export default function ProfessionalProfileScreen() {
           <Button
             title="Try again"
             variant="outline"
-            onPress={() => void refetch()}
+            onPress={handleRetry}
             style={styles.retryBtn}
           />
         </View>
@@ -145,9 +149,8 @@ export default function ProfessionalProfileScreen() {
           <Ionicons name="arrow-back" size={22} color="#cdc1ad" />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => void toggle()}
+          onPress={toggle}
           style={styles.headerBtn}
-          disabled={isToggling}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Ionicons
@@ -177,9 +180,9 @@ export default function ProfessionalProfileScreen() {
               <View style={[styles.badge, styles.badgePrice]}>
                 <Text style={styles.badgeText}>
                   {professional.priceRange}
-                  {professional.startingPrice !== undefined
-                    ? ` · from ${professional.startingPrice}`
-                    : ''}
+                  {professional.startingPrice === undefined
+                    ? ''
+                    : ` · from ${professional.startingPrice}`}
                 </Text>
               </View>
             )}
@@ -270,20 +273,28 @@ export default function ProfessionalProfileScreen() {
                 onPress={() => void openLink(`tel:${professional.phone}`)}
               />
             )}
-            {professional.bookingLink !== undefined && (
-              <ContactRow
-                icon="calendar-outline"
-                label="Book an appointment"
-                onPress={() => void openLink(professional.bookingLink!)}
-              />
-            )}
-            {professional.website !== undefined && (
-              <ContactRow
-                icon="link-outline"
-                label={professional.website}
-                onPress={() => void openLink(professional.website!)}
-              />
-            )}
+            {professional.bookingLink !== undefined &&
+              (() => {
+                const link = professional.bookingLink;
+                return (
+                  <ContactRow
+                    icon="calendar-outline"
+                    label="Book an appointment"
+                    onPress={() => void openLink(link)}
+                  />
+                );
+              })()}
+            {professional.website !== undefined &&
+              (() => {
+                const site = professional.website;
+                return (
+                  <ContactRow
+                    icon="link-outline"
+                    label={site}
+                    onPress={() => void openLink(site)}
+                  />
+                );
+              })()}
           </View>
         </View>
       </ScrollView>
