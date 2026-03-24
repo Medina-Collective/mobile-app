@@ -1,5 +1,10 @@
 module.exports = function (api) {
   api.cache(true);
+
+  // Jest sets BABEL_ENV=test. The reanimated plugin requires react-native-worklets
+  // which is a native module — skip it in unit tests to avoid the missing module error.
+  const isTest = process.env.BABEL_ENV === 'test' || process.env.NODE_ENV === 'test';
+
   return {
     presets: ['babel-preset-expo'],
     plugins: [
@@ -24,7 +29,8 @@ module.exports = function (api) {
         },
       ],
       // IMPORTANT: react-native-reanimated/plugin must always be last
-      'react-native-reanimated/plugin',
+      // Skip in test environment — it requires react-native-worklets (native module)
+      ...(!isTest ? ['react-native-reanimated/plugin'] : []),
     ],
   };
 };
