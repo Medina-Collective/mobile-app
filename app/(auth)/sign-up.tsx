@@ -11,7 +11,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button, Input, BackButton } from '@components/ui';
-import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { useAuth } from '@features/auth';
 import { signUpSchema, type SignUpFormData } from '@features/auth/schemas/auth.schema';
@@ -41,7 +40,11 @@ export default function SignUpScreen() {
 
   const onSubmit = async (data: SignUpFormData) => {
     await signIn(data.email, data.password);
-    router.replace('/(tabs)');
+    if (data.role === 'professional') {
+      router.replace('/(auth)/professional-profile');
+    } else {
+      router.replace('/(tabs)');
+    }
   };
 
   return (
@@ -58,14 +61,18 @@ export default function SignUpScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.header}>
-            <Text variant="heading1">{'You belong\nhere ♡'}</Text>
+            <Text variant="heading1" style={styles.heading}>
+              {'You belong\nhere ♡'}
+            </Text>
             <Text variant="bodySm" style={styles.subtitle}>
               Create your account and join the community.
             </Text>
           </View>
 
           <View style={styles.roleSection}>
-            <Text variant="overline">I am joining as</Text>
+            <Text variant="overline" style={styles.subtitle}>
+              I am joining as
+            </Text>
             <View style={styles.roleRow}>
               {ROLES.map(({ value, label, description }) => {
                 const isSelected = selectedRole === value;
@@ -158,7 +165,7 @@ export default function SignUpScreen() {
           />
 
           <TouchableOpacity onPress={() => router.push('/(auth)/sign-in')} style={styles.footer}>
-            <Text variant="caption">
+            <Text variant="caption" style={styles.footerText}>
               {'Already have an account?  '}
               <Text variant="caption" style={styles.footerLink}>
                 Sign in
@@ -172,30 +179,32 @@ export default function SignUpScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.burgundy.deep },
+  safe: { flex: 1, backgroundColor: '#28030a' },
   flex: { flex: 1 },
   scroll: { paddingHorizontal: spacing[8], paddingTop: spacing[8], paddingBottom: spacing[10] },
   header: { marginBottom: spacing[10], gap: spacing[3] },
-  subtitle: { color: colors.beige[400] },
+  heading: { color: '#cdc1ad' },
+  subtitle: { color: '#7b625b' },
 
   roleSection: { marginBottom: spacing[10], gap: spacing[4] },
   roleRow: { flexDirection: 'row', gap: spacing[3] },
   roleCard: {
     flex: 1,
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: '#7b625b',
     borderRadius: 8,
     padding: spacing[4],
     gap: spacing[1],
-    backgroundColor: colors.burgundy.surface,
+    backgroundColor: 'transparent',
   },
-  roleCardSelected: { borderColor: colors.beige[200], backgroundColor: colors.burgundy.raised },
-  roleLabel: { fontSize: 13, fontWeight: '600', color: colors.beige[400], letterSpacing: 0.3 },
-  roleLabelSelected: { color: colors.beige[200] },
-  roleDesc: { fontSize: 11, color: colors.burgundy.muted, lineHeight: 15 },
-  roleDescSelected: { color: colors.beige[400] },
+  roleCardSelected: { borderColor: '#cdc1ad', backgroundColor: 'transparent' },
+  roleLabel: { fontSize: 13, fontWeight: '600', color: '#7b625b', letterSpacing: 0.3 },
+  roleLabelSelected: { color: '#cdc1ad' },
+  roleDesc: { fontSize: 11, color: '#7b625b', lineHeight: 15, opacity: 0.7 },
+  roleDescSelected: { color: '#cdc1ad', opacity: 1 },
 
-  cta: { width: '100%', marginTop: spacing[4] },
+  cta: { width: '100%', marginTop: spacing[4], backgroundColor: '#cdc1ad' },
   footer: { marginTop: spacing[8], alignItems: 'center' },
-  footerLink: { color: colors.beige[200], fontWeight: '600' },
+  footerText: { color: '#7b625b' },
+  footerLink: { color: '#cdc1ad', fontWeight: '600' },
 });

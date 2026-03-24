@@ -4,7 +4,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button, Input, BackButton } from '@components/ui';
-import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { useAuth } from '@features/auth';
 import { signInSchema, type SignInFormData } from '@features/auth/schemas/auth.schema';
@@ -37,7 +36,9 @@ export default function SignInScreen() {
 
         <View style={styles.content}>
           <View style={styles.header}>
-            <Text variant="heading1">{'Welcome\nback ♡'}</Text>
+            <Text variant="heading1" style={styles.heading}>
+              {'Welcome\nback ♡'}
+            </Text>
             <Text variant="bodySm" style={styles.subtitle}>
               So glad you're here. Sign in to continue.
             </Text>
@@ -91,7 +92,7 @@ export default function SignInScreen() {
         </View>
 
         <TouchableOpacity onPress={() => router.push('/(auth)/sign-up')} style={styles.footer}>
-          <Text variant="caption">
+          <Text variant="caption" style={styles.footerText}>
             {"Don't have an account?  "}
             <Text variant="caption" style={styles.footerLink}>
               Sign up
@@ -104,14 +105,16 @@ export default function SignInScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.burgundy.deep },
+  safe: { flex: 1, backgroundColor: '#28030a' },
   flex: { flex: 1 },
   content: { flex: 1, paddingHorizontal: spacing[8], paddingTop: spacing[10] },
   header: { marginBottom: spacing[12], gap: spacing[3] },
-  subtitle: { color: colors.beige[400] },
+  heading: { color: '#cdc1ad' },
+  subtitle: { color: '#7b625b' },
   forgotLink: { alignSelf: 'flex-end', marginTop: -spacing[2] },
-  forgotText: { color: colors.crimson[400] },
-  cta: { marginTop: spacing[10], width: '100%' },
+  forgotText: { color: '#7b625b' },
+  cta: { marginTop: spacing[10], width: '100%', backgroundColor: '#cdc1ad' },
   footer: { paddingBottom: spacing[6], alignItems: 'center' },
-  footerLink: { color: colors.beige[200], fontWeight: '600' },
+  footerText: { color: '#7b625b' },
+  footerLink: { color: '#cdc1ad', fontWeight: '600' },
 });
