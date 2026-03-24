@@ -1,9 +1,11 @@
-import { View, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+
+const logo = require('@assets/images/logo.jpg') as number;
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -14,11 +16,8 @@ export default function WelcomeScreen() {
 
         {/* ── Brand mark ───────────────────────────────────────────── */}
         <View style={styles.hero}>
-          {/* MC monogram — matches the logo exactly */}
-          <Text style={styles.monogram}>MC</Text>
-
-          {/* Wordmark */}
-          <Text style={styles.wordmark}>Medina Collective</Text>
+          {/* Brand logo */}
+          <Image source={logo} style={styles.logo} resizeMode="contain" />
 
           {/* Crimson accent line + tagline */}
           <View style={styles.dividerRow}>
@@ -69,19 +68,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[5],
   },
-  monogram: {
-    fontSize: 72,
-    fontWeight: '700',
-    color: colors.beige[200],
-    letterSpacing: 6,
-    lineHeight: 80,
-  },
-  wordmark: {
-    fontSize: 15,
-    fontWeight: '400',
-    color: colors.crimson[400],
-    letterSpacing: 3,
-    textTransform: 'uppercase',
+  logo: {
+    width: 260,
+    height: 260,
   },
   dividerRow: {
     alignItems: 'center',
