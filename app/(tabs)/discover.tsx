@@ -1,24 +1,57 @@
-import { View, StyleSheet } from 'react-native';
+import { useCallback } from 'react';
+import { View, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import { Screen } from '@components/layout';
-import { Text } from '@components/ui';
+import { Text, Button } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+import { useListProfessionals } from '@features/discover/hooks/useProfessional';
+import { ProfessionalCard } from '@features/discover/components/ProfessionalCard';
+
+function ListSeparator() {
+  return <View style={styles.separator} />;
+}
 
 export default function DiscoverScreen() {
+  const { data: professionals, isLoading, isError, refetch } = useListProfessionals();
+
+  const handleRetry = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
   return (
     <Screen>
       <View style={styles.header}>
         <Text variant="heading2">Discover</Text>
-        <Text variant="body" style={styles.subtitle}>
-          Explore people, places, and culture
+        <Text variant="bodySm" style={styles.subtitle}>
+          Find shops, services & classes near you
         </Text>
       </View>
 
-      <View style={styles.placeholder}>
-        <Text variant="body" style={styles.placeholderText}>
-          Discovery feed coming soon
-        </Text>
-      </View>
+      {isLoading && (
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#cdc1ad" />
+        </View>
+      )}
+
+      {isError && (
+        <View style={styles.centered}>
+          <Text variant="bodySm" style={styles.errorText}>
+            Could not load professionals.
+          </Text>
+          <Button title="Try again" variant="outline" onPress={handleRetry} />
+        </View>
+      )}
+
+      {professionals !== undefined && (
+        <FlatList
+          data={professionals}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <ProfessionalCard professional={item} />}
+          contentContainerStyle={styles.list}
+          ItemSeparatorComponent={ListSeparator}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </Screen>
   );
 }
@@ -32,12 +65,20 @@ const styles = StyleSheet.create({
   subtitle: {
     color: colors.neutral[500],
   },
-  placeholder: {
+  centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: spacing[4],
   },
-  placeholderText: {
-    color: colors.neutral[400],
+  errorText: {
+    color: colors.neutral[500],
+    textAlign: 'center',
+  },
+  list: {
+    paddingBottom: spacing[8],
+  },
+  separator: {
+    height: spacing[3],
   },
 });

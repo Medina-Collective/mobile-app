@@ -64,13 +64,22 @@ const MOCK_PROFESSIONALS: Record<string, Professional> = {
   },
 };
 
-// ── Hook ──────────────────────────────────────────────────────────────────────
+// ── Hooks ─────────────────────────────────────────────────────────────────────
+
+export function useListProfessionals() {
+  return useQuery({
+    queryKey: ['professionals'],
+    queryFn: async (): Promise<Professional[]> => {
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      return Object.values(MOCK_PROFESSIONALS);
+    },
+  });
+}
 
 export function useGetProfessional(id: string) {
   return useQuery({
     queryKey: ['professionals', id],
     queryFn: async (): Promise<Professional> => {
-      // Simulate network latency
       await new Promise((resolve) => setTimeout(resolve, 600));
       const professional = MOCK_PROFESSIONALS[id];
       if (professional === undefined) {
