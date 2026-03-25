@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
@@ -19,13 +19,23 @@ function getInitials(name: string): string {
     .join('');
 }
 
-export function BusinessLogoPicker({ businessName, onPress }: Readonly<BusinessLogoPickerProps>) {
+export function BusinessLogoPicker({
+  businessName,
+  logoUri,
+  onPress,
+}: Readonly<BusinessLogoPickerProps>) {
   const initials = getInitials(businessName) || '?';
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.circle}>
-        <Text style={styles.initials}>{initials}</Text>
+      <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.circleWrapper}>
+        <View style={styles.circle}>
+          {logoUri !== undefined && logoUri !== '' ? (
+            <Image source={{ uri: logoUri }} style={styles.image} />
+          ) : (
+            <Text style={styles.initials}>{initials}</Text>
+          )}
+        </View>
         <View style={styles.badge}>
           <Ionicons name="camera" size={14} color={colors.burgundy.deep} />
         </View>
@@ -43,6 +53,10 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     marginBottom: spacing[8],
   },
+  circleWrapper: {
+    width: 96,
+    height: 96,
+  },
   circle: {
     width: 96,
     height: 96,
@@ -52,6 +66,11 @@ const styles = StyleSheet.create({
     borderColor: colors.burgundy.mid,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  image: {
+    width: 96,
+    height: 96,
   },
   initials: {
     fontSize: fontSize.xl,
@@ -61,8 +80,8 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
+    bottom: -2,
+    right: -2,
     width: 28,
     height: 28,
     borderRadius: 14,

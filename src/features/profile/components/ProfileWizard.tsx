@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { View, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { View, ScrollView, StyleSheet, TextInput, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -148,12 +149,28 @@ export function ProfileWizard({
             <Controller
               control={control}
               name="logoUri"
-              render={({ field: { value } }) => (
+              render={({ field: { value, onChange } }) => (
                 <BusinessLogoPicker
                   businessName={watchedValues.businessName}
                   logoUri={value}
-                  onPress={() => {
-                    // image picker integration goes here
+                  onPress={async () => {
+                    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                    if (!permission.granted) {
+                      Alert.alert(
+                        'Permission needed',
+                        'Allow access to your photo library to add a logo.',
+                      );
+                      return;
+                    }
+                    const result = await ImagePicker.launchImageLibraryAsync({
+                      mediaTypes: ['images'],
+                      allowsEditing: true,
+                      aspect: [1, 1],
+                      quality: 0.8,
+                    });
+                    if (!result.canceled && result.assets[0]) {
+                      onChange(result.assets[0].uri);
+                    }
                   }}
                 />
               )}

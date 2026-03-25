@@ -37,9 +37,11 @@ export default function RootLayout() {
         <StatusBar style="auto" />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="professional/[id]/index" />
           <Stack.Screen name="professional/[id]/edit" />
+          <Stack.Screen name="admin/index" />
+          <Stack.Screen name="admin/[id]" />
           <Stack.Screen name="+not-found" />
         </Stack>
       </QueryClientProvider>

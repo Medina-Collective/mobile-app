@@ -4,20 +4,28 @@ import { ProfileWizard } from '../ProfileWizard';
 const mockBack = jest.fn();
 jest.mock('expo-router', () => ({ useRouter: () => ({ back: mockBack }) }));
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 // Mock all sub-components to keep tests fast and focused on wizard logic
-jest.mock('../StepIndicator', () => ({
-  StepIndicator: ({ currentStep }: { currentStep: number }) => {
-    const { Text } = require('react-native');
-    return <Text testID="step-indicator">{`step-${currentStep}`}</Text>;
-  },
-}));
+jest.mock('../StepIndicator', () => {
+  const { Text } = require('react-native');
+  return {
+    StepIndicator: ({ currentStep }: { currentStep: number }) => (
+      <Text testID="step-indicator">{`step-${currentStep}`}</Text>
+    ),
+  };
+});
 jest.mock('../BusinessLogoPicker', () => ({ BusinessLogoPicker: () => null }));
-jest.mock('../BusinessTypeSelector', () => ({
-  BusinessTypeSelector: ({ onChange }: { onChange: (v: string) => void }) => {
-    const { Text } = require('react-native');
-    return <Text testID="type-selector" onPress={() => onChange('service')}>select-type</Text>;
-  },
-}));
+jest.mock('../BusinessTypeSelector', () => {
+  const { Text } = require('react-native');
+  return {
+    BusinessTypeSelector: ({ onChange }: { onChange: (v: string) => void }) => (
+      <Text testID="type-selector" onPress={() => onChange('service')}>
+        select-type
+      </Text>
+    ),
+  };
+});
+/* eslint-enable @typescript-eslint/no-require-imports */
 jest.mock('../CategorySelector', () => ({ CategorySelector: () => null }));
 jest.mock('../SubcategorySelector', () => ({ SubcategorySelector: () => null }));
 jest.mock('../ServiceTypeSelector', () => ({ ServiceTypeSelector: () => null }));
@@ -33,9 +41,7 @@ beforeEach(() => {
 
 describe('ProfileWizard', () => {
   it('starts on step 0', () => {
-    const { getByTestId } = render(
-      <ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} />,
-    );
+    const { getByTestId } = render(<ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} />);
     expect(getByTestId('step-indicator').props.children).toBe('step-0');
   });
 
@@ -44,7 +50,9 @@ describe('ProfileWizard', () => {
       <ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} />,
     );
     // businessName is empty and profileType unset — validation fails, wizard stays on step 0
-    await act(async () => { fireEvent.press(getByText('Next')); });
+    await act(async () => {
+      fireEvent.press(getByText('Next'));
+    });
     // With empty businessName, validation fails — still on step 0
     expect(getByTestId('step-indicator').props.children).toBe('step-0');
   });
@@ -59,9 +67,7 @@ describe('ProfileWizard', () => {
   });
 
   it('calls router.back when Back is pressed on step 0 without onCancel prop', () => {
-    const { getByText } = render(
-      <ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} />,
-    );
+    const { getByText } = render(<ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} />);
     fireEvent.press(getByText('Cancel'));
     expect(mockBack).toHaveBeenCalledTimes(1);
   });
@@ -86,7 +92,9 @@ describe('ProfileWizard', () => {
     );
     // shop type: steps 0→1→3→4→5→6 = 5 presses (subcategory is skipped)
     for (let i = 0; i < 5; i++) {
-      await act(async () => { fireEvent.press(getByText('Next')); });
+      await act(async () => {
+        fireEvent.press(getByText('Next'));
+      });
     }
     expect(getByText('Save changes')).toBeTruthy();
   });
@@ -115,10 +123,14 @@ describe('ProfileWizard', () => {
       />,
     );
     // Step 0 → 1 (category)
-    await act(async () => { fireEvent.press(getByText('Next')); });
+    await act(async () => {
+      fireEvent.press(getByText('Next'));
+    });
     expect(getByTestId('step-indicator').props.children).toBe('step-1');
     // Step 1 → 3 (skip subcategory for 'shop')
-    await act(async () => { fireEvent.press(getByText('Next')); });
+    await act(async () => {
+      fireEvent.press(getByText('Next'));
+    });
     expect(getByTestId('step-indicator').props.children).toBe('step-3');
   });
 });

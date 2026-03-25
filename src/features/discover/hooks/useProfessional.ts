@@ -1,77 +1,44 @@
 import { useQuery } from '@tanstack/react-query';
-import type { Professional } from '@app-types/professional';
+import { supabase } from '@services/supabase.client';
+import type { Professional, ServiceTypeValue } from '@app-types/professional';
+import type { Database } from '@app-types/supabase';
 
-// ── Mock data ─────────────────────────────────────────────────────────────────
-// Replace queryFn body with: const { data } = await apiClient.get<Professional>(`/professionals/${id}`); return data;
+type ProfessionalRow = Database['public']['Tables']['professionals']['Row'];
 
-const MOCK_PROFESSIONALS: Record<string, Professional> = {
-  '1': {
-    id: '1',
-    businessName: 'Henna by Fatima',
-    profileType: 'service',
-    category: 'Beauty',
-    subcategories: ['Henna', 'Makeup'],
-    serviceTypes: ['at_home', 'travels_to_client'],
-    basedIn: 'Montreal',
-    servesAreas: ['Montreal', 'Laval', 'Longueuil'],
-    description:
-      'Specialised henna artist and makeup artist serving the Montreal Muslim community. Available for weddings, Eid events, and special occasions. Traditional and modern designs tailored just for you.',
-    inquiryEmail: 'hello@hennabyfattima.com',
-    instagram: 'hennabyfattima',
-    phone: '+1 514 000 0000',
-    bookingLink: 'https://calendly.com/henna',
-    priceRange: '$$',
-    startingPrice: '$50',
-    status: 'approved',
+function rowToProfessional(row: ProfessionalRow): Professional {
+  return {
+    id: row.id,
+    businessName: row.business_name,
+    profileType: row.profile_type,
+    category: row.category,
+    subcategories: row.subcategories,
+    serviceTypes: row.service_types as ServiceTypeValue[],
+    basedIn: row.based_in,
+    servesAreas: row.serves_areas,
+    description: row.description,
+    inquiryEmail: row.inquiry_email,
+    instagram: row.instagram ?? undefined,
+    phone: row.phone ?? undefined,
+    website: row.website ?? undefined,
+    bookingLink: row.booking_link ?? undefined,
+    priceRange: row.price_range ?? undefined,
+    startingPrice: row.starting_price ?? undefined,
+    logoUri: row.logo_uri ?? undefined,
+    status: row.status,
     isFavorited: false,
-  },
-  '2': {
-    id: '2',
-    businessName: 'Nour Pilates',
-    profileType: 'service',
-    category: 'Fitness',
-    subcategories: ['Pilates / Yoga', 'Women Fitness Classes'],
-    serviceTypes: ['has_studio', 'online'],
-    basedIn: 'Laval',
-    servesAreas: ['Laval', 'Montreal', 'Online'],
-    description:
-      'Women-only pilates and wellness studio in Laval. Online classes available. All levels welcome — from beginners to advanced practitioners.',
-    inquiryEmail: 'nour@nourpilates.ca',
-    instagram: 'nourpilates',
-    website: 'https://nourpilates.ca',
-    priceRange: '$$$',
-    startingPrice: '$25/session',
-    status: 'approved',
-    isFavorited: true,
-  },
-  '3': {
-    id: '3',
-    businessName: 'Sakina Sweets',
-    profileType: 'shop',
-    category: 'Food & Sweets',
-    subcategories: [],
-    serviceTypes: [],
-    basedIn: 'Brossard',
-    servesAreas: ['Brossard', 'Longueuil', "At client's home"],
-    description:
-      'Handmade Middle Eastern sweets and custom celebration cakes. Perfect for weddings, Eid, and all your special moments. Orders placed 1 week in advance.',
-    inquiryEmail: 'orders@skinasweets.com',
-    instagram: 'sakinasweets',
-    phone: '+1 438 000 0000',
-    priceRange: '$',
-    status: 'approved',
-    isFavorited: false,
-  },
-};
-
-// ── Hooks ─────────────────────────────────────────────────────────────────────
+  };
+}
 
 export function useListProfessionals() {
   return useQuery({
     queryKey: ['professionals'],
     queryFn: async (): Promise<Professional[]> => {
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      return Object.values(MOCK_PROFESSIONALS);
+      const { data, error } = await supabase
+        .from('professionals')
+        .select('*')
+        .eq('status', 'approved');
+      if (error) throw error;
+      return data.map(rowToProfessional);
     },
   });
 }
@@ -80,12 +47,13 @@ export function useGetProfessional(id: string) {
   return useQuery({
     queryKey: ['professionals', id],
     queryFn: async (): Promise<Professional> => {
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      const professional = MOCK_PROFESSIONALS[id];
-      if (professional === undefined) {
-        throw new Error('Professional not found');
-      }
-      return professional;
+      const { data, error } = await supabase
+        .from('professionals')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (error) throw error;
+      return rowToProfessional(data);
     },
   });
 }
