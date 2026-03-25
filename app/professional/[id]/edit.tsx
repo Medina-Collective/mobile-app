@@ -6,6 +6,7 @@ import { Text } from '@components/ui';
 import { ProfileWizard } from '@features/profile/components/ProfileWizard';
 import { useGetProfessional } from '@features/discover/hooks/useProfessional';
 import { supabase } from '@services/supabase.client';
+import { formDataToRow } from '@features/profile/utils/professional-profile.utils';
 import type { ProfessionalProfileFormData } from '@features/profile/schemas/professional-profile.schema';
 
 export default function EditProfessionalProfileScreen() {
@@ -16,24 +17,7 @@ export default function EditProfessionalProfileScreen() {
   const handleSave = async (data: ProfessionalProfileFormData) => {
     const { error } = await supabase
       .from('professionals')
-      .update({
-        business_name: data.businessName,
-        profile_type: data.profileType,
-        category: data.category,
-        subcategories: data.subcategories,
-        service_types: data.serviceTypes,
-        based_in: data.basedIn,
-        serves_areas: data.servesAreas,
-        description: data.description,
-        inquiry_email: data.inquiryEmail,
-        instagram: data.instagram ?? null,
-        phone: data.phone ?? null,
-        website: data.website ?? null,
-        booking_link: data.bookingLink ?? null,
-        price_range: data.priceRange ?? null,
-        starting_price: data.startingPrice ?? null,
-        logo_uri: data.logoUri ?? null,
-      })
+      .update(formDataToRow(data))
       .eq('id', id);
     if (error) throw error;
     router.back();

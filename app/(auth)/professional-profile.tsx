@@ -5,6 +5,7 @@ import { colors } from '@theme/colors';
 import { ProfileWizard } from '@features/profile/components/ProfileWizard';
 import { supabase } from '@services/supabase.client';
 import { useAuthStore } from '@store/auth.store';
+import { formDataToRow } from '@features/profile/utils/professional-profile.utils';
 import type { ProfessionalProfileFormData } from '@features/profile/schemas/professional-profile.schema';
 
 export default function ProfessionalProfileScreen() {
@@ -13,26 +14,9 @@ export default function ProfessionalProfileScreen() {
 
   const handleSubmit = async (data: ProfessionalProfileFormData) => {
     if (!userId) throw new Error('Not authenticated');
-    const { error } = await supabase.from('professionals').insert({
-      user_id: userId,
-      business_name: data.businessName,
-      profile_type: data.profileType,
-      category: data.category,
-      subcategories: data.subcategories,
-      service_types: data.serviceTypes,
-      based_in: data.basedIn,
-      serves_areas: data.servesAreas,
-      description: data.description,
-      inquiry_email: data.inquiryEmail,
-      instagram: data.instagram ?? null,
-      phone: data.phone ?? null,
-      website: data.website ?? null,
-      booking_link: data.bookingLink ?? null,
-      price_range: data.priceRange ?? null,
-      starting_price: data.startingPrice ?? null,
-      logo_uri: data.logoUri ?? null,
-      status: 'pending_review',
-    });
+    const { error } = await supabase
+      .from('professionals')
+      .insert({ ...formDataToRow(data), user_id: userId, status: 'pending_review' });
     if (error) throw error;
     router.replace('/(auth)/thank-you');
   };
