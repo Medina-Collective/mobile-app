@@ -35,4 +35,19 @@ describe('BusinessLogoPicker', () => {
     fireEvent.press(getByText('HS'));
     expect(onPress).toHaveBeenCalledTimes(1);
   });
+
+  it('hides initials and shows image branch when logoUri is provided', () => {
+    const { queryByText, toJSON } = render(
+      <BusinessLogoPicker
+        businessName="Henna Studio"
+        logoUri="https://example.com/logo.png"
+        onPress={jest.fn()}
+      />,
+    );
+    // Initials should not be shown when a logo URI is set
+    expect(queryByText('HS')).toBeNull();
+    // The rendered tree should contain an Image node
+    const json = JSON.stringify(toJSON());
+    expect(json).toContain('https://example.com/logo.png');
+  });
 });

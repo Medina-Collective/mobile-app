@@ -30,8 +30,12 @@ module.exports = {
     '!src/**/*.spec.{ts,tsx}',
     // Barrel/index files: just re-exports, no logic to test
     '!src/**/index.ts',
-    // Infrastructure: HTTP clients depend on the network — covered by integration tests.
+    // Supabase client init — mocked globally, cannot be covered by unit tests.
     '!src/services/**',
+    // Pure TypeScript type/interface files — no runtime logic.
+    '!src/types/api.ts',
+    '!src/types/user.ts',
+    '!src/types/supabase.ts',
     // Design tokens: pure constant objects, no logic to test.
     '!src/theme/**',
   ],

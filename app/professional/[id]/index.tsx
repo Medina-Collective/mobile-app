@@ -149,6 +149,14 @@ export default function ProfessionalProfileScreen() {
           <Ionicons name="arrow-back" size={22} color="#cdc1ad" />
         </TouchableOpacity>
         <TouchableOpacity
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onPress={() => router.push(`/professional/${id}/edit` as any)}
+          style={styles.headerBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="create-outline" size={20} color="#cdc1ad" />
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={toggle}
           style={styles.headerBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}

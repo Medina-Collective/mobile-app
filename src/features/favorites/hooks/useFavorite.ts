@@ -1,27 +1,34 @@
 import { useMutation } from '@tanstack/react-query';
-import { apiClient } from '@services/api.client';
+import { supabase } from '@services/supabase.client';
 import { useFavoritesStore } from '@store/favorites.store';
-
-async function addFavorite(id: string): Promise<void> {
-  await apiClient.post(`/professionals/${id}/favorite`);
-}
-
-async function removeFavorite(id: string): Promise<void> {
-  await apiClient.delete(`/professionals/${id}/favorite`);
-}
+import { useAuthStore } from '@store/auth.store';
 
 export function useFavorite(professionalId: string) {
+  const userId = useAuthStore((s) => s.user?.id);
   const isFavorited = useFavoritesStore((s) => s.isFavorited(professionalId));
   const toggle = useFavoritesStore((s) => s.toggle);
 
   const mutation = useMutation({
-    mutationFn: () => (isFavorited ? removeFavorite(professionalId) : addFavorite(professionalId)),
+    mutationFn: async () => {
+      if (!userId) throw new Error('Not authenticated');
+      if (isFavorited) {
+        const { error } = await supabase
+          .from('favorites')
+          .delete()
+          .eq('user_id', userId)
+          .eq('professional_id', professionalId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('favorites')
+          .insert({ user_id: userId, professional_id: professionalId });
+        if (error) throw error;
+      }
+    },
     onMutate: () => {
-      // Optimistic update — flip immediately so the UI feels instant
       toggle(professionalId);
     },
     onError: () => {
-      // Revert on failure
       toggle(professionalId);
     },
   });

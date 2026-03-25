@@ -1,5 +1,6 @@
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import type { RelativePathString } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
@@ -25,7 +26,7 @@ export function ProfessionalCard({ professional }: Readonly<ProfessionalCardProp
 
   return (
     <TouchableOpacity
-      onPress={() => router.push(`/professional/${professional.id}`)}
+      onPress={() => router.push(`/professional/${professional.id}` as RelativePathString)}
       activeOpacity={0.85}
       style={styles.card}
     >
