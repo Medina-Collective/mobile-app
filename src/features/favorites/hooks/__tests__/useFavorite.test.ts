@@ -56,7 +56,7 @@ describe('useFavorite', () => {
   it('calls delete path when already favorited', async () => {
     useFavoritesStore.setState({ favoritedIds: ['1'] });
     // Build a chainable mock: delete().eq().eq() resolves at the end
-    const chain: Record<string, jest.Mock> = {
+    const chain: { delete: jest.Mock; eq: jest.Mock } = {
       delete: jest.fn(),
       eq: jest.fn(),
     };
