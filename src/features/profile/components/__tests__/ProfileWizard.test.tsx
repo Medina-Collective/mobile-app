@@ -1,5 +1,10 @@
-import { render, fireEvent, act } from '@testing-library/react-native';
+import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import { ProfileWizard } from '../ProfileWizard';
+
+jest.mock('expo-image-picker', () => ({
+  requestMediaLibraryPermissionsAsync: jest.fn(),
+  launchImageLibraryAsync: jest.fn(),
+}));
 
 const mockBack = jest.fn();
 jest.mock('expo-router', () => ({ useRouter: () => ({ back: mockBack }) }));
@@ -132,5 +137,106 @@ describe('ProfileWizard', () => {
       fireEvent.press(getByText('Next'));
     });
     expect(getByTestId('step-indicator').props.children).toBe('step-3');
+  });
+
+  it('goes to step 2 (subcategory) for service profile type', async () => {
+    const { getByText, getByTestId } = render(
+      <ProfileWizard
+        submitLabel="Submit"
+        onSubmit={mockOnSubmit}
+        defaultValues={{
+          businessName: 'Test',
+          profileType: 'service',
+          category: 'Beauty',
+        }}
+      />,
+    );
+    await act(async () => {
+      fireEvent.press(getByText('Next'));
+    });
+    expect(getByTestId('step-indicator').props.children).toBe('step-1');
+    await act(async () => {
+      fireEvent.press(getByText('Next'));
+    });
+    // service type: should land on step 2 (subcategory)
+    expect(getByTestId('step-indicator').props.children).toBe('step-2');
+  });
+
+  it('Back from step 1 returns to step 0', async () => {
+    const { getByText, getByTestId } = render(
+      <ProfileWizard
+        submitLabel="Submit"
+        onSubmit={mockOnSubmit}
+        defaultValues={{ businessName: 'Test', profileType: 'shop', category: 'Food & Sweets' }}
+      />,
+    );
+    await act(async () => {
+      fireEvent.press(getByText('Next'));
+    });
+    expect(getByTestId('step-indicator').props.children).toBe('step-1');
+    fireEvent.press(getByText('Back'));
+    expect(getByTestId('step-indicator').props.children).toBe('step-0');
+  });
+
+  it('Back from step 3 goes to step 1 for non-service type (skips subcategory)', async () => {
+    const { getByText, getByTestId } = render(
+      <ProfileWizard
+        submitLabel="Submit"
+        onSubmit={mockOnSubmit}
+        defaultValues={{ businessName: 'Test', profileType: 'shop', category: 'Food & Sweets' }}
+      />,
+    );
+    // 0 → 1 → 3 (skip step 2)
+    await act(async () => fireEvent.press(getByText('Next')));
+    await act(async () => fireEvent.press(getByText('Next')));
+    expect(getByTestId('step-indicator').props.children).toBe('step-3');
+    fireEvent.press(getByText('Back'));
+    // Should skip step 2 back to step 1
+    expect(getByTestId('step-indicator').props.children).toBe('step-1');
+  });
+
+  it('Back from step 3 goes to step 2 for service type', async () => {
+    const { getByText, getByTestId } = render(
+      <ProfileWizard
+        submitLabel="Submit"
+        onSubmit={mockOnSubmit}
+        defaultValues={{ businessName: 'Test', profileType: 'service', category: 'Beauty' }}
+      />,
+    );
+    // 0 → 1 → 2 → 3
+    await act(async () => fireEvent.press(getByText('Next')));
+    await act(async () => fireEvent.press(getByText('Next')));
+    await act(async () => fireEvent.press(getByText('Next')));
+    expect(getByTestId('step-indicator').props.children).toBe('step-3');
+    fireEvent.press(getByText('Back'));
+    expect(getByTestId('step-indicator').props.children).toBe('step-2');
+  });
+
+  it('calls onSubmit with form data when submitted on the last step', async () => {
+    const { getByText } = render(
+      <ProfileWizard
+        submitLabel="Submit"
+        onSubmit={mockOnSubmit}
+        defaultValues={{
+          businessName: 'Test Business',
+          profileType: 'shop',
+          category: 'Food & Sweets',
+          subcategories: [],
+          serviceTypes: [],
+          basedIn: 'Montreal',
+          servesAreas: ['Montreal'],
+          description: 'A description with enough characters to pass validation minimum.',
+          inquiryEmail: 'test@test.com',
+        }}
+      />,
+    );
+    for (let i = 0; i < 5; i++) {
+      await act(async () => fireEvent.press(getByText('Next')));
+    }
+    await act(async () => fireEvent.press(getByText('Submit')));
+    await waitFor(() => expect(mockOnSubmit).toHaveBeenCalledTimes(1));
+    expect(mockOnSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({ businessName: 'Test Business', inquiryEmail: 'test@test.com' }),
+    );
   });
 });
