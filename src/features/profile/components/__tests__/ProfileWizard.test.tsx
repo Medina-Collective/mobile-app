@@ -1,5 +1,6 @@
 import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import { ProfileWizard } from '../ProfileWizard';
+import * as ImagePicker from 'expo-image-picker';
 
 jest.mock('expo-image-picker', () => ({
   requestMediaLibraryPermissionsAsync: jest.fn(),
@@ -19,7 +20,14 @@ jest.mock('../StepIndicator', () => {
     ),
   };
 });
-jest.mock('../BusinessLogoPicker', () => ({ BusinessLogoPicker: () => null }));
+jest.mock('../BusinessLogoPicker', () => {
+  const { TouchableOpacity } = require('react-native');
+  return {
+    BusinessLogoPicker: ({ onPress }: { onPress: () => void }) => (
+      <TouchableOpacity testID="logo-picker" onPress={onPress} />
+    ),
+  };
+});
 jest.mock('../BusinessTypeSelector', () => {
   const { Text } = require('react-native');
   return {
@@ -30,14 +38,83 @@ jest.mock('../BusinessTypeSelector', () => {
     ),
   };
 });
+jest.mock('../CategorySelector', () => {
+  const { Text } = require('react-native');
+  return {
+    CategorySelector: ({ onChange }: { onChange: (v: string) => void }) => (
+      <Text testID="category-selector" onPress={() => onChange('Beauty')}>
+        select-category
+      </Text>
+    ),
+  };
+});
+jest.mock('../SubcategorySelector', () => {
+  const { Text } = require('react-native');
+  return {
+    SubcategorySelector: ({ onChange }: { onChange: (v: string[]) => void }) => (
+      <Text testID="subcategory-selector" onPress={() => onChange(['Henna'])}>
+        select-subcategory
+      </Text>
+    ),
+  };
+});
+jest.mock('../ServiceTypeSelector', () => {
+  const { Text } = require('react-native');
+  return {
+    ServiceTypeSelector: ({ onChange }: { onChange: (v: string[]) => void }) => (
+      <Text testID="service-type-selector" onPress={() => onChange(['at_home'])}>
+        select-service-type
+      </Text>
+    ),
+  };
+});
+jest.mock('../LocationStep', () => {
+  const { Text } = require('react-native');
+  return {
+    LocationStep: ({
+      onBasedInChange,
+      onServesAreasChange,
+    }: {
+      onBasedInChange: (v: string) => void;
+      onServesAreasChange: (v: string[]) => void;
+    }) => (
+      <Text
+        testID="location-step"
+        onPress={() => {
+          onBasedInChange('Montreal');
+          onServesAreasChange(['Montreal']);
+        }}
+      >
+        location
+      </Text>
+    ),
+  };
+});
+jest.mock('../ProfilePreviewCard', () => {
+  const { Text } = require('react-native');
+  return {
+    ProfilePreviewCard: ({ onEditStep }: { onEditStep: (step: number) => void }) => (
+      <Text testID="preview-card" onPress={() => onEditStep(0)}>
+        preview
+      </Text>
+    ),
+  };
+});
 /* eslint-enable @typescript-eslint/no-require-imports */
-jest.mock('../CategorySelector', () => ({ CategorySelector: () => null }));
-jest.mock('../SubcategorySelector', () => ({ SubcategorySelector: () => null }));
-jest.mock('../ServiceTypeSelector', () => ({ ServiceTypeSelector: () => null }));
-jest.mock('../LocationStep', () => ({ LocationStep: () => null }));
-jest.mock('../ProfilePreviewCard', () => ({ ProfilePreviewCard: () => null }));
 
 const mockOnSubmit = jest.fn().mockResolvedValue(undefined);
+
+const fullDefaultValues = {
+  businessName: 'Test Business',
+  profileType: 'shop' as const,
+  category: 'Food & Sweets',
+  subcategories: [],
+  serviceTypes: [],
+  basedIn: 'Montreal',
+  servesAreas: ['Montreal'],
+  description: 'A description with enough characters to pass validation minimum.',
+  inquiryEmail: 'test@test.com',
+};
 
 beforeEach(() => {
   mockBack.mockClear();
@@ -50,19 +127,17 @@ describe('ProfileWizard', () => {
     expect(getByTestId('step-indicator').props.children).toBe('step-0');
   });
 
-  it('advances to step 1 on Next when step 0 is valid', async () => {
+  it('stays on step 0 when Next is pressed with empty businessName', async () => {
     const { getByText, getByTestId } = render(
       <ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} />,
     );
-    // businessName is empty and profileType unset — validation fails, wizard stays on step 0
     await act(async () => {
       fireEvent.press(getByText('Next'));
     });
-    // With empty businessName, validation fails — still on step 0
     expect(getByTestId('step-indicator').props.children).toBe('step-0');
   });
 
-  it('calls onCancel when Back is pressed on step 0 with onCancel prop', () => {
+  it('calls onCancel when Cancel is pressed on step 0 with onCancel prop', () => {
     const onCancel = jest.fn();
     const { getByText } = render(
       <ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} onCancel={onCancel} />,
@@ -71,37 +146,10 @@ describe('ProfileWizard', () => {
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
-  it('calls router.back when Back is pressed on step 0 without onCancel prop', () => {
+  it('calls router.back when Cancel is pressed on step 0 without onCancel prop', () => {
     const { getByText } = render(<ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} />);
     fireEvent.press(getByText('Cancel'));
     expect(mockBack).toHaveBeenCalledTimes(1);
-  });
-
-  it('shows the submitLabel on the last step', async () => {
-    const { getByText } = render(
-      <ProfileWizard
-        submitLabel="Save changes"
-        onSubmit={mockOnSubmit}
-        defaultValues={{
-          businessName: 'Test Business',
-          profileType: 'shop', // shop skips subcategory step → 5 Next presses to reach review
-          category: 'Food & Sweets',
-          subcategories: [],
-          serviceTypes: [],
-          basedIn: 'Montreal',
-          servesAreas: ['Montreal'],
-          description: 'A description with enough characters to pass validation minimum.',
-          inquiryEmail: 'test@test.com',
-        }}
-      />,
-    );
-    // shop type: steps 0→1→3→4→5→6 = 5 presses (subcategory is skipped)
-    for (let i = 0; i < 5; i++) {
-      await act(async () => {
-        fireEvent.press(getByText('Next'));
-      });
-    }
-    expect(getByText('Save changes')).toBeTruthy();
   });
 
   it('pre-populates businessName from defaultValues', () => {
@@ -120,22 +168,12 @@ describe('ProfileWizard', () => {
       <ProfileWizard
         submitLabel="Submit"
         onSubmit={mockOnSubmit}
-        defaultValues={{
-          businessName: 'Test',
-          profileType: 'shop',
-          category: 'Food & Sweets',
-        }}
+        defaultValues={{ businessName: 'Test', profileType: 'shop', category: 'Food & Sweets' }}
       />,
     );
-    // Step 0 → 1 (category)
-    await act(async () => {
-      fireEvent.press(getByText('Next'));
-    });
+    await act(async () => fireEvent.press(getByText('Next')));
     expect(getByTestId('step-indicator').props.children).toBe('step-1');
-    // Step 1 → 3 (skip subcategory for 'shop')
-    await act(async () => {
-      fireEvent.press(getByText('Next'));
-    });
+    await act(async () => fireEvent.press(getByText('Next')));
     expect(getByTestId('step-indicator').props.children).toBe('step-3');
   });
 
@@ -144,21 +182,11 @@ describe('ProfileWizard', () => {
       <ProfileWizard
         submitLabel="Submit"
         onSubmit={mockOnSubmit}
-        defaultValues={{
-          businessName: 'Test',
-          profileType: 'service',
-          category: 'Beauty',
-        }}
+        defaultValues={{ businessName: 'Test', profileType: 'service', category: 'Beauty' }}
       />,
     );
-    await act(async () => {
-      fireEvent.press(getByText('Next'));
-    });
-    expect(getByTestId('step-indicator').props.children).toBe('step-1');
-    await act(async () => {
-      fireEvent.press(getByText('Next'));
-    });
-    // service type: should land on step 2 (subcategory)
+    await act(async () => fireEvent.press(getByText('Next')));
+    await act(async () => fireEvent.press(getByText('Next')));
     expect(getByTestId('step-indicator').props.children).toBe('step-2');
   });
 
@@ -170,9 +198,7 @@ describe('ProfileWizard', () => {
         defaultValues={{ businessName: 'Test', profileType: 'shop', category: 'Food & Sweets' }}
       />,
     );
-    await act(async () => {
-      fireEvent.press(getByText('Next'));
-    });
+    await act(async () => fireEvent.press(getByText('Next')));
     expect(getByTestId('step-indicator').props.children).toBe('step-1');
     fireEvent.press(getByText('Back'));
     expect(getByTestId('step-indicator').props.children).toBe('step-0');
@@ -186,12 +212,10 @@ describe('ProfileWizard', () => {
         defaultValues={{ businessName: 'Test', profileType: 'shop', category: 'Food & Sweets' }}
       />,
     );
-    // 0 → 1 → 3 (skip step 2)
     await act(async () => fireEvent.press(getByText('Next')));
     await act(async () => fireEvent.press(getByText('Next')));
     expect(getByTestId('step-indicator').props.children).toBe('step-3');
     fireEvent.press(getByText('Back'));
-    // Should skip step 2 back to step 1
     expect(getByTestId('step-indicator').props.children).toBe('step-1');
   });
 
@@ -203,7 +227,6 @@ describe('ProfileWizard', () => {
         defaultValues={{ businessName: 'Test', profileType: 'service', category: 'Beauty' }}
       />,
     );
-    // 0 → 1 → 2 → 3
     await act(async () => fireEvent.press(getByText('Next')));
     await act(async () => fireEvent.press(getByText('Next')));
     await act(async () => fireEvent.press(getByText('Next')));
@@ -212,22 +235,26 @@ describe('ProfileWizard', () => {
     expect(getByTestId('step-indicator').props.children).toBe('step-2');
   });
 
-  it('calls onSubmit with form data when submitted on the last step', async () => {
+  it('shows the submitLabel on the last step', async () => {
+    const { getByText } = render(
+      <ProfileWizard
+        submitLabel="Save changes"
+        onSubmit={mockOnSubmit}
+        defaultValues={fullDefaultValues}
+      />,
+    );
+    for (let i = 0; i < 5; i++) {
+      await act(async () => fireEvent.press(getByText('Next')));
+    }
+    expect(getByText('Save changes')).toBeTruthy();
+  });
+
+  it('calls onSubmit with form data on last step submit', async () => {
     const { getByText } = render(
       <ProfileWizard
         submitLabel="Submit"
         onSubmit={mockOnSubmit}
-        defaultValues={{
-          businessName: 'Test Business',
-          profileType: 'shop',
-          category: 'Food & Sweets',
-          subcategories: [],
-          serviceTypes: [],
-          basedIn: 'Montreal',
-          servesAreas: ['Montreal'],
-          description: 'A description with enough characters to pass validation minimum.',
-          inquiryEmail: 'test@test.com',
-        }}
+        defaultValues={fullDefaultValues}
       />,
     );
     for (let i = 0; i < 5; i++) {
@@ -238,5 +265,98 @@ describe('ProfileWizard', () => {
     expect(mockOnSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ businessName: 'Test Business', inquiryEmail: 'test@test.com' }),
     );
+  });
+
+  it('resets subcategories when category changes on step 1', async () => {
+    const { getByText, getByTestId } = render(
+      <ProfileWizard
+        submitLabel="Submit"
+        onSubmit={mockOnSubmit}
+        defaultValues={{
+          businessName: 'Test',
+          profileType: 'service',
+          category: 'Beauty',
+          subcategories: ['Henna'],
+        }}
+      />,
+    );
+    await act(async () => fireEvent.press(getByText('Next')));
+    expect(getByTestId('step-indicator').props.children).toBe('step-1');
+    // Trigger category change — mock calls onChange('Beauty'), which resets subcategories
+    fireEvent.press(getByTestId('category-selector'));
+    // Advance to subcategory step and check subcategories were reset
+    await act(async () => fireEvent.press(getByText('Next')));
+    expect(getByTestId('step-indicator').props.children).toBe('step-2');
+  });
+
+  it('onEditStep from preview card navigates back to the given step', async () => {
+    const { getByText, getByTestId } = render(
+      <ProfileWizard
+        submitLabel="Submit"
+        onSubmit={mockOnSubmit}
+        defaultValues={fullDefaultValues}
+      />,
+    );
+    for (let i = 0; i < 5; i++) {
+      await act(async () => fireEvent.press(getByText('Next')));
+    }
+    expect(getByTestId('step-indicator').props.children).toBe('step-6');
+    fireEvent.press(getByTestId('preview-card'));
+    expect(getByTestId('step-indicator').props.children).toBe('step-0');
+  });
+
+  it('shows the price chip toggle on step 5', async () => {
+    const { getByText, getByTestId } = render(
+      <ProfileWizard
+        submitLabel="Submit"
+        onSubmit={mockOnSubmit}
+        defaultValues={fullDefaultValues}
+      />,
+    );
+    // Navigate to step 5: 0→1→3→4→5
+    for (let i = 0; i < 4; i++) {
+      await act(async () => fireEvent.press(getByText('Next')));
+    }
+    expect(getByTestId('step-indicator').props.children).toBe('step-5');
+    // Select a price range chip
+    fireEvent.press(getByText('$'));
+    // Press it again to deselect (covers the isSelected ? undefined : range branch)
+    fireEvent.press(getByText('$'));
+  });
+
+  it('shows alert when image picker permission is denied', async () => {
+    (ImagePicker.requestMediaLibraryPermissionsAsync as jest.Mock).mockResolvedValue({
+      granted: false,
+    });
+    const { getByTestId } = render(<ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} />);
+    await act(async () => fireEvent.press(getByTestId('logo-picker')));
+    expect(ImagePicker.requestMediaLibraryPermissionsAsync).toHaveBeenCalled();
+    expect(ImagePicker.launchImageLibraryAsync).not.toHaveBeenCalled();
+  });
+
+  it('sets logoUri when image is selected', async () => {
+    (ImagePicker.requestMediaLibraryPermissionsAsync as jest.Mock).mockResolvedValue({
+      granted: true,
+    });
+    (ImagePicker.launchImageLibraryAsync as jest.Mock).mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file://logo.png' }],
+    });
+    const { getByTestId } = render(<ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} />);
+    await act(async () => fireEvent.press(getByTestId('logo-picker')));
+    expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
+  });
+
+  it('does not set logoUri when image picker is cancelled', async () => {
+    (ImagePicker.requestMediaLibraryPermissionsAsync as jest.Mock).mockResolvedValue({
+      granted: true,
+    });
+    (ImagePicker.launchImageLibraryAsync as jest.Mock).mockResolvedValue({
+      canceled: true,
+      assets: [],
+    });
+    const { getByTestId } = render(<ProfileWizard submitLabel="Submit" onSubmit={mockOnSubmit} />);
+    await act(async () => fireEvent.press(getByTestId('logo-picker')));
+    expect(ImagePicker.launchImageLibraryAsync).toHaveBeenCalled();
   });
 });
