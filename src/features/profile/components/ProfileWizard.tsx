@@ -44,7 +44,7 @@ export function ProfileWizard({
   onSubmit,
   submitLabel,
   onCancel,
-}: ProfileWizardProps) {
+}: Readonly<ProfileWizardProps>) {
   const router = useRouter();
   const scrollRef = useRef<ScrollView>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -99,10 +99,10 @@ export function ProfileWizard({
 
   const handleBack = () => {
     if (currentStep === 0) {
-      if (onCancel !== undefined) {
-        onCancel();
-      } else {
+      if (onCancel === undefined) {
         router.back();
+      } else {
+        onCancel();
       }
       return;
     }
