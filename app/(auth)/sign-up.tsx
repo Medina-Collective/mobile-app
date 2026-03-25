@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -23,7 +24,7 @@ const ROLES: { value: Role; label: string; description: string }[] = [
 
 export default function SignUpScreen() {
   const router = useRouter();
-  const { signIn, isLoading } = useAuth();
+  const { signUp, isLoading } = useAuth();
 
   const {
     control,
@@ -37,13 +38,21 @@ export default function SignUpScreen() {
   });
 
   const selectedRole = watch('role');
+  const [serverError, setServerError] = useState<string | undefined>(undefined);
 
   const onSubmit = async (data: SignUpFormData) => {
-    await signIn(data.email, data.password);
-    if (data.role === 'professional') {
-      router.replace('/(auth)/professional-profile');
-    } else {
-      router.replace('/(tabs)');
+    setServerError(undefined);
+    try {
+      await signUp(data.email, data.password, data.displayName);
+      if (data.role === 'professional') {
+        router.replace('/(auth)/professional-profile');
+      } else {
+        router.replace('/(tabs)');
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setServerError(message);
     }
   };
 
@@ -157,6 +166,12 @@ export default function SignUpScreen() {
             )}
           />
 
+          {serverError !== undefined && (
+            <Text variant="caption" style={styles.serverError}>
+              {serverError}
+            </Text>
+          )}
+
           <Button
             title="Create account"
             onPress={() => void handleSubmit(onSubmit)()}
@@ -203,6 +218,7 @@ const styles = StyleSheet.create({
   roleDesc: { fontSize: 11, color: '#7b625b', lineHeight: 15, opacity: 0.7 },
   roleDescSelected: { color: '#cdc1ad', opacity: 1 },
 
+  serverError: { color: '#e57373', textAlign: 'center', marginTop: spacing[2] },
   cta: { width: '100%', marginTop: spacing[4], backgroundColor: '#cdc1ad' },
   footer: { marginTop: spacing[8], alignItems: 'center' },
   footerText: { color: '#7b625b' },
