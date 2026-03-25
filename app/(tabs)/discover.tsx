@@ -1,15 +1,11 @@
 import { useCallback } from 'react';
-import { View, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Screen } from '@components/layout';
-import { Text, Button } from '@components/ui';
+import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { useListProfessionals } from '@features/discover/hooks/useProfessional';
-import { ProfessionalCard } from '@features/discover/components/ProfessionalCard';
-
-function ListSeparator() {
-  return <View style={styles.separator} />;
-}
+import { ProfessionalList } from '@features/discover/components/ProfessionalList';
 
 export default function DiscoverScreen() {
   const { data: professionals, isLoading, isError, refetch } = useListProfessionals();
@@ -27,31 +23,13 @@ export default function DiscoverScreen() {
         </Text>
       </View>
 
-      {isLoading && (
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#cdc1ad" />
-        </View>
-      )}
-
-      {isError && (
-        <View style={styles.centered}>
-          <Text variant="bodySm" style={styles.errorText}>
-            Could not load professionals.
-          </Text>
-          <Button title="Try again" variant="outline" onPress={handleRetry} />
-        </View>
-      )}
-
-      {professionals !== undefined && (
-        <FlatList
-          data={professionals}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <ProfessionalCard professional={item} />}
-          contentContainerStyle={styles.list}
-          ItemSeparatorComponent={ListSeparator}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
+      <ProfessionalList
+        data={professionals}
+        isLoading={isLoading}
+        isError={isError}
+        onRetry={handleRetry}
+        errorMessage="Could not load professionals."
+      />
     </Screen>
   );
 }
@@ -64,21 +42,5 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: colors.neutral[500],
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing[4],
-  },
-  errorText: {
-    color: colors.neutral[500],
-    textAlign: 'center',
-  },
-  list: {
-    paddingBottom: spacing[8],
-  },
-  separator: {
-    height: spacing[3],
   },
 });
