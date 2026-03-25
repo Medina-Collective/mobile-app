@@ -1,0 +1,491 @@
+import { useCallback } from 'react';
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  Linking,
+  StyleSheet,
+} from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { Text, Button } from '@components/ui';
+import { colors } from '@theme/colors';
+import { spacing } from '@theme/spacing';
+import { fontSize } from '@theme/typography';
+import { PROFILE_TYPE_LABELS, SERVICE_TYPE_LABELS } from '@app-types/professional';
+import { useGetProfessional } from '@features/discover/hooks/useProfessional';
+import { useFavorite } from '@features/favorites/hooks/useFavorite';
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? '')
+    .join('');
+}
+
+async function openLink(url: string): Promise<void> {
+  const supported = await Linking.canOpenURL(url);
+  if (supported) {
+    await Linking.openURL(url);
+  }
+}
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function ContactRow({
+  icon,
+  label,
+  onPress,
+}: Readonly<{
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  label: string;
+  onPress: () => void;
+}>) {
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.contactRow}>
+      <View style={styles.contactIconWrap}>
+        <Ionicons name={icon} size={16} color="#cdc1ad" />
+      </View>
+      <Text style={styles.contactLabel}>{label}</Text>
+      <Ionicons name="chevron-forward" size={14} color={colors.burgundy.muted} />
+    </TouchableOpacity>
+  );
+}
+
+function InfoChip({ label }: Readonly<{ label: string }>) {
+  return (
+    <View style={styles.chip}>
+      <Text style={styles.chipText}>{label}</Text>
+    </View>
+  );
+}
+
+// ── Screen ────────────────────────────────────────────────────────────────────
+
+export default function ProfessionalProfileScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+  const { data: professional, isLoading, isError, refetch } = useGetProfessional(id);
+  const { isFavorited, toggle } = useFavorite(id);
+
+  const handleBack = useCallback(() => {
+    router.back();
+  }, [router]);
+
+  const handleRetry = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
+  // ── Loading ────────────────────────────────────────────────────────────────
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.headerBar}>
+          <TouchableOpacity
+            onPress={handleBack}
+            style={styles.headerBtn}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons name="arrow-back" size={22} color="#cdc1ad" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#cdc1ad" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // ── Error ──────────────────────────────────────────────────────────────────
+
+  if (isError || professional === undefined) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.headerBar}>
+          <TouchableOpacity
+            onPress={handleBack}
+            style={styles.headerBtn}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons name="arrow-back" size={22} color="#cdc1ad" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.centered}>
+          <Ionicons name="alert-circle-outline" size={48} color={colors.burgundy.muted} />
+          <Text variant="bodySm" style={styles.errorText}>
+            Could not load this profile.
+          </Text>
+          <Button
+            title="Try again"
+            variant="outline"
+            onPress={handleRetry}
+            style={styles.retryBtn}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // ── Derived display values ─────────────────────────────────────────────────
+
+  const profileTypeLabel = PROFILE_TYPE_LABELS[professional.profileType];
+  const serviceTypeLabels = professional.serviceTypes.map((v) => SERVICE_TYPE_LABELS[v]);
+
+  return (
+    <SafeAreaView style={styles.safe}>
+      {/* Header */}
+      <View style={styles.headerBar}>
+        <TouchableOpacity
+          onPress={handleBack}
+          style={styles.headerBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="arrow-back" size={22} color="#cdc1ad" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={toggle}
+          style={styles.headerBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons
+            name={isFavorited ? 'heart' : 'heart-outline'}
+            size={22}
+            color={isFavorited ? colors.crimson[400] : '#cdc1ad'}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        {/* Hero */}
+        <View style={styles.hero}>
+          <View style={styles.avatarCircle}>
+            <Text style={styles.avatarInitials}>
+              {getInitials(professional.businessName) || '?'}
+            </Text>
+          </View>
+          <Text variant="heading2" style={styles.businessName}>
+            {professional.businessName}
+          </Text>
+          <View style={styles.badgeRow}>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{profileTypeLabel}</Text>
+            </View>
+            {professional.priceRange !== undefined && (
+              <View style={[styles.badge, styles.badgePrice]}>
+                <Text style={styles.badgeText}>
+                  {professional.priceRange}
+                  {professional.startingPrice === undefined
+                    ? ''
+                    : ` · from ${professional.startingPrice}`}
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        <View style={styles.divider} />
+
+        {/* Category & subcategories */}
+        <View style={styles.section}>
+          <Text variant="overline" style={styles.sectionLabel}>
+            Speciality
+          </Text>
+          <View style={styles.chipRow}>
+            <View style={[styles.chip, styles.chipAccent]}>
+              <Text style={[styles.chipText, styles.chipTextAccent]}>{professional.category}</Text>
+            </View>
+            {professional.subcategories.map((sub) => (
+              <InfoChip key={sub} label={sub} />
+            ))}
+          </View>
+        </View>
+
+        {/* Service types */}
+        {serviceTypeLabels.length > 0 && (
+          <View style={styles.section}>
+            <Text variant="overline" style={styles.sectionLabel}>
+              How they work
+            </Text>
+            <View style={styles.chipRow}>
+              {serviceTypeLabels.map((label) => (
+                <InfoChip key={label} label={label} />
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Location */}
+        <View style={styles.section}>
+          <Text variant="overline" style={styles.sectionLabel}>
+            Location
+          </Text>
+          <View style={styles.locationRow}>
+            <Ionicons name="location-outline" size={14} color={colors.burgundy.muted} />
+            <Text variant="bodySm" style={styles.locationText}>
+              Based in {professional.basedIn}
+            </Text>
+          </View>
+          {professional.servesAreas.length > 0 && (
+            <Text variant="caption" style={styles.servesText}>
+              Serves: {professional.servesAreas.join(', ')}
+            </Text>
+          )}
+        </View>
+
+        {/* About */}
+        <View style={styles.section}>
+          <Text variant="overline" style={styles.sectionLabel}>
+            About
+          </Text>
+          <Text variant="bodySm" style={styles.description}>
+            {professional.description}
+          </Text>
+        </View>
+
+        {/* Contact */}
+        <View style={styles.section}>
+          <Text variant="overline" style={styles.sectionLabel}>
+            Contact
+          </Text>
+          <View style={styles.contactList}>
+            <ContactRow
+              icon="mail-outline"
+              label={professional.inquiryEmail}
+              onPress={() => void openLink(`mailto:${professional.inquiryEmail}`)}
+            />
+            {professional.instagram !== undefined && (
+              <ContactRow
+                icon="logo-instagram"
+                label={`@${professional.instagram}`}
+                onPress={() => void openLink(`https://instagram.com/${professional.instagram}`)}
+              />
+            )}
+            {professional.phone !== undefined && (
+              <ContactRow
+                icon="call-outline"
+                label={professional.phone}
+                onPress={() => void openLink(`tel:${professional.phone}`)}
+              />
+            )}
+            {professional.bookingLink !== undefined &&
+              (() => {
+                const link = professional.bookingLink;
+                return (
+                  <ContactRow
+                    icon="calendar-outline"
+                    label="Book an appointment"
+                    onPress={() => void openLink(link)}
+                  />
+                );
+              })()}
+            {professional.website !== undefined &&
+              (() => {
+                const site = professional.website;
+                return (
+                  <ContactRow
+                    icon="link-outline"
+                    label={site}
+                    onPress={() => void openLink(site)}
+                  />
+                );
+              })()}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+// ── Styles ────────────────────────────────────────────────────────────────────
+
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: colors.burgundy.deep,
+  },
+
+  // Header
+  headerBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing[6],
+    paddingVertical: spacing[3],
+  },
+  headerBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.burgundy.raised,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Loading / error
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing[4],
+  },
+  errorText: {
+    color: colors.burgundy.muted,
+    textAlign: 'center',
+  },
+  retryBtn: {
+    minWidth: 140,
+  },
+
+  // Scroll
+  scroll: {
+    paddingHorizontal: spacing[6],
+    paddingBottom: spacing[12],
+  },
+
+  // Hero
+  hero: {
+    alignItems: 'center',
+    paddingVertical: spacing[8],
+    gap: spacing[3],
+  },
+  avatarCircle: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: colors.burgundy.raised,
+    borderWidth: 2,
+    borderColor: colors.burgundy.mid,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing[2],
+  },
+  avatarInitials: {
+    fontSize: fontSize.xl,
+    fontWeight: '700',
+    color: '#cdc1ad',
+    letterSpacing: 1,
+  },
+  businessName: {
+    color: '#cdc1ad',
+    textAlign: 'center',
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[2],
+    justifyContent: 'center',
+  },
+  badge: {
+    paddingVertical: spacing[1],
+    paddingHorizontal: spacing[3],
+    borderRadius: 20,
+    backgroundColor: colors.burgundy.raised,
+    borderWidth: 1,
+    borderColor: colors.burgundy.mid,
+  },
+  badgePrice: {
+    borderColor: '#cdc1ad',
+  },
+  badgeText: {
+    fontSize: fontSize.xs,
+    color: '#cdc1ad',
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+
+  // Divider
+  divider: {
+    height: 1,
+    backgroundColor: colors.burgundy.surface,
+    marginBottom: spacing[6],
+  },
+
+  // Sections
+  section: {
+    marginBottom: spacing[8],
+    gap: spacing[3],
+  },
+  sectionLabel: {
+    color: '#7b625b',
+  },
+
+  // Chips
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[2],
+  },
+  chip: {
+    paddingVertical: spacing[1],
+    paddingHorizontal: spacing[3],
+    borderRadius: 20,
+    backgroundColor: colors.burgundy.raised,
+    borderWidth: 1,
+    borderColor: colors.burgundy.mid,
+  },
+  chipAccent: {
+    borderColor: '#cdc1ad',
+  },
+  chipText: {
+    fontSize: fontSize.xs,
+    color: '#cdc1ad',
+    fontWeight: '500',
+  },
+  chipTextAccent: {
+    fontWeight: '700',
+  },
+
+  // Location
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  locationText: {
+    color: '#cdc1ad',
+  },
+  servesText: {
+    color: colors.burgundy.muted,
+    marginTop: spacing[1],
+  },
+
+  // Description
+  description: {
+    color: colors.beige[300],
+    lineHeight: 22,
+  },
+
+  // Contact
+  contactList: {
+    gap: spacing[1],
+  },
+  contactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4],
+    backgroundColor: colors.burgundy.surface,
+    borderRadius: 10,
+  },
+  contactIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.burgundy.raised,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contactLabel: {
+    flex: 1,
+    fontSize: fontSize.sm,
+    color: '#cdc1ad',
+    fontWeight: '500',
+  },
+});
