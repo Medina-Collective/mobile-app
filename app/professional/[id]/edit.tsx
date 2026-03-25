@@ -15,10 +15,7 @@ export default function EditProfessionalProfileScreen() {
   const { data: professional, isLoading, isError } = useGetProfessional(id);
 
   const handleSave = async (data: ProfessionalProfileFormData) => {
-    const { error } = await supabase
-      .from('professionals')
-      .update(formDataToRow(data))
-      .eq('id', id);
+    const { error } = await supabase.from('professionals').update(formDataToRow(data)).eq('id', id);
     if (error) throw error;
     router.back();
   };
