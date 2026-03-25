@@ -30,8 +30,13 @@ module.exports = {
     '!src/**/*.spec.{ts,tsx}',
     // Barrel/index files: just re-exports, no logic to test
     '!src/**/index.ts',
-    // Infrastructure: HTTP clients depend on the network — covered by integration tests.
+    // Infrastructure: HTTP clients and auth store depend on native modules / network.
     '!src/services/**',
+    '!src/store/auth.store.ts',
+    // Pure TypeScript type/interface files — no runtime logic.
+    '!src/types/api.ts',
+    '!src/types/user.ts',
+    '!src/types/supabase.ts',
     // Design tokens: pure constant objects, no logic to test.
     '!src/theme/**',
   ],
