@@ -23,10 +23,10 @@ export function Screen({
   noHorizontalPadding = false,
   noTopInset = false,
   variant = 'light',
-}: ScreenProps) {
+}: Readonly<ScreenProps>) {
   const edges = noTopInset
-    ? (['bottom', 'left', 'right'] as const)
-    : (['top', 'bottom', 'left', 'right'] as const);
+    ? (['left', 'right'] as const)
+    : (['top', 'left', 'right'] as const);
 
   return (
     <SafeAreaView
