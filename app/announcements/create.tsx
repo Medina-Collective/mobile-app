@@ -496,7 +496,7 @@ const styles = StyleSheet.create({
   },
   audienceOptionActive: {
     borderColor: colors.burgundy.mid,
-    backgroundColor: 'rgba(39, 3, 9, 0.06)',
+    backgroundColor: 'rgba(68, 0, 7, 0.06)',
   },
   audienceIcon: {
     marginBottom: spacing[1],
