@@ -50,7 +50,7 @@ export function useListAnnouncements(typeFilter?: AnnouncementType | undefined) 
         .eq('status', 'published')
         .lte('visibility_start', now)
         .gte('visibility_end', now)
-        .order('visibility_start', { ascending: true });
+        .order('created_at', { ascending: false });
 
       if (typeFilter !== undefined) {
         query = query.eq('type', typeFilter);
@@ -174,11 +174,19 @@ export function useCreateAnnouncement() {
       let coverImageUrl: string | null = null;
       if (formData.coverImageUri !== undefined) {
         const filename = `${professional.id}/${Date.now()}.jpg`;
-        const response = await fetch(formData.coverImageUri);
-        const blob = await response.blob();
+        // fetch().blob() returns 0 bytes for local file URIs in React Native.
+        // XHR with arraybuffer is the reliable cross-platform alternative.
+        const arrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', formData.coverImageUri!);
+          xhr.responseType = 'arraybuffer';
+          xhr.onload = () => resolve(xhr.response as ArrayBuffer);
+          xhr.onerror = () => reject(new Error('Failed to read image file'));
+          xhr.send();
+        });
         const { error: uploadError } = await supabase.storage
           .from('announcement-images')
-          .upload(filename, blob, { contentType: 'image/jpeg', upsert: false });
+          .upload(filename, arrayBuffer, { contentType: 'image/jpeg', upsert: false });
         if (uploadError) throw uploadError;
         const { data: urlData } = supabase.storage
           .from('announcement-images')

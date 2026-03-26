@@ -1,4 +1,6 @@
+import type React from 'react';
 import { TouchableOpacity, StyleSheet, ActivityIndicator, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
@@ -22,6 +24,32 @@ export function ParticipationButton({
 
   const isFull = maxCapacity !== undefined && participantCount >= maxCapacity && !isParticipating;
 
+  let buttonContent: React.ReactNode;
+  if (isToggling) {
+    buttonContent = <ActivityIndicator size="small" color={colors.beige[100]} />;
+  } else if (isFull) {
+    buttonContent = (
+      <View style={styles.row}>
+        <Ionicons name="lock-closed" size={13} color={colors.neutral[500]} />
+        <Text variant="label" style={styles.labelFull} numberOfLines={1}>Full</Text>
+      </View>
+    );
+  } else if (isParticipating) {
+    buttonContent = (
+      <View style={styles.row}>
+        <Ionicons name="checkmark" size={15} color={colors.beige[100]} />
+        <Text variant="label" style={[styles.label, styles.labelActive]} numberOfLines={1}>Going</Text>
+      </View>
+    );
+  } else {
+    buttonContent = (
+      <View style={styles.row}>
+        <Ionicons name="add" size={15} color={colors.neutral[0]} />
+        <Text variant="label" style={styles.label} numberOfLines={1}>Confirm Participation</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={compact ? styles.compactWrapper : styles.wrapper}>
       <TouchableOpacity
@@ -35,20 +63,7 @@ export function ParticipationButton({
         disabled={isToggling || isFull}
         activeOpacity={0.75}
       >
-        {isToggling ? (
-          <ActivityIndicator
-            size="small"
-            color={colors.beige[100]}
-          />
-        ) : (
-          <Text
-            variant="label"
-            style={[styles.label, isParticipating && styles.labelActive]}
-            numberOfLines={1}
-          >
-            {isFull ? '🔒 Full' : isParticipating ? '✓ Going' : '+ Confirm Participation'}
-          </Text>
-        )}
+        {buttonContent}
       </TouchableOpacity>
 
       <Text variant="caption" style={styles.count}>
@@ -86,6 +101,11 @@ const styles = StyleSheet.create({
   buttonFull: {
     backgroundColor: colors.neutral[300],
   },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
   label: {
     color: colors.neutral[0],
     fontSize: 13,
@@ -93,6 +113,11 @@ const styles = StyleSheet.create({
   },
   labelActive: {
     color: colors.beige[100],
+  },
+  labelFull: {
+    color: colors.neutral[500],
+    fontSize: 13,
+    fontWeight: '600',
   },
   count: {
     color: colors.neutral[500],

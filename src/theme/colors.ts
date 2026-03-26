@@ -66,12 +66,12 @@ export const colors = {
    * The liquid-glass look is built on these tokens.
    */
   warm: {
-    /** Page background — warm off-white cream */
-    bg: '#faf3ec',
+    /** Page background — soft warm cream */
+    bg: '#f5ede6',
     /** Card / surface — frosted warm white */
-    surface: 'rgba(255, 249, 243, 0.92)',
+    surface: 'rgba(255, 252, 249, 0.88)',
     /** Slightly more opaque surface for elevated cards */
-    elevated: '#fffaf5',
+    elevated: '#fdf8f4',
     /** Card border — warm translucent line */
     border: 'rgba(160, 122, 95, 0.18)',
     /** Stronger border for focused states */

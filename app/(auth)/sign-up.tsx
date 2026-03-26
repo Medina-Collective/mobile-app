@@ -110,6 +110,7 @@ export default function SignUpScreen() {
             name="displayName"
             render={({ field: { onChange, value } }) => (
               <Input
+                  variant="dark"
                 label="Full name"
                 placeholder="Your name"
                 value={value}
@@ -125,6 +126,7 @@ export default function SignUpScreen() {
             name="email"
             render={({ field: { onChange, value } }) => (
               <Input
+                  variant="dark"
                 label="Email"
                 placeholder="you@example.com"
                 value={value}
@@ -141,6 +143,7 @@ export default function SignUpScreen() {
             name="password"
             render={({ field: { onChange, value } }) => (
               <Input
+                  variant="dark"
                 label="Password"
                 placeholder="Min. 8 characters"
                 value={value}
@@ -156,6 +159,7 @@ export default function SignUpScreen() {
             name="confirmPassword"
             render={({ field: { onChange, value } }) => (
               <Input
+                  variant="dark"
                 label="Confirm password"
                 placeholder="Repeat your password"
                 value={value}

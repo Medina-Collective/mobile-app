@@ -124,16 +124,17 @@ export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProp
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.warm.surface,
-    borderRadius: 20,
+    backgroundColor: 'rgba(255, 252, 249, 0.88)',
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: colors.warm.border,
+    borderColor: 'rgba(255, 255, 255, 0.75)',
     overflow: 'hidden',
+    // top highlight — the glass catch-light
     shadowColor: colors.warm.shadow,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.13,
+    shadowRadius: 32,
+    elevation: 4,
   },
   coverImage: {
     width: '100%',

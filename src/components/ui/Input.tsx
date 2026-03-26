@@ -9,12 +9,15 @@ interface InputProps extends TextInputProps {
   label?: string | undefined;
   error?: string | undefined;
   containerStyle?: ViewStyle | undefined;
+  /** 'dark' keeps legacy beige text for use on dark/burgundy backgrounds (auth screens) */
+  variant?: 'light' | 'dark' | undefined;
 }
 
 export function Input({
   label,
   error,
   containerStyle,
+  variant = 'light',
   style,
   onFocus,
   onBlur,
@@ -33,11 +36,12 @@ export function Input({
       <TextInput
         style={[
           styles.input,
-          isFocused && styles.inputFocused,
+          variant === 'dark' ? styles.inputDark : styles.inputLight,
+          isFocused && (variant === 'dark' ? styles.inputDarkFocused : styles.inputLightFocused),
           hasError && styles.inputError,
           style,
         ]}
-        placeholderTextColor="#7b625b"
+        placeholderTextColor={variant === 'dark' ? '#7b625b' : colors.warm.muted}
         onFocus={(e) => {
           setIsFocused(true);
           onFocus?.(e);
@@ -72,10 +76,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     paddingVertical: spacing[2],
     fontSize: fontSize.base,
-    color: '#cdc1ad',
     backgroundColor: 'transparent',
   },
-  inputFocused: {
+  inputLight: {
+    color: colors.warm.title,
+    borderBottomColor: colors.warm.muted,
+  },
+  inputLightFocused: {
+    borderBottomColor: colors.burgundy.mid,
+  },
+  inputDark: {
+    color: '#cdc1ad',
+    borderBottomColor: '#7b625b',
+  },
+  inputDarkFocused: {
     borderBottomColor: '#cdc1ad',
   },
   inputError: {

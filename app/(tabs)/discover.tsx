@@ -119,6 +119,7 @@ export default function DiscoverScreen() {
               <Text
                 variant="caption"
                 style={[styles.chipLabel, isActive && styles.chipLabelActive]}
+                numberOfLines={1}
               >
                 {f.label}
               </Text>
@@ -156,25 +157,33 @@ const styles = StyleSheet.create({
     color: colors.warm.muted,
   },
   filtersScroll: {
-    flexGrow: 0,
+    height: 40,
+    marginBottom: spacing[3],
   },
   filters: {
     flexDirection: 'row',
     gap: spacing[2],
     paddingHorizontal: spacing[4],
-    paddingBottom: spacing[3],
   },
   chip: {
+    flexShrink: 0,
     paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2],
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.warm.border,
-    backgroundColor: colors.warm.surface,
+    borderColor: 'rgba(255, 255, 255, 0.7)',
+    backgroundColor: 'rgba(255, 252, 249, 0.88)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.warm.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
   },
   chipActive: {
     backgroundColor: colors.burgundy.mid,
     borderColor: colors.burgundy.mid,
+    shadowOpacity: 0,
   },
   chipLabel: {
     color: colors.warm.body,
@@ -186,7 +195,7 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingHorizontal: spacing[4],
-    paddingBottom: spacing[16],
+    paddingBottom: spacing[28],
   },
   separator: {
     height: spacing[4],
@@ -207,7 +216,7 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
-    bottom: spacing[8],
+    bottom: 106,
     right: spacing[5],
     width: 56,
     height: 56,
@@ -215,11 +224,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.burgundy.mid,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.burgundy.deep,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.18)',
+    shadowColor: colors.burgundy.mid,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 8,
   },
   fabIcon: {
     fontSize: 28,

@@ -51,6 +51,7 @@ export default function SignInScreen() {
               name="email"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  variant="dark"
                   label="Email"
                   placeholder="you@example.com"
                   value={value}
@@ -67,6 +68,7 @@ export default function SignInScreen() {
               name="password"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  variant="dark"
                   label="Password"
                   placeholder="••••••••"
                   value={value}

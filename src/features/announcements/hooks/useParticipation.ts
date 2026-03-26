@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@services/supabase.client';
 import { useAuthStore } from '@store/auth.store';
@@ -16,16 +17,44 @@ export function useParticipation(announcementId: string) {
   const queryClient = useQueryClient();
   const userId = useAuthStore((s) => s.user?.id);
 
-  // Read current participation state from the detail cache (fallback: false)
   const detailKey = QUERY_KEYS.announcement(announcementId);
-  const current = queryClient.getQueryData<Announcement>(detailKey);
-  const isParticipating = current?.hasParticipated ?? false;
 
+  // Subscribe to the detail cache reactively without registering a queryFn.
+  // useQuery({ enabled: false, queryFn: throw }) would corrupt the shared cache
+  // entry used by useGetAnnouncement, causing the detail page to show an error.
+  // The QueryCache subscription API is the correct low-level approach here.
+  const [detailData, setDetailData] = useState<Announcement | undefined>(
+    () => queryClient.getQueryData<Announcement>(detailKey),
+  );
+  useEffect(() => {
+    // Sync on mount in case the cache was populated between render and effect
+    setDetailData(queryClient.getQueryData<Announcement>(detailKey));
+    return queryClient.getQueryCache().subscribe(() => {
+      setDetailData(queryClient.getQueryData<Announcement>(detailKey));
+    });
+  }, [queryClient, detailKey]);
+
+  // Fallback: search list caches when the detail hasn't been fetched yet
+  // (i.e. user hasn't visited the detail page — fixes "Full" instead of "Going" in feed).
+  let isParticipating = detailData?.hasParticipated ?? false;
+  if (detailData === undefined) {
+    const lists = queryClient.getQueriesData<Announcement[]>({ queryKey: QUERY_KEYS.announcements });
+    for (const [, list] of lists) {
+      if (!Array.isArray(list)) continue;
+      const found = list.find((a) => a.id === announcementId);
+      if (found !== undefined) {
+        isParticipating = found.hasParticipated;
+        break;
+      }
+    }
+  }
+
+  // Pass the snapshot as `variables` so mutationFn never relies on a stale closure.
   const mutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (wasParticipating: boolean) => {
       if (!userId) throw new Error('Not authenticated');
 
-      if (isParticipating) {
+      if (wasParticipating) {
         const { error } = await supabase
           .from('announcement_participants')
           .delete()
@@ -40,35 +69,33 @@ export function useParticipation(announcementId: string) {
       }
     },
 
-    // Optimistic update — flip the state before the network call
-    onMutate: async () => {
+    // Optimistic update — flip state before the network call
+    onMutate: async (wasParticipating: boolean) => {
       await queryClient.cancelQueries({ queryKey: detailKey });
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.announcements });
 
       const previousDetail = queryClient.getQueryData<Announcement>(detailKey);
-      // Use getQueriesData for partial-key match — list keys include extra segments (isPro, typeFilter)
       const previousLists = queryClient.getQueriesData<Announcement[]>({
         queryKey: QUERY_KEYS.announcements,
       });
 
-      const flipAnnouncement = (a: Announcement): Announcement => ({
+      const flip = (a: Announcement): Announcement => ({
         ...a,
-        hasParticipated: !a.hasParticipated,
-        participantCount: a.hasParticipated
+        hasParticipated: !wasParticipating,
+        participantCount: wasParticipating
           ? Math.max(0, a.participantCount - 1)
           : a.participantCount + 1,
       });
 
-      if (previousDetail) {
-        queryClient.setQueryData<Announcement>(detailKey, flipAnnouncement(previousDetail));
+      if (previousDetail !== undefined) {
+        queryClient.setQueryData<Announcement>(detailKey, flip(previousDetail));
       }
 
-      // Update every cached list variant that contains this announcement
       for (const [key, list] of previousLists) {
-        if (list !== undefined) {
+        if (Array.isArray(list)) {
           queryClient.setQueryData<Announcement[]>(
             key,
-            list.map((a) => (a.id === announcementId ? flipAnnouncement(a) : a)),
+            list.map((a) => (a.id === announcementId ? flip(a) : a)),
           );
         }
       }
@@ -76,8 +103,8 @@ export function useParticipation(announcementId: string) {
       return { previousDetail, previousLists };
     },
 
-    // Roll back on error
-    onError: (_err, _vars, context) => {
+    onError: (err, _vars, context) => {
+      console.error('[useParticipation] toggle failed:', err);
       if (context?.previousDetail !== undefined) {
         queryClient.setQueryData(detailKey, context.previousDetail);
       }
@@ -86,7 +113,6 @@ export function useParticipation(announcementId: string) {
       }
     },
 
-    // Refetch both detail and all list variants to sync server-side participant_count
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: detailKey });
       void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.announcements });
@@ -95,7 +121,7 @@ export function useParticipation(announcementId: string) {
 
   return {
     isParticipating,
-    toggle: () => mutation.mutate(),
+    toggle: () => mutation.mutate(isParticipating),
     isToggling: mutation.isPending,
   };
 }
