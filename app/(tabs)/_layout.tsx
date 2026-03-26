@@ -1,7 +1,6 @@
-import { StyleSheet, View, Platform } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Redirect, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { useAuth } from '@features/auth';
 import { colors } from '@theme/colors';
 
@@ -16,32 +15,18 @@ interface TabConfig {
 
 function makeTabIcon(tab: TabConfig) {
   return ({ focused, color, size }: { focused: boolean; color: string; size: number }) => (
-    <Ionicons name={focused ? tab.activeIcon : tab.inactiveIcon} size={size} color={color} />
-  );
-}
-
-function GlassTabBar() {
-  return (
-    <View style={styles.blurWrapper} pointerEvents="none">
-      <BlurView
-        intensity={60}
-        tint="light"
-        style={StyleSheet.absoluteFill}
-      />
-      {/* warm tint overlay */}
-      <View style={[StyleSheet.absoluteFill, styles.tintOverlay]} />
-      {/* top highlight edge — the "glass" catch-light */}
-      <View style={[StyleSheet.absoluteFill, styles.glassHighlight]} />
+    <View style={styles.iconWrapper}>
+      {focused && <View style={styles.activeIndicator} />}
+      <Ionicons name={focused ? tab.activeIcon : tab.inactiveIcon} size={size} color={color} />
     </View>
   );
 }
 
 const TABS: TabConfig[] = [
-  { name: 'index',    title: 'Home',      activeIcon: 'home',      inactiveIcon: 'home-outline' },
-  { name: 'discover', title: 'Discover',  activeIcon: 'compass',   inactiveIcon: 'compass-outline' },
-  { name: 'search',   title: 'Search',    activeIcon: 'search',    inactiveIcon: 'search-outline' },
-  { name: 'favorites',title: 'Favorites', activeIcon: 'heart',     inactiveIcon: 'heart-outline' },
-  { name: 'profile',  title: 'Profile',   activeIcon: 'person',    inactiveIcon: 'person-outline' },
+  { name: 'index',     title: 'Home',      activeIcon: 'home',    inactiveIcon: 'home-outline' },
+  { name: 'discover',  title: 'Discover',  activeIcon: 'compass', inactiveIcon: 'compass-outline' },
+  { name: 'favorites', title: 'Favorites', activeIcon: 'heart',   inactiveIcon: 'heart-outline' },
+  { name: 'profile',   title: 'Profile',   activeIcon: 'person',  inactiveIcon: 'person-outline' },
 ];
 
 export default function TabsLayout() {
@@ -57,31 +42,23 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: '#2F0A0A',
         tabBarInactiveTintColor: 'rgba(26, 18, 18, 0.40)',
-        tabBarBackground: () => <GlassTabBar />,
         tabBarStyle: {
-          position: 'absolute',
-          bottom: 24,
-          left: 20,
-          right: 20,
-          height: 68,
-          borderRadius: 34,
-          backgroundColor: Platform.OS === 'android' ? 'rgba(250, 246, 240, 0.97)' : 'transparent',
-          borderTopWidth: 0,
-          // shadow
-          shadowColor: colors.warm.shadow,
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.14,
-          shadowRadius: 24,
-          elevation: 12,
-          overflow: 'hidden',
+          height: 64,
+          backgroundColor: 'rgba(250, 246, 240, 0.97)',
+          borderTopWidth: 1,
+          borderTopColor: colors.warm.border,
+          elevation: 0,
+          shadowOpacity: 0,
         },
         tabBarItemStyle: {
-          paddingVertical: 6,
+          paddingTop: 10,
+          paddingBottom: 6,
         },
         tabBarLabelStyle: {
           fontSize: 10,
-          fontWeight: '600',
-          marginBottom: 2,
+          fontWeight: '500',
+          letterSpacing: 0.3,
+          marginTop: 2,
         },
       }}
     >
@@ -96,6 +73,7 @@ export default function TabsLayout() {
         />
       ))}
       {/* Hidden routes */}
+      <Tabs.Screen name="search" options={{ href: null }} />
       <Tabs.Screen name="events" options={{ href: null }} />
       <Tabs.Screen name="announcements" options={{ href: null }} />
     </Tabs>
@@ -103,20 +81,16 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
-  blurWrapper: {
-    flex: 1,
-    borderRadius: 34,
-    overflow: 'hidden',
+  iconWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  tintOverlay: {
-    backgroundColor: 'rgba(250, 246, 240, 0.70)',
-    borderRadius: 34,
-  },
-  glassHighlight: {
-    borderRadius: 34,
-    borderWidth: 1,
-    borderColor: 'rgba(160, 122, 95, 0.2)',
-    // inner top highlight
-    borderTopColor: 'rgba(160, 122, 95, 0.30)',
+  activeIndicator: {
+    position: 'absolute',
+    top: -10,
+    width: 28,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: '#2F0A0A',
   },
 });

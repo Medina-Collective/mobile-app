@@ -305,7 +305,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingBottom: spacing[28],
+    paddingBottom: spacing[8],
   },
 
   // Header (sticky)
@@ -314,27 +314,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing[5],
-    paddingTop: spacing[14],
-    paddingBottom: spacing[4],
+    paddingTop: spacing[3],
+    paddingBottom: spacing[3],
     backgroundColor: colors.warm.bg,
     borderBottomWidth: 1,
     borderBottomColor: colors.warm.border,
   },
   headerLeft: {
-    gap: spacing[1],
+    gap: 2,
   },
   greeting: {
     fontFamily: fontFamily.sansSemiBold,
-    fontSize: 11,
-    letterSpacing: 2,
+    fontSize: 10,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
     color: colors.warm.muted,
   },
   firstName: {
     fontFamily: fontFamily.serifBold,
-    fontSize: 32,
+    fontSize: 22,
     color: colors.warm.title,
-    lineHeight: 38,
+    lineHeight: 28,
   },
   notificationBtn: {
     width: 44,
