@@ -1,5 +1,7 @@
+import { StyleSheet, View, Platform } from 'react-native';
 import { Redirect, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { useAuth } from '@features/auth';
 import { colors } from '@theme/colors';
 
@@ -18,37 +20,28 @@ function makeTabIcon(tab: TabConfig) {
   );
 }
 
+function GlassTabBar() {
+  return (
+    <View style={styles.blurWrapper} pointerEvents="none">
+      <BlurView
+        intensity={60}
+        tint="light"
+        style={StyleSheet.absoluteFill}
+      />
+      {/* warm tint overlay */}
+      <View style={[StyleSheet.absoluteFill, styles.tintOverlay]} />
+      {/* top highlight edge — the "glass" catch-light */}
+      <View style={[StyleSheet.absoluteFill, styles.glassHighlight]} />
+    </View>
+  );
+}
+
 const TABS: TabConfig[] = [
-  {
-    name: 'index',
-    title: 'Home',
-    activeIcon: 'home',
-    inactiveIcon: 'home-outline',
-  },
-  {
-    name: 'discover',
-    title: 'Discover',
-    activeIcon: 'compass',
-    inactiveIcon: 'compass-outline',
-  },
-  {
-    name: 'search',
-    title: 'Search',
-    activeIcon: 'search',
-    inactiveIcon: 'search-outline',
-  },
-  {
-    name: 'favorites',
-    title: 'Favorites',
-    activeIcon: 'heart',
-    inactiveIcon: 'heart-outline',
-  },
-  {
-    name: 'profile',
-    title: 'Profile',
-    activeIcon: 'person',
-    inactiveIcon: 'person-outline',
-  },
+  { name: 'index',    title: 'Home',      activeIcon: 'home',      inactiveIcon: 'home-outline' },
+  { name: 'discover', title: 'Discover',  activeIcon: 'compass',   inactiveIcon: 'compass-outline' },
+  { name: 'search',   title: 'Search',    activeIcon: 'search',    inactiveIcon: 'search-outline' },
+  { name: 'favorites',title: 'Favorites', activeIcon: 'heart',     inactiveIcon: 'heart-outline' },
+  { name: 'profile',  title: 'Profile',   activeIcon: 'person',    inactiveIcon: 'person-outline' },
 ];
 
 export default function TabsLayout() {
@@ -64,14 +57,31 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.burgundy.mid,
         tabBarInactiveTintColor: colors.warm.muted,
+        tabBarBackground: () => <GlassTabBar />,
         tabBarStyle: {
-          backgroundColor: colors.warm.elevated,
-          borderTopColor: colors.warm.border,
-          borderTopWidth: 1,
+          position: 'absolute',
+          bottom: 24,
+          left: 20,
+          right: 20,
+          height: 68,
+          borderRadius: 34,
+          backgroundColor: Platform.OS === 'android' ? 'rgba(250, 243, 236, 0.92)' : 'transparent',
+          borderTopWidth: 0,
+          // shadow
+          shadowColor: colors.warm.shadow,
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: 0.14,
+          shadowRadius: 24,
+          elevation: 12,
+          overflow: 'hidden',
+        },
+        tabBarItemStyle: {
+          paddingVertical: 6,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: '600',
+          marginBottom: 2,
         },
       }}
     >
@@ -85,9 +95,28 @@ export default function TabsLayout() {
           }}
         />
       ))}
-      {/* Hidden routes — registered so deep-links still work, but not shown in the tab bar */}
+      {/* Hidden routes */}
       <Tabs.Screen name="events" options={{ href: null }} />
       <Tabs.Screen name="announcements" options={{ href: null }} />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  blurWrapper: {
+    flex: 1,
+    borderRadius: 34,
+    overflow: 'hidden',
+  },
+  tintOverlay: {
+    backgroundColor: 'rgba(250, 243, 236, 0.55)',
+    borderRadius: 34,
+  },
+  glassHighlight: {
+    borderRadius: 34,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.55)',
+    // inner top highlight
+    borderTopColor: 'rgba(255, 255, 255, 0.8)',
+  },
+});

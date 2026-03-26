@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: spacing[4],
+    paddingBottom: spacing[24], // clear the floating tab bar (68px height + 24px offset)
   },
   noHorizontalPadding: {
     paddingHorizontal: 0,
