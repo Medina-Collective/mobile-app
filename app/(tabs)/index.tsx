@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   comingUpWrapper: {
     paddingHorizontal: spacing[5],
     marginTop: spacing[5],
-    marginBottom: spacing[5],
+    marginBottom: spacing[3],
   },
   comingUpCard: {
     backgroundColor: '#2F0A0A',
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
 
   // Filter chips
   filtersScroll: {
-    marginTop: spacing[6],
+    marginTop: spacing[3],
     marginBottom: spacing[5],
   },
   filtersContent: {
