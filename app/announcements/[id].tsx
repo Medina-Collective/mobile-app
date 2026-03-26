@@ -1,4 +1,4 @@
-import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { format, isSameDay } from 'date-fns';
 import { Image } from 'expo-image';

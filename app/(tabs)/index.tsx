@@ -1,164 +1,504 @@
-import { useCallback } from 'react';
-import { View, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useState } from 'react';
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { format } from 'date-fns';
 import { Screen } from '@components/layout';
-import { Text, Button } from '@components/ui';
+import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { useAuth } from '@features/auth';
 import { useFollowedAnnouncements } from '@features/follows/hooks/useFollowedAnnouncements';
+import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncement';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
-import type { Announcement } from '@app-types/announcement';
+import type { AnnouncementType } from '@app-types/announcement';
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Filter config ─────────────────────────────────────────────────────────────
 
-function FeedSeparator() {
-  return <View style={styles.separator} />;
+const HOME_FILTERS: { label: string; type: AnnouncementType | undefined }[] = [
+  { label: 'All', type: undefined },
+  { label: 'Events', type: 'activity_event' as AnnouncementType },
+  { label: 'Offers', type: 'limited_offer' as AnnouncementType },
+  { label: 'Halaqas', type: 'halaqa' as AnnouncementType },
+  { label: 'Activities', type: 'bazaar' as AnnouncementType },
+];
+
+// ── SectionHeader ─────────────────────────────────────────────────────────────
+
+function SectionHeader({
+  title,
+  subtitle,
+  onSeeAll,
+}: Readonly<{ title: string; subtitle?: string | undefined; onSeeAll?: (() => void) | undefined }>) {
+  return (
+    <View style={sectionHeaderStyles.row}>
+      <View>
+        <Text style={sectionHeaderStyles.title}>{title}</Text>
+        {subtitle !== undefined && (
+          <Text style={sectionHeaderStyles.subtitle}>{subtitle}</Text>
+        )}
+      </View>
+      {onSeeAll !== undefined && (
+        <TouchableOpacity onPress={onSeeAll} activeOpacity={0.75}>
+          <View style={sectionHeaderStyles.seeAllRow}>
+            <Text style={sectionHeaderStyles.seeAll}>See all</Text>
+            <Ionicons name="chevron-forward" size={12} color={colors.burgundy.mid} />
+          </View>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
 }
 
-function FeedItem({ item }: Readonly<{ item: Announcement }>) {
-  return <AnnouncementCard announcement={item} />;
-}
+const sectionHeaderStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing[5],
+    marginBottom: spacing[3],
+  },
+  title: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: colors.warm.title,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: colors.warm.muted,
+    marginTop: 2,
+  },
+  seeAllRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    marginTop: 2,
+  },
+  seeAll: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.burgundy.mid,
+  },
+});
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
-  const { data, isLoading, isError, refetch } = useFollowedAnnouncements();
-
-  const handleRetry = useCallback(async () => {
-    await refetch();
-  }, [refetch]);
-
   const firstName = user?.displayName?.split(' ')[0] ?? 'there';
 
-  function renderContent() {
-    if (isLoading) {
-      return (
-        <View style={styles.centered}>
-          <ActivityIndicator color={colors.burgundy.mid} />
-        </View>
-      );
-    }
+  const [activeFilterIndex, setActiveFilterIndex] = useState(0);
+  const activeFilterType: AnnouncementType | undefined =
+    HOME_FILTERS[activeFilterIndex]?.type;
 
-    if (isError) {
-      return (
-        <View style={styles.centered}>
-          <Text variant="body" style={styles.mutedText}>
-            Could not load your feed.
-          </Text>
-          <Button title="Retry" variant="outline" onPress={handleRetry} style={styles.ctaBtn} />
-        </View>
-      );
-    }
+  const { data: allAnnouncements = [] } = useListAnnouncements(activeFilterType);
+  const {
+    data: followedAnnouncements,
+    isLoading: feedLoading,
+  } = useFollowedAnnouncements();
 
-    if (data === undefined || data.length === 0) {
-      return (
-        <View style={styles.centered}>
-          <Ionicons name="compass-outline" size={52} color={colors.warm.border} />
-          <Text style={styles.emptyTitle}>Your feed is empty</Text>
-          <Text style={styles.emptyBody}>
-            Follow professional accounts to see their announcements here.
-          </Text>
-          <TouchableOpacity
-            style={styles.cta}
-            onPress={() => router.push('/(tabs)/search')}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.ctaLabel}>Find pros to follow</Text>
-          </TouchableOpacity>
-        </View>
-      );
-    }
+  // "Coming Up" card — first announcement with a future eventStart, else first item
+  const now = new Date();
+  const upcomingAnnouncement =
+    allAnnouncements.find(
+      (a) => a.eventStart !== undefined && new Date(a.eventStart) > now,
+    ) ?? allAnnouncements[0];
 
-    return (
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <FeedItem item={item} />}
-        contentContainerStyle={styles.list}
-        ItemSeparatorComponent={FeedSeparator}
-        showsVerticalScrollIndicator={false}
-      />
-    );
-  }
+  // Upcoming events list (max 3)
+  const upcomingEvents = allAnnouncements
+    .filter((a) => a.eventStart !== undefined)
+    .sort((a, b) => {
+      const dateA = a.eventStart !== undefined ? new Date(a.eventStart).getTime() : 0;
+      const dateB = b.eventStart !== undefined ? new Date(b.eventStart).getTime() : 0;
+      return dateA - dateB;
+    })
+    .slice(0, 3);
+
+  // Limited offers
+  const limitedOffers = allAnnouncements.filter((a) => a.type === 'limited_offer');
 
   return (
     <Screen noHorizontalPadding>
-      <View style={styles.header}>
-        <Text style={styles.greeting}>Assalamu Alaikum</Text>
-        <Text style={styles.title}>{firstName}</Text>
-      </View>
-      {renderContent()}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* ── 1. Header ──────────────────────────────────────────────────── */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.greeting}>Assalamu Alaikum</Text>
+            <Text style={styles.firstName}>{firstName}</Text>
+          </View>
+          <View style={styles.notificationBtn}>
+            <Ionicons name="notifications-outline" size={20} color={colors.warm.title} />
+            <View style={styles.notificationDot} />
+          </View>
+        </View>
+
+        {/* ── 2. Coming Up Card ──────────────────────────────────────────── */}
+        <View style={styles.comingUpWrapper}>
+          {upcomingAnnouncement !== undefined ? (
+            <TouchableOpacity
+              style={styles.comingUpCard}
+              activeOpacity={0.88}
+              onPress={() => router.push(`/announcements/${upcomingAnnouncement.id}`)}
+            >
+              {/* Top label row */}
+              <View style={styles.comingUpLabelRow}>
+                <Ionicons name="calendar-outline" size={16} color="#ffffff" />
+                <Text style={styles.comingUpLabel}>COMING UP</Text>
+              </View>
+
+              {/* Event title */}
+              <Text style={styles.comingUpTitle} numberOfLines={2}>
+                {upcomingAnnouncement.title}
+              </Text>
+
+              {/* Date + time */}
+              {upcomingAnnouncement.eventStart !== undefined && (
+                <Text style={styles.comingUpMeta}>
+                  {format(new Date(upcomingAnnouncement.eventStart), 'EEE, MMM d · HH:mm')}
+                </Text>
+              )}
+
+              {/* View details row */}
+              <View style={styles.comingUpFooter}>
+                <Text style={styles.comingUpViewDetails}>View details</Text>
+                <Ionicons name="chevron-forward" size={13} color="rgba(255,255,255,0.9)" />
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.comingUpCard}>
+              <View style={styles.comingUpLabelRow}>
+                <Ionicons name="calendar-outline" size={16} color="#ffffff" />
+                <Text style={styles.comingUpLabel}>COMING UP</Text>
+              </View>
+              <Text style={styles.comingUpTitle}>No upcoming events</Text>
+            </View>
+          )}
+        </View>
+
+        {/* ── 3. Category Filter Chips ───────────────────────────────────── */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filtersContent}
+          style={styles.filtersScroll}
+        >
+          {HOME_FILTERS.map((filter, index) => {
+            const isActive = activeFilterIndex === index;
+            return (
+              <TouchableOpacity
+                key={filter.label}
+                style={[styles.chip, isActive && styles.chipActive]}
+                onPress={() => setActiveFilterIndex(index)}
+                activeOpacity={0.75}
+              >
+                <Text style={[styles.chipLabel, isActive && styles.chipLabelActive]}>
+                  {filter.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        {/* ── 4. Featured Section ────────────────────────────────────────── */}
+        <View style={styles.section}>
+          <SectionHeader
+            title="Featured"
+            subtitle="Curated for you"
+            onSeeAll={() => router.push('/(tabs)/discover')}
+          />
+          {allAnnouncements.length > 0 ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.featuredScrollContent}
+            >
+              {allAnnouncements.map((item) => (
+                <View key={item.id} style={styles.featuredCardWrapper}>
+                  <AnnouncementCard announcement={item} variant="featured" />
+                </View>
+              ))}
+            </ScrollView>
+          ) : (
+            <View style={styles.emptyRow}>
+              <Text style={styles.emptyText}>No announcements yet — check back soon!</Text>
+            </View>
+          )}
+        </View>
+
+        {/* ── 5. Your Feed Section ──────────────────────────────────────── */}
+        <View style={styles.section}>
+          <SectionHeader
+            title="Your Feed"
+            subtitle="From accounts you follow"
+            onSeeAll={() => router.push('/(tabs)/discover')}
+          />
+          {feedLoading ? (
+            <View style={styles.centeredRow}>
+              <ActivityIndicator color={colors.burgundy.mid} />
+            </View>
+          ) : followedAnnouncements === undefined || followedAnnouncements.length === 0 ? (
+            <View style={styles.emptyRow}>
+              <Text style={styles.emptyText}>
+                Follow professionals to see their announcements here
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.feedList}>
+              {followedAnnouncements.map((item, index) => (
+                <View
+                  key={item.id}
+                  style={index > 0 ? styles.feedItemGap : undefined}
+                >
+                  <AnnouncementCard announcement={item} />
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* ── 6. Upcoming Events Section ────────────────────────────────── */}
+        {upcomingEvents.length > 0 && (
+          <View style={styles.section}>
+            <SectionHeader
+              title="Upcoming Events"
+              onSeeAll={() => router.push('/(tabs)/discover')}
+            />
+            <View style={[styles.feedList, styles.feedListPadded]}>
+              {upcomingEvents.map((item, index) => (
+                <View
+                  key={item.id}
+                  style={index > 0 ? styles.feedItemGap : undefined}
+                >
+                  <AnnouncementCard announcement={item} variant="compact" />
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* ── 7. Limited Offers Section ─────────────────────────────────── */}
+        {limitedOffers.length > 0 && (
+          <View style={[styles.section, styles.lastSection]}>
+            <SectionHeader
+              title="Limited Offers"
+              subtitle="Don't miss out"
+              onSeeAll={() => router.push('/(tabs)/discover')}
+            />
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.featuredScrollContent}
+            >
+              {limitedOffers.map((item) => (
+                <View key={item.id} style={styles.featuredCardWrapper}>
+                  <AnnouncementCard announcement={item} variant="featured" />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+      </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: spacing[28],
+  },
+
+  // Header
   header: {
-    paddingHorizontal: spacing[4],
-    paddingTop: spacing[4],
-    paddingBottom: spacing[5],
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing[5],
+    paddingTop: spacing[6],
+    paddingBottom: spacing[4],
+  },
+  headerLeft: {
     gap: spacing[1],
   },
   greeting: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
-    letterSpacing: 1.5,
+    letterSpacing: 2,
     textTransform: 'uppercase',
     color: colors.warm.muted,
   },
-  title: {
-    fontSize: 28,
+  firstName: {
+    fontSize: 32,
     fontWeight: '700',
     color: colors.warm.title,
-    letterSpacing: 0.2,
+    lineHeight: 38,
   },
-  list: {
-    paddingHorizontal: spacing[4],
-    paddingBottom: spacing[16],
-  },
-  separator: {
-    height: spacing[4],
-  },
-  centered: {
-    flex: 1,
+  notificationBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.warm.surface,
+    borderWidth: 1,
+    borderColor: colors.warm.border,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: spacing[8],
-    gap: spacing[4],
+    shadowColor: colors.warm.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  mutedText: {
-    color: colors.warm.muted,
-    textAlign: 'center',
+  notificationDot: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#ef4444',
+    borderWidth: 1.5,
+    borderColor: colors.warm.bg,
   },
-  emptyTitle: {
-    fontSize: 17,
+
+  // Coming Up Card
+  comingUpWrapper: {
+    paddingHorizontal: spacing[5],
+    marginBottom: spacing[5],
+  },
+  comingUpCard: {
+    backgroundColor: '#28020a',
+    borderRadius: 20,
+    padding: spacing[5],
+    gap: spacing[2],
+  },
+  comingUpLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    marginBottom: spacing[1],
+  },
+  comingUpLabel: {
+    fontSize: 11,
     fontWeight: '600',
-    color: colors.warm.title,
-    textAlign: 'center',
+    letterSpacing: 2,
+    color: '#ffffff',
+    textTransform: 'uppercase',
   },
-  emptyBody: {
+  comingUpTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ffffff',
+    lineHeight: 24,
+  },
+  comingUpMeta: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.75)',
+  },
+  comingUpFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[1],
+    marginTop: spacing[2],
+  },
+  comingUpViewDetails: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: 'rgba(255, 255, 255, 0.9)',
+  },
+
+  // Filter chips
+  filtersScroll: {
+    marginTop: spacing[5],
+    marginBottom: spacing[5],
+    height: 40,
+  },
+  filtersContent: {
+    flexDirection: 'row',
+    gap: spacing[2],
+    paddingHorizontal: spacing[5],
+  },
+  chip: {
+    flexShrink: 0,
+    paddingHorizontal: spacing[4],
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(160, 122, 95, 0.14)',
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 36,
+    shadowColor: colors.warm.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  chipActive: {
+    backgroundColor: '#28020a',
+    borderColor: '#28020a',
+    shadowOpacity: 0,
+  },
+  chipLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#1a1212',
+  },
+  chipLabelActive: {
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+
+  // Sections
+  section: {
+    marginBottom: spacing[6],
+  },
+  lastSection: {
+    marginBottom: 0,
+  },
+
+  // Featured horizontal scroll
+  featuredScrollContent: {
+    flexDirection: 'row',
+    gap: spacing[3],
+    paddingHorizontal: spacing[5],
+  },
+  featuredCardWrapper: {
+    minWidth: 280,
+    maxWidth: 280,
+  },
+
+  // Feed list (vertical)
+  feedList: {
+    gap: 0,
+  },
+  feedListPadded: {
+    paddingHorizontal: spacing[5],
+  },
+  feedItemGap: {
+    marginTop: spacing[3],
+  },
+
+  // Empty / loading states
+  emptyRow: {
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[4],
+  },
+  emptyText: {
     fontSize: 13,
     color: colors.warm.muted,
     textAlign: 'center',
-    lineHeight: 20,
   },
-  cta: {
-    marginTop: spacing[2],
-    paddingHorizontal: spacing[6],
-    paddingVertical: spacing[3],
-    borderRadius: 24,
-    backgroundColor: '#28020a',
-  },
-  ctaLabel: {
-    color: '#ffffff',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  ctaBtn: {
-    minWidth: 120,
+  centeredRow: {
+    paddingVertical: spacing[6],
+    alignItems: 'center',
   },
 });
