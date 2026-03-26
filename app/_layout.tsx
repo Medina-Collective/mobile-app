@@ -15,8 +15,13 @@ export default function RootLayout() {
   const hydrateFromStorage = useAuthStore((s) => s.hydrateFromStorage);
 
   const [fontsLoaded] = useFonts({
-    // Add custom fonts here once available, e.g.:
-    // 'Inter-Regular': require('@assets/fonts/Inter-Regular.ttf'),
+    'PlayfairDisplay-Regular': require('@expo-google-fonts/playfair-display/400Regular/PlayfairDisplay_400Regular.ttf'),
+    'PlayfairDisplay-SemiBold': require('@expo-google-fonts/playfair-display/600SemiBold/PlayfairDisplay_600SemiBold.ttf'),
+    'PlayfairDisplay-Bold': require('@expo-google-fonts/playfair-display/700Bold/PlayfairDisplay_700Bold.ttf'),
+    'DMSans-Regular': require('@expo-google-fonts/dm-sans/400Regular/DMSans_400Regular.ttf'),
+    'DMSans-Medium': require('@expo-google-fonts/dm-sans/500Medium/DMSans_500Medium.ttf'),
+    'DMSans-SemiBold': require('@expo-google-fonts/dm-sans/600SemiBold/DMSans_600SemiBold.ttf'),
+    'DMSans-Bold': require('@expo-google-fonts/dm-sans/700Bold/DMSans_700Bold.ttf'),
   });
 
   useEffect(() => {

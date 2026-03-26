@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+import { fontFamily } from '@theme/typography';
 import { ANNOUNCEMENT_TYPE_LABELS } from '@app-types/announcement';
 import { ParticipationButton } from './ParticipationButton';
 import { SaveButton } from './SaveButton';
@@ -429,12 +430,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
+    fontFamily: fontFamily.serifBold,
     fontSize: 16,
-    fontWeight: '700',
     color: colors.warm.title,
     lineHeight: 22,
   },
   description: {
+    fontFamily: fontFamily.sansRegular,
     fontSize: 13,
     color: colors.warm.muted,
     lineHeight: 19,
@@ -528,12 +530,13 @@ const featuredStyles = StyleSheet.create({
     flexShrink: 1,
   },
   title: {
+    fontFamily: fontFamily.serifBold,
     fontSize: 15,
-    fontWeight: '700',
     color: colors.warm.title,
     lineHeight: 21,
   },
   description: {
+    fontFamily: fontFamily.sansRegular,
     fontSize: 12,
     color: colors.warm.muted,
     lineHeight: 18,
@@ -588,8 +591,8 @@ const compactStyles = StyleSheet.create({
     color: colors.warm.muted,
   },
   title: {
+    fontFamily: fontFamily.serifSemiBold,
     fontSize: 14,
-    fontWeight: '700',
     color: colors.warm.title,
     lineHeight: 19,
   },

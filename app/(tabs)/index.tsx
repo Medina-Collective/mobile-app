@@ -13,6 +13,7 @@ import { Screen } from '@components/layout';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+import { fontFamily } from '@theme/typography';
 import { useAuth } from '@features/auth';
 import { useFollowedAnnouncements } from '@features/follows/hooks/useFollowedAnnouncements';
 import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncement';
@@ -65,11 +66,12 @@ const sectionHeaderStyles = StyleSheet.create({
     marginBottom: spacing[3],
   },
   title: {
+    fontFamily: fontFamily.serifSemiBold,
     fontSize: 17,
-    fontWeight: '700',
     color: colors.warm.title,
   },
   subtitle: {
+    fontFamily: fontFamily.sansRegular,
     fontSize: 12,
     color: colors.warm.muted,
     marginTop: 2,
@@ -81,8 +83,8 @@ const sectionHeaderStyles = StyleSheet.create({
     marginTop: 2,
   },
   seeAll: {
+    fontFamily: fontFamily.sansMedium,
     fontSize: 13,
-    fontWeight: '500',
     color: colors.burgundy.mid,
   },
 });
@@ -330,15 +332,15 @@ const styles = StyleSheet.create({
     gap: spacing[1],
   },
   greeting: {
+    fontFamily: fontFamily.sansSemiBold,
     fontSize: 11,
-    fontWeight: '600',
     letterSpacing: 2,
     textTransform: 'uppercase',
     color: colors.warm.muted,
   },
   firstName: {
+    fontFamily: fontFamily.serifBold,
     fontSize: 32,
-    fontWeight: '700',
     color: colors.warm.title,
     lineHeight: 38,
   },
@@ -394,8 +396,8 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   comingUpTitle: {
+    fontFamily: fontFamily.serifBold,
     fontSize: 18,
-    fontWeight: '700',
     color: '#ffffff',
     lineHeight: 24,
   },
