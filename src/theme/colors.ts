@@ -61,6 +61,33 @@ export const colors = {
     1000: '#000000',
   },
 
+  /**
+   * Warm light palette — used for all "light" screens (discover, search, profile, etc.)
+   * The liquid-glass look is built on these tokens.
+   */
+  warm: {
+    /** Page background — warm off-white cream */
+    bg: '#faf3ec',
+    /** Card / surface — frosted warm white */
+    surface: 'rgba(255, 249, 243, 0.92)',
+    /** Slightly more opaque surface for elevated cards */
+    elevated: '#fffaf5',
+    /** Card border — warm translucent line */
+    border: 'rgba(160, 122, 95, 0.18)',
+    /** Stronger border for focused states */
+    borderFocus: 'rgba(140, 30, 41, 0.35)',
+    /** Page titles — deep burgundy */
+    title: '#28030a',
+    /** Body text */
+    body: '#4a2d2d',
+    /** Secondary / muted text */
+    muted: '#8a6a5a',
+    /** Faint dividers */
+    divider: 'rgba(160, 122, 95, 0.12)',
+    /** Shadow tint for glass cards */
+    shadow: '#7b625b',
+  },
+
   success: { 50: '#f0fdf4', 500: '#22c55e', 700: '#15803d' },
   warning: { 50: '#fffbeb', 500: '#f59e0b', 700: '#b45309' },
   error: { 50: '#fef2f2', 500: '#ef4444', 700: '#b91c1c' },

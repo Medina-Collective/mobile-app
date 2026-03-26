@@ -10,6 +10,11 @@ interface ScreenProps {
   noHorizontalPadding?: boolean;
   /** Remove top safe area inset */
   noTopInset?: boolean;
+  /**
+   * 'light' — warm cream background (default, most screens)
+   * 'dark'  — deep burgundy background (home feed, auth screens)
+   */
+  variant?: 'light' | 'dark';
 }
 
 export function Screen({
@@ -17,13 +22,17 @@ export function Screen({
   style,
   noHorizontalPadding = false,
   noTopInset = false,
+  variant = 'light',
 }: ScreenProps) {
   const edges = noTopInset
     ? (['bottom', 'left', 'right'] as const)
     : (['top', 'bottom', 'left', 'right'] as const);
 
   return (
-    <SafeAreaView style={[styles.safe, style]} edges={edges}>
+    <SafeAreaView
+      style={[variant === 'dark' ? styles.safeDark : styles.safeLight, style]}
+      edges={edges}
+    >
       <View style={[styles.content, noHorizontalPadding && styles.noHorizontalPadding]}>
         {children}
       </View>
@@ -32,9 +41,13 @@ export function Screen({
 }
 
 const styles = StyleSheet.create({
-  safe: {
+  safeLight: {
     flex: 1,
-    backgroundColor: colors.neutral[0],
+    backgroundColor: colors.warm.bg,
+  },
+  safeDark: {
+    flex: 1,
+    backgroundColor: colors.burgundy.deep,
   },
   content: {
     flex: 1,

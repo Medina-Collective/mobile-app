@@ -12,6 +12,12 @@ interface TabConfig {
   inactiveIcon: IoniconName;
 }
 
+function makeTabIcon(tab: TabConfig) {
+  return ({ focused, color, size }: { focused: boolean; color: string; size: number }) => (
+    <Ionicons name={focused ? tab.activeIcon : tab.inactiveIcon} size={size} color={color} />
+  );
+}
+
 const TABS: TabConfig[] = [
   {
     name: 'index',
@@ -20,16 +26,16 @@ const TABS: TabConfig[] = [
     inactiveIcon: 'home-outline',
   },
   {
-    name: 'events',
-    title: 'Events',
-    activeIcon: 'calendar',
-    inactiveIcon: 'calendar-outline',
-  },
-  {
     name: 'discover',
     title: 'Discover',
     activeIcon: 'compass',
     inactiveIcon: 'compass-outline',
+  },
+  {
+    name: 'search',
+    title: 'Search',
+    activeIcon: 'search',
+    inactiveIcon: 'search-outline',
   },
   {
     name: 'favorites',
@@ -57,15 +63,15 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.burgundy.mid,
-        tabBarInactiveTintColor: colors.neutral[400],
+        tabBarInactiveTintColor: colors.warm.muted,
         tabBarStyle: {
-          backgroundColor: colors.neutral[0],
-          borderTopColor: colors.neutral[200],
+          backgroundColor: colors.warm.elevated,
+          borderTopColor: colors.warm.border,
           borderTopWidth: 1,
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: '500',
+          fontWeight: '600',
         },
       }}
     >
@@ -75,16 +81,13 @@ export default function TabsLayout() {
           name={tab.name}
           options={{
             title: tab.title,
-            tabBarIcon: ({ focused, color, size }) => (
-              <Ionicons
-                name={focused ? tab.activeIcon : tab.inactiveIcon}
-                size={size}
-                color={color}
-              />
-            ),
+            tabBarIcon: makeTabIcon(tab),
           }}
         />
       ))}
+      {/* Hidden routes — registered so deep-links still work, but not shown in the tab bar */}
+      <Tabs.Screen name="events" options={{ href: null }} />
+      <Tabs.Screen name="announcements" options={{ href: null }} />
     </Tabs>
   );
 }

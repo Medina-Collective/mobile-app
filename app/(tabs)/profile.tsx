@@ -1,5 +1,7 @@
-import { View, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import type { RelativePathString } from 'expo-router';
@@ -8,9 +10,13 @@ import { Text, Button } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { useAuth } from '@features/auth';
+import { useAuthStore } from '@store/auth.store';
+import { useFollowsStore } from '@store/follows.store';
 import { supabase } from '@services/supabase.client';
 import { USER_ROLES } from '@constants/index';
+import { useListProfessionals } from '@features/discover/hooks/useProfessional';
 import type { Database } from '@app-types/supabase';
+import type { Professional } from '@app-types/professional';
 
 type ProfessionalRow = Database['public']['Tables']['professionals']['Row'];
 
@@ -50,9 +56,9 @@ function ProProfileSection({
   if (profile === null) {
     return (
       <TouchableOpacity style={styles.menuRow} onPress={onCreate}>
-        <Ionicons name="add-circle-outline" size={20} color="#cdc1ad" />
+        <Ionicons name="add-circle-outline" size={20} color={colors.burgundy.mid} />
         <Text style={styles.menuLabel}>Create professional profile</Text>
-        <Ionicons name="chevron-forward" size={16} color="#7b625b" />
+        <Ionicons name="chevron-forward" size={16} color={colors.warm.muted} />
       </TouchableOpacity>
     );
   }
@@ -76,13 +82,13 @@ function ProProfileSection({
       {profile.status === 'approved' && (
         <TouchableOpacity style={styles.menuRow} onPress={() => onView(profile.id)}>
           <Ionicons name="eye-outline" size={18} color="#cdc1ad" />
-          <Text style={styles.menuLabel}>View my profile</Text>
+          <Text style={styles.proMenuLabel}>View my profile</Text>
           <Ionicons name="chevron-forward" size={16} color="#7b625b" />
         </TouchableOpacity>
       )}
       <TouchableOpacity style={styles.menuRow} onPress={() => onEdit(profile.id)}>
         <Ionicons name="create-outline" size={18} color="#cdc1ad" />
-        <Text style={styles.menuLabel}>Edit my profile</Text>
+        <Text style={styles.proMenuLabel}>Edit my profile</Text>
         <Ionicons name="chevron-forward" size={16} color="#7b625b" />
       </TouchableOpacity>
       {profile.status === 'pending_review' && (
@@ -99,9 +105,40 @@ function ProProfileSection({
   );
 }
 
+function FollowedProRow({ professional }: Readonly<{ professional: Professional }>) {
+  const router = useRouter();
+  return (
+    <TouchableOpacity
+      style={styles.followedRow}
+      onPress={() => router.push(`/professional/${professional.id}` as RelativePathString)}
+      activeOpacity={0.8}
+    >
+      <View style={styles.followedAvatar}>
+        <Text style={styles.followedInitial}>
+          {professional.businessName.charAt(0).toUpperCase()}
+        </Text>
+      </View>
+      <View style={styles.followedInfo}>
+        <Text style={styles.followedName} numberOfLines={1}>{professional.businessName}</Text>
+        <Text style={styles.followedMeta} numberOfLines={1}>{professional.category}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={16} color={colors.warm.muted} />
+    </TouchableOpacity>
+  );
+}
+
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const refreshUser = useAuthStore((s) => s.refreshUser);
+  const followedIds = useFollowsStore((s) => s.followedIds);
+  const { data: allProfessionals } = useListProfessionals();
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshUser().catch(() => null);
+    }, [refreshUser]),
+  );
 
   const isAdmin = user?.role === USER_ROLES.ADMIN;
 
@@ -119,92 +156,123 @@ export default function ProfileScreen() {
     },
   });
 
+  const followedPros = (allProfessionals ?? []).filter((p) => followedIds.includes(p.id));
+
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text variant="heading2">Profile</Text>
-      </View>
-
-      <View style={styles.avatarSection}>
-        <View style={styles.avatarPlaceholder}>
-          <Text variant="heading3" style={styles.avatarInitial}>
-            {user?.displayName?.charAt(0).toUpperCase() ?? '?'}
-          </Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Profile</Text>
         </View>
-        <Text variant="heading4">{user?.displayName ?? '—'}</Text>
-        <Text variant="body" style={styles.email}>
-          {user?.email ?? '—'}
-        </Text>
-        <View style={styles.roleBadge}>
-          <Text variant="caption" style={styles.roleText}>
-            {user?.role ?? 'user'}
-          </Text>
+
+        <View style={styles.avatarSection}>
+          <View style={styles.avatarPlaceholder}>
+            <Text style={styles.avatarInitial}>
+              {user?.displayName?.charAt(0).toUpperCase() ?? '?'}
+            </Text>
+          </View>
+          <Text style={styles.displayName}>{user?.displayName ?? '—'}</Text>
+          <Text style={styles.email}>{user?.email ?? '—'}</Text>
+          <View style={styles.roleBadge}>
+            <Text style={styles.roleText}>{user?.role ?? 'user'}</Text>
+          </View>
         </View>
-      </View>
 
-      {/* Admin panel shortcut */}
-      {isAdmin && (
-        <TouchableOpacity
-          style={styles.menuRow}
-          onPress={() => router.push('/admin' as RelativePathString)}
-        >
-          <Ionicons name="shield-checkmark-outline" size={20} color="#e0a83a" />
-          <Text style={styles.menuLabel}>Admin Panel</Text>
-          <Ionicons name="chevron-forward" size={16} color="#7b625b" />
-        </TouchableOpacity>
-      )}
+        {/* Admin panel shortcut */}
+        {isAdmin && (
+          <TouchableOpacity
+            style={styles.menuRow}
+            onPress={() => router.push('/admin' as RelativePathString)}
+          >
+            <Ionicons name="shield-checkmark-outline" size={20} color={colors.burgundy.mid} />
+            <Text style={styles.menuLabel}>Admin Panel</Text>
+            <Ionicons name="chevron-forward" size={16} color={colors.warm.muted} />
+          </TouchableOpacity>
+        )}
 
-      {/* Professional profile status */}
-      {!isAdmin && (
-        <View style={styles.proSection}>
-          <ProProfileSection
-            isLoading={profileLoading}
-            profile={myProfile ?? null}
-            onView={(id) => router.push(`/professional/${id}` as RelativePathString)}
-            onEdit={(id) => router.push(`/professional/${id}/edit` as RelativePathString)}
-            onCreate={() => router.push('/(auth)/professional-profile' as RelativePathString)}
-          />
+        {/* Professional profile status */}
+        {!isAdmin && (
+          <View style={styles.proSection}>
+            <ProProfileSection
+              isLoading={profileLoading}
+              profile={myProfile ?? null}
+              onView={(id) => router.push(`/professional/${id}` as RelativePathString)}
+              onEdit={(id) => router.push(`/professional/${id}/edit` as RelativePathString)}
+              onCreate={() => router.push('/(auth)/professional-profile' as RelativePathString)}
+            />
+          </View>
+        )}
+
+        {/* Following */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Following</Text>
+          {followedPros.length === 0 ? (
+            <Text style={styles.emptyText}>You're not following anyone yet.</Text>
+          ) : (
+            <View style={styles.followedList}>
+              {followedPros.map((p) => (
+                <FollowedProRow key={p.id} professional={p} />
+              ))}
+            </View>
+          )}
         </View>
-      )}
 
-      <View style={styles.footer}>
         <Button
           title="Sign Out"
           variant="outline"
           onPress={() => void signOut()}
           style={styles.signOutButton}
         />
-      </View>
+      </ScrollView>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { paddingTop: spacing[4], paddingBottom: spacing[4] },
+  header: { paddingTop: spacing[4], paddingBottom: spacing[2] },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.warm.title,
+    letterSpacing: 0.2,
+  },
   avatarSection: {
     alignItems: 'center',
-    paddingTop: spacing[6],
+    paddingTop: spacing[5],
     paddingBottom: spacing[6],
     gap: spacing[2],
   },
   avatarPlaceholder: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.burgundy.surface,
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: 'rgba(140, 30, 41, 0.1)',
+    borderWidth: 2,
+    borderColor: 'rgba(140, 30, 41, 0.18)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing[2],
   },
-  avatarInitial: { color: colors.beige[200] },
-  email: { color: colors.neutral[500] },
+  avatarInitial: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: colors.burgundy.mid,
+  },
+  displayName: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.warm.title,
+  },
+  email: { fontSize: 13, color: colors.warm.muted },
   roleBadge: {
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[1],
-    backgroundColor: colors.burgundy.raised,
+    backgroundColor: 'rgba(140, 30, 41, 0.08)',
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(140, 30, 41, 0.15)',
   },
-  roleText: { color: colors.beige[300], textTransform: 'capitalize' },
+  roleText: { fontSize: 11, fontWeight: '600', color: colors.burgundy.mid, textTransform: 'capitalize' },
   menuRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -212,16 +280,22 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[1],
     borderBottomWidth: 1,
-    borderBottomColor: colors.burgundy.raised,
+    borderBottomColor: colors.warm.divider,
   },
-  menuLabel: { flex: 1, fontSize: 14, color: '#cdc1ad' },
+  menuLabel: { flex: 1, fontSize: 14, color: colors.warm.body },
+  proMenuLabel: { flex: 1, fontSize: 14, color: '#cdc1ad' },
   proSection: { marginTop: spacing[2] },
   proCard: {
     backgroundColor: colors.burgundy.surface,
-    borderRadius: 12,
+    borderRadius: 16,
     padding: spacing[4],
     gap: spacing[2],
     marginBottom: spacing[3],
+    shadowColor: colors.burgundy.deep,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 3,
   },
   proCardHeader: {
     flexDirection: 'row',
@@ -239,6 +313,42 @@ const styles = StyleSheet.create({
   statusText: { fontSize: 11, fontWeight: '600' },
   pendingNote: { fontSize: 12, color: '#e0a83a', marginTop: spacing[1] },
   rejectedNote: { fontSize: 12, color: '#e57373', marginTop: spacing[1] },
-  footer: { marginTop: 'auto', paddingBottom: spacing[4] },
-  signOutButton: { width: '100%' },
+  scroll: { paddingBottom: spacing[12] },
+  signOutButton: { width: '100%', marginTop: spacing[4] },
+  section: { marginTop: spacing[6] },
+  sectionTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: colors.warm.muted,
+    marginBottom: spacing[3],
+  },
+  emptyText: { fontSize: 13, color: colors.warm.muted },
+  followedList: { gap: spacing[2] },
+  followedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[3],
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[3],
+    backgroundColor: colors.warm.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.warm.border,
+  },
+  followedAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(140, 30, 41, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(140, 30, 41, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  followedInitial: { fontSize: 15, fontWeight: '700', color: colors.burgundy.mid },
+  followedInfo: { flex: 1, gap: 2 },
+  followedName: { fontSize: 14, fontWeight: '600', color: colors.warm.title },
+  followedMeta: { fontSize: 11, color: colors.warm.muted },
 });

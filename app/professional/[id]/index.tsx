@@ -16,7 +16,7 @@ import { spacing } from '@theme/spacing';
 import { fontSize } from '@theme/typography';
 import { PROFILE_TYPE_LABELS, SERVICE_TYPE_LABELS } from '@app-types/professional';
 import { useGetProfessional } from '@features/discover/hooks/useProfessional';
-import { useFavorite } from '@features/favorites/hooks/useFavorite';
+import { FollowButton } from '@features/follows/components/FollowButton';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -71,7 +71,6 @@ export default function ProfessionalProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { data: professional, isLoading, isError, refetch } = useGetProfessional(id);
-  const { isFavorited, toggle } = useFavorite(id);
 
   const handleBack = useCallback(() => {
     router.back();
@@ -156,17 +155,6 @@ export default function ProfessionalProfileScreen() {
         >
           <Ionicons name="create-outline" size={20} color="#cdc1ad" />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={toggle}
-          style={styles.headerBtn}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Ionicons
-            name={isFavorited ? 'heart' : 'heart-outline'}
-            size={22}
-            color={isFavorited ? colors.crimson[400] : '#cdc1ad'}
-          />
-        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -195,6 +183,8 @@ export default function ProfessionalProfileScreen() {
               </View>
             )}
           </View>
+
+          <FollowButton professionalId={id} variant="pill" />
         </View>
 
         <View style={styles.divider} />

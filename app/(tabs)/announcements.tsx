@@ -2,8 +2,8 @@ import { useCallback, useState } from 'react';
 import {
   View,
   FlatList,
-  ScrollView,
   TouchableOpacity,
+  ScrollView,
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
@@ -18,7 +18,7 @@ import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncem
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
 import { ANNOUNCEMENT_TYPE_OPTIONS } from '@features/announcements/schemas/announcement.schema';
 import { ANNOUNCEMENT_TYPE_LABELS } from '@app-types/announcement';
-import type { Announcement, AnnouncementType } from '@app-types/announcement';
+import type { AnnouncementType } from '@app-types/announcement';
 
 const ALL_FILTER = 'all' as const;
 type FilterValue = typeof ALL_FILTER | AnnouncementType;
@@ -31,17 +31,11 @@ const FILTERS: { value: FilterValue; label: string }[] = [
   })),
 ];
 
-function CardItem({ item }: Readonly<{ item: Announcement }>) {
-  return <AnnouncementCard announcement={item} />;
-}
-
-function CardSeparator() {
-  return <View style={styles.separator} />;
-}
-
-export default function DiscoverScreen() {
+export default function AnnouncementsScreen() {
   const router = useRouter();
-  const isPro = useAuthStore((s) => s.user?.role === USER_ROLES.PROFESSIONAL);
+  const user = useAuthStore((s) => s.user);
+  const isPro = user?.role === USER_ROLES.PROFESSIONAL;
+
   const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
 
   const { data, isLoading, isError, refetch } = useListAnnouncements(
@@ -52,52 +46,16 @@ export default function DiscoverScreen() {
     await refetch();
   }, [refetch]);
 
-  function renderFeed() {
-    if (isLoading) {
-      return (
-        <View style={styles.centered}>
-          <ActivityIndicator color={colors.burgundy.mid} />
-        </View>
-      );
-    }
-
-    if (isError) {
-      return (
-        <View style={styles.centered}>
-          <Text variant="body" style={styles.mutedText}>
-            Could not load announcements.
-          </Text>
-          <Button title="Retry" variant="outline" onPress={handleRetry} style={styles.retryBtn} />
-        </View>
-      );
-    }
-
-    return (
-      <FlatList
-        data={data ?? []}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <CardItem item={item} />}
-        contentContainerStyle={styles.list}
-        ItemSeparatorComponent={CardSeparator}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.centered}>
-            <Text variant="body" style={styles.mutedText}>
-              Nothing here yet — check back soon!
-            </Text>
-          </View>
-        }
-      />
-    );
-  }
-
   return (
-    <Screen noHorizontalPadding>
+    <Screen noHorizontalPadding style={styles.screen}>
+      {/* Header */}
       <View style={styles.header}>
-        <Text variant="heading2" style={styles.title}>Discover</Text>
-        <Text variant="bodySm" style={styles.subtitle}>
-          What's happening in the community
-        </Text>
+        <View>
+          <Text variant="heading2">Announcements</Text>
+          <Text variant="bodySm" style={styles.subtitle}>
+            What's happening in your community
+          </Text>
+        </View>
       </View>
 
       {/* Type filter chips */}
@@ -127,8 +85,37 @@ export default function DiscoverScreen() {
         })}
       </ScrollView>
 
-      {renderFeed()}
+      {/* Feed */}
+      {isLoading ? (
+        <View style={styles.centered}>
+          <ActivityIndicator color={colors.burgundy.mid} />
+        </View>
+      ) : isError ? (
+        <View style={styles.centered}>
+          <Text variant="body" style={styles.emptyText}>
+            Could not load announcements.
+          </Text>
+          <Button title="Retry" variant="outline" onPress={handleRetry} style={styles.retryBtn} />
+        </View>
+      ) : (
+        <FlatList
+          data={data ?? []}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <AnnouncementCard announcement={item} />}
+          contentContainerStyle={styles.list}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ListEmptyComponent={
+            <View style={styles.centered}>
+              <Text variant="body" style={styles.emptyText}>
+                No announcements right now.{'\n'}Check back soon!
+              </Text>
+            </View>
+          }
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
+      {/* PRO floating action button */}
       {isPro && (
         <TouchableOpacity
           style={styles.fab}
@@ -143,17 +130,17 @@ export default function DiscoverScreen() {
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    backgroundColor: colors.neutral[50],
+  },
   header: {
     paddingHorizontal: spacing[4],
     paddingTop: spacing[4],
     paddingBottom: spacing[3],
-    gap: spacing[1],
-  },
-  title: {
-    color: colors.warm.title,
   },
   subtitle: {
-    color: colors.warm.muted,
+    color: colors.neutral[500],
+    marginTop: spacing[1],
   },
   filtersScroll: {
     flexGrow: 0,
@@ -169,24 +156,24 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[2],
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.warm.border,
-    backgroundColor: colors.warm.surface,
+    borderColor: colors.neutral[300],
+    backgroundColor: colors.neutral[0],
   },
   chipActive: {
     backgroundColor: colors.burgundy.mid,
     borderColor: colors.burgundy.mid,
   },
   chipLabel: {
-    color: colors.warm.body,
+    color: colors.neutral[600],
     fontWeight: '500',
   },
   chipLabelActive: {
-    color: colors.beige[100],
+    color: colors.neutral[0],
     fontWeight: '600',
   },
   list: {
     paddingHorizontal: spacing[4],
-    paddingBottom: spacing[16],
+    paddingBottom: spacing[24],
   },
   separator: {
     height: spacing[4],
@@ -198,12 +185,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[6],
     gap: spacing[4],
   },
-  mutedText: {
-    color: colors.warm.muted,
+  emptyText: {
+    color: colors.neutral[400],
     textAlign: 'center',
+    lineHeight: 22,
   },
   retryBtn: {
-    minWidth: 120,
+    width: 120,
   },
   fab: {
     position: 'absolute',
@@ -215,15 +203,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.burgundy.mid,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.burgundy.deep,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
+    shadowColor: colors.neutral[900],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
     elevation: 6,
   },
   fabIcon: {
     fontSize: 28,
-    color: colors.beige[100],
+    color: colors.neutral[0],
     lineHeight: 32,
   },
 });
