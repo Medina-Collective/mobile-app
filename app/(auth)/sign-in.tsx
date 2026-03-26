@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button, Input, BackButton } from '@components/ui';
 import { spacing } from '@theme/spacing';
+import { colors } from '@theme/colors';
 import { useAuth } from '@features/auth';
 import { signInSchema, type SignInFormData } from '@features/auth/schemas/auth.schema';
 
@@ -88,6 +89,7 @@ export default function SignInScreen() {
             onPress={() => void handleSubmit(onSubmit)()}
             loading={isLoading}
             style={styles.cta}
+            textColor={colors.burgundy.mid}
           />
         </View>
 

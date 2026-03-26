@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button, Input, BackButton } from '@components/ui';
 import { spacing } from '@theme/spacing';
+import { colors } from '@theme/colors';
 import { useAuth } from '@features/auth';
 import { signUpSchema, type SignUpFormData } from '@features/auth/schemas/auth.schema';
 
@@ -177,6 +178,7 @@ export default function SignUpScreen() {
             onPress={() => void handleSubmit(onSubmit)()}
             loading={isLoading}
             style={styles.cta}
+            textColor={colors.burgundy.mid}
           />
 
           <TouchableOpacity onPress={() => router.push('/(auth)/sign-in')} style={styles.footer}>
