@@ -57,7 +57,7 @@ export const ANNOUNCEMENT_TYPE_LABELS: Record<AnnouncementType, string> = {
 export const ANNOUNCEMENT_TYPE_ICONS: Record<AnnouncementType, string> = {
   activity_event: 'people-outline',
   bazaar: 'bag-handle-outline',
-  brand_popup: 'ribbon-outline',
+  brand_popup: 'storefront-outline',
   halaqa: 'book-outline',
   limited_offer: 'pricetag-outline',
   other: 'notifications-outline',

@@ -22,7 +22,7 @@ export const ANNOUNCEMENT_TYPE_OPTIONS = [
     value: 'brand_popup' as const,
     label: 'Brand Pop-Up',
     description: 'A temporary showcase or pop-up shop',
-    icon: 'ribbon-outline',
+    icon: 'storefront-outline',
   },
   {
     value: 'halaqa' as const,
