@@ -37,7 +37,7 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'solid' ? colors.burgundy.deep : colors.beige[200]}
+          color={variant === 'solid' ? colors.beige[100] : colors.burgundy.mid}
           size="small"
         />
       ) : (
@@ -58,9 +58,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[6],
   },
-  /** Warm beige fill — the primary welcoming CTA */
+  /** Deep burgundy fill — the primary CTA */
   solid: {
-    backgroundColor: colors.beige[200],
+    backgroundColor: colors.burgundy.mid,
   },
   /** Subtle merlot border — secondary action */
   outline: {
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   label: {
-    color: colors.burgundy.deep,
+    color: colors.beige[100],
     letterSpacing: 0.5,
     fontSize: 14,
     fontWeight: '700',

@@ -12,6 +12,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '@components/layout';
 import { Text, Input, Button, BackButton } from '@components/ui';
 import { colors } from '@theme/colors';
@@ -191,7 +192,7 @@ export default function CreateAnnouncementScreen() {
             <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.8}>
               {coverImageUri === undefined ? (
                 <View style={styles.imagePlaceholder}>
-                  <Text style={styles.imagePlaceholderIcon}>🖼️</Text>
+                  <Ionicons name="image-outline" size={32} color={colors.warm.muted} />
                   <Text variant="bodySm" style={styles.imagePlaceholderText}>
                     Tap to add a cover photo
                   </Text>
@@ -316,7 +317,12 @@ export default function CreateAnnouncementScreen() {
                     onPress={() => onChange('public')}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.audienceIcon}>🌍</Text>
+                    <Ionicons
+                      name="earth-outline"
+                      size={24}
+                      color={value === 'public' ? colors.burgundy.mid : colors.warm.muted}
+                      style={styles.audienceIcon}
+                    />
                     <Text variant="label" style={[styles.audienceLabel, value === 'public' && styles.audienceLabelActive]}>
                       Everyone
                     </Text>
@@ -330,7 +336,12 @@ export default function CreateAnnouncementScreen() {
                     onPress={() => onChange('pro_only')}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.audienceIcon}>👥</Text>
+                    <Ionicons
+                      name="people-outline"
+                      size={24}
+                      color={value === 'pro_only' ? colors.burgundy.mid : colors.warm.muted}
+                      style={styles.audienceIcon}
+                    />
                     <Text variant="label" style={[styles.audienceLabel, value === 'pro_only' && styles.audienceLabelActive]}>
                       PROs only
                     </Text>
@@ -459,9 +470,6 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     backgroundColor: colors.warm.surface,
   },
-  imagePlaceholderIcon: {
-    fontSize: 32,
-  },
   imagePlaceholderText: {
     color: colors.warm.muted,
   },
@@ -491,7 +499,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(40, 2, 10, 0.06)',
   },
   audienceIcon: {
-    fontSize: 24,
     marginBottom: spacing[1],
   },
   audienceLabel: {

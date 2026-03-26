@@ -38,7 +38,7 @@ export function ParticipationButton({
         {isToggling ? (
           <ActivityIndicator
             size="small"
-            color={isParticipating ? colors.burgundy.deep : colors.neutral[0]}
+            color={colors.beige[100]}
           />
         ) : (
           <Text
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
   },
   buttonActive: {
-    backgroundColor: colors.beige[200],
+    backgroundColor: colors.burgundy.raised,
   },
   buttonFull: {
     backgroundColor: colors.neutral[300],
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   labelActive: {
-    color: colors.burgundy.deep,
+    color: colors.beige[100],
   },
   count: {
     color: colors.neutral[500],
