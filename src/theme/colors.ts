@@ -68,10 +68,10 @@ export const colors = {
   warm: {
     /** Page background — dark */
     bg: '#28020a',
-    /** Card / surface — frosted dark */
-    surface: 'rgba(205, 193, 173, 0.09)',
+    /** Card / surface — beige */
+    surface: 'rgba(205, 193, 173, 0.18)',
     /** Slightly more opaque surface for elevated cards */
-    elevated: 'rgba(205, 193, 173, 0.14)',
+    elevated: 'rgba(205, 193, 173, 0.24)',
     /** Card border — warm translucent line */
     border: 'rgba(205, 193, 173, 0.18)',
     /** Stronger border for focused states */
