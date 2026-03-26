@@ -414,27 +414,27 @@ const styles = StyleSheet.create({
   filtersScroll: {
     marginTop: spacing[6],
     marginBottom: spacing[5],
-    height: 40,
   },
   filtersContent: {
     flexDirection: 'row',
     gap: spacing[2],
     paddingHorizontal: spacing[5],
+    paddingVertical: spacing[1],
   },
   chip: {
     flexShrink: 0,
     paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(160, 122, 95, 0.14)',
-    backgroundColor: '#ffffff',
+    borderColor: colors.warm.border,
+    backgroundColor: colors.warm.surface,
     justifyContent: 'center',
     alignItems: 'center',
-    height: 36,
     shadowColor: colors.warm.shadow,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
     elevation: 2,
   },
   chipActive: {
@@ -443,13 +443,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
   },
   chipLabel: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#1a1212',
+    fontFamily: fontFamily.sansMedium,
+    fontSize: 14,
+    color: colors.warm.title,
   },
   chipLabelActive: {
     color: '#ffffff',
-    fontWeight: '600',
+    fontFamily: fontFamily.sansSemiBold,
   },
 
   // Section spacing
