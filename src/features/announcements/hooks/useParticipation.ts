@@ -46,7 +46,10 @@ export function useParticipation(announcementId: string) {
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.announcements });
 
       const previousDetail = queryClient.getQueryData<Announcement>(detailKey);
-      const previousList = queryClient.getQueryData<Announcement[]>(QUERY_KEYS.announcements);
+      // Use getQueriesData for partial-key match — list keys include extra segments (isPro, typeFilter)
+      const previousLists = queryClient.getQueriesData<Announcement[]>({
+        queryKey: QUERY_KEYS.announcements,
+      });
 
       const flipAnnouncement = (a: Announcement): Announcement => ({
         ...a,
@@ -60,14 +63,17 @@ export function useParticipation(announcementId: string) {
         queryClient.setQueryData<Announcement>(detailKey, flipAnnouncement(previousDetail));
       }
 
-      if (previousList) {
-        queryClient.setQueryData<Announcement[]>(
-          QUERY_KEYS.announcements,
-          previousList.map((a) => (a.id === announcementId ? flipAnnouncement(a) : a)),
-        );
+      // Update every cached list variant that contains this announcement
+      for (const [key, list] of previousLists) {
+        if (list !== undefined) {
+          queryClient.setQueryData<Announcement[]>(
+            key,
+            list.map((a) => (a.id === announcementId ? flipAnnouncement(a) : a)),
+          );
+        }
       }
 
-      return { previousDetail, previousList };
+      return { previousDetail, previousLists };
     },
 
     // Roll back on error
@@ -75,13 +81,15 @@ export function useParticipation(announcementId: string) {
       if (context?.previousDetail !== undefined) {
         queryClient.setQueryData(detailKey, context.previousDetail);
       }
-      if (context?.previousList !== undefined) {
-        queryClient.setQueryData(QUERY_KEYS.announcements, context.previousList);
+      for (const [key, list] of context?.previousLists ?? []) {
+        queryClient.setQueryData(key, list);
       }
     },
 
+    // Refetch both detail and all list variants to sync server-side participant_count
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: detailKey });
+      void queryClient.invalidateQueries({ queryKey: detailKey });
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.announcements });
     },
   });
 
