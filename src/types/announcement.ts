@@ -19,6 +19,7 @@ export interface Announcement {
   id: string;
   professionalId: string;
   professionalName: string;
+  professionalLogoUrl?: string | undefined;
   type: AnnouncementType;
   title: string;
   description?: string | undefined;

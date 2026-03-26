@@ -84,6 +84,24 @@ export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProp
           {announcement.title}
         </Text>
 
+        {/* Professional */}
+        {announcement.professionalName.length > 0 && (
+          <View style={styles.proRow}>
+            {announcement.professionalLogoUrl === undefined ? (
+              <View style={[styles.proLogo, styles.proLogoFallback]}>
+                <Ionicons name="storefront-outline" size={10} color={colors.warm.muted} />
+              </View>
+            ) : (
+              <Image
+                source={{ uri: announcement.professionalLogoUrl }}
+                style={styles.proLogo}
+                contentFit="cover"
+              />
+            )}
+            <Text style={styles.proName} numberOfLines={1}>{announcement.professionalName}</Text>
+          </View>
+        )}
+
         {/* Location */}
         {announcement.location !== undefined && (
           <View style={styles.metaRow}>
@@ -193,6 +211,27 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.warm.title,
     lineHeight: 23,
+  },
+  proRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  proLogo: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+  },
+  proLogoFallback: {
+    backgroundColor: colors.warm.bg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  proName: {
+    fontSize: 12,
+    color: colors.warm.muted,
+    fontWeight: '500',
+    flex: 1,
   },
   metaRow: {
     flexDirection: 'row',

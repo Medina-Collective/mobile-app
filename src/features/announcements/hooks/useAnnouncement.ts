@@ -7,12 +7,18 @@ import type { Database } from '@app-types/supabase';
 import type { AnnouncementFormData } from '../schemas/announcement.schema';
 
 type AnnouncementRow = Database['public']['Tables']['announcements']['Row'];
+type ProfessionalSnippet = { business_name: string; logo_uri: string | null } | null;
 
-function rowToAnnouncement(row: AnnouncementRow, hasParticipated = false): Announcement {
+function rowToAnnouncement(
+  row: AnnouncementRow,
+  hasParticipated = false,
+  professional: ProfessionalSnippet = null,
+): Announcement {
   return {
     id: row.id,
     professionalId: row.professional_id,
-    professionalName: '',
+    professionalName: professional?.business_name ?? '',
+    professionalLogoUrl: professional?.logo_uri ?? undefined,
     type: row.type as AnnouncementType,
     title: row.title,
     description: row.description ?? undefined,
@@ -46,7 +52,7 @@ export function useListAnnouncements(typeFilter?: AnnouncementType | undefined) 
 
       let query = supabase
         .from('announcements')
-        .select('*')
+        .select('*, professionals(business_name, logo_uri)')
         .eq('status', 'published')
         .lte('visibility_start', now)
         .gte('visibility_end', now)
@@ -70,7 +76,7 @@ export function useListAnnouncements(typeFilter?: AnnouncementType | undefined) 
       } = await supabase.auth.getUser();
 
       if (!user || data.length === 0) {
-        return data.map((r) => rowToAnnouncement(r));
+        return data.map((r) => rowToAnnouncement(r, false, r.professionals as ProfessionalSnippet));
       }
 
       const ids = data.map((r) => r.id);
@@ -81,7 +87,9 @@ export function useListAnnouncements(typeFilter?: AnnouncementType | undefined) 
         .in('announcement_id', ids);
 
       const participatedSet = new Set(participated?.map((p) => p.announcement_id) ?? []);
-      return data.map((r) => rowToAnnouncement(r, participatedSet.has(r.id)));
+      return data.map((r) =>
+        rowToAnnouncement(r, participatedSet.has(r.id), r.professionals as ProfessionalSnippet),
+      );
     },
   });
 }
@@ -94,7 +102,7 @@ export function useGetAnnouncement(id: string) {
     queryFn: async (): Promise<Announcement> => {
       const { data, error } = await supabase
         .from('announcements')
-        .select('*')
+        .select('*, professionals(business_name, logo_uri)')
         .eq('id', id)
         .single();
       if (error) throw error;
@@ -114,7 +122,7 @@ export function useGetAnnouncement(id: string) {
         hasParticipated = p !== null;
       }
 
-      return rowToAnnouncement(data, hasParticipated);
+      return rowToAnnouncement(data, hasParticipated, data.professionals as ProfessionalSnippet);
     },
   });
 }
@@ -133,7 +141,7 @@ export function useMyAnnouncements() {
       // Look up the professional profile linked to this user
       const { data: professional, error: profError } = await supabase
         .from('professionals')
-        .select('id')
+        .select('id, business_name, logo_uri')
         .eq('user_id', user.id)
         .single();
       if (profError) throw profError;
@@ -145,7 +153,11 @@ export function useMyAnnouncements() {
         .order('created_at', { ascending: false });
       if (error) throw error;
 
-      return data.map((r) => rowToAnnouncement(r));
+      const proSnippet: ProfessionalSnippet = {
+        business_name: professional.business_name,
+        logo_uri: professional.logo_uri,
+      };
+      return data.map((r) => rowToAnnouncement(r, false, proSnippet));
     },
   });
 }

@@ -105,6 +105,24 @@ export default function AnnouncementDetailScreen() {
             <SaveButton announcementId={announcement.id} />
           </View>
 
+          {/* Professional */}
+          {announcement.professionalName.length > 0 && (
+            <View style={styles.proRow}>
+              {announcement.professionalLogoUrl === undefined ? (
+                <View style={[styles.proLogo, styles.proLogoFallback]}>
+                  <Ionicons name="storefront-outline" size={12} color={colors.warm.muted} />
+                </View>
+              ) : (
+                <Image
+                  source={{ uri: announcement.professionalLogoUrl }}
+                  style={styles.proLogo}
+                  contentFit="cover"
+                />
+              )}
+              <Text style={styles.proName}>{announcement.professionalName}</Text>
+            </View>
+          )}
+
           {/* Title */}
           <Text style={styles.title}>{announcement.title}</Text>
 
@@ -236,6 +254,26 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     letterSpacing: 0.3,
+  },
+  proRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  proLogo: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+  },
+  proLogoFallback: {
+    backgroundColor: colors.warm.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  proName: {
+    fontSize: 13,
+    color: colors.warm.muted,
+    fontWeight: '500',
   },
   title: {
     fontSize: 26,
