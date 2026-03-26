@@ -5,6 +5,8 @@ import { Button } from '@components/ui';
 import { spacing } from '@theme/spacing';
 import { colors } from '@theme/colors';
 
+const MC_BEIGE = '#cdc1ad';
+
 const welcomeImage = require('@assets/images/welcome-page-design.png') as number;
 
 
@@ -23,6 +25,7 @@ export default function WelcomeScreen() {
             title="Join the community"
             onPress={() => router.push('/(auth)/sign-up')}
             style={styles.joinButton}
+            textColor={colors.burgundy.mid}
           />
           <Button
             title="Sign in"
@@ -51,7 +54,7 @@ const styles = StyleSheet.create({
   },
   joinButton: {
     width: '100%',
-    backgroundColor: colors.burgundy.mid,
+    backgroundColor: MC_BEIGE,
   },
   button: {
     width: '100%',
