@@ -7,12 +7,18 @@ import type { Announcement, AnnouncementType, AnnouncementAudience } from '@app-
 import type { Database } from '@app-types/supabase';
 
 type AnnouncementRow = Database['public']['Tables']['announcements']['Row'];
+type ProfessionalSnippet = { business_name: string; logo_uri: string | null } | null;
 
-function rowToAnnouncement(row: AnnouncementRow, hasParticipated = false): Announcement {
+function rowToAnnouncement(
+  row: AnnouncementRow,
+  hasParticipated = false,
+  professional: ProfessionalSnippet = null,
+): Announcement {
   return {
     id: row.id,
     professionalId: row.professional_id,
-    professionalName: '',
+    professionalName: professional?.business_name ?? '',
+    professionalLogoUrl: professional?.logo_uri ?? undefined,
     type: row.type as AnnouncementType,
     title: row.title,
     description: row.description ?? undefined,
@@ -50,7 +56,7 @@ export function useFollowedAnnouncements() {
 
       let query = supabase
         .from('announcements')
-        .select('*')
+        .select('*, professionals(business_name, logo_uri)')
         .eq('status', 'published')
         .lte('visibility_start', now)
         .gte('visibility_end', now)
@@ -71,7 +77,9 @@ export function useFollowedAnnouncements() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) return data.map((r) => rowToAnnouncement(r));
+      if (!user) {
+        return data.map((r) => rowToAnnouncement(r, false, r.professionals as ProfessionalSnippet));
+      }
 
       const ids = data.map((r) => r.id);
       const { data: participated } = await supabase
@@ -81,7 +89,9 @@ export function useFollowedAnnouncements() {
         .in('announcement_id', ids);
 
       const participatedSet = new Set(participated?.map((p) => p.announcement_id) ?? []);
-      return data.map((r) => rowToAnnouncement(r, participatedSet.has(r.id)));
+      return data.map((r) =>
+        rowToAnnouncement(r, participatedSet.has(r.id), r.professionals as ProfessionalSnippet),
+      );
     },
   });
 }

@@ -105,9 +105,13 @@ export default function AnnouncementDetailScreen() {
             <SaveButton announcementId={announcement.id} />
           </View>
 
-          {/* Professional */}
+          {/* Professional — tappable, navigates to their profile */}
           {announcement.professionalName.length > 0 && (
-            <View style={styles.proRow}>
+            <TouchableOpacity
+              style={styles.proRow}
+              onPress={() => router.push(`/professional/${announcement.professionalId}`)}
+              activeOpacity={0.7}
+            >
               {announcement.professionalLogoUrl === undefined ? (
                 <View style={[styles.proLogo, styles.proLogoFallback]}>
                   <Ionicons name="storefront-outline" size={12} color={colors.warm.muted} />
@@ -120,7 +124,8 @@ export default function AnnouncementDetailScreen() {
                 />
               )}
               <Text style={styles.proName}>{announcement.professionalName}</Text>
-            </View>
+              <Ionicons name="chevron-forward" size={13} color={colors.warm.muted} />
+            </TouchableOpacity>
           )}
 
           {/* Title */}
