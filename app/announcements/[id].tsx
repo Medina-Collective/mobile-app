@@ -279,10 +279,10 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   participationBlock: {
-    backgroundColor: 'rgba(40, 2, 10, 0.05)',
+    backgroundColor: 'rgba(39, 3, 9, 0.05)',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(40, 2, 10, 0.12)',
+    borderColor: 'rgba(39, 3, 9, 0.12)',
     padding: spacing[5],
     gap: spacing[3],
   },

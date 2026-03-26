@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { View, TouchableOpacity, Platform, Modal, StyleSheet } from 'react-native';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
+import { Ionicons } from '@expo/vector-icons';
 import { Text, Button } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
@@ -80,7 +81,7 @@ export function DatePicker({
         >
           {displayValue ?? placeholder}
         </Text>
-        <Text style={styles.calendarIcon}>📅</Text>
+        <Ionicons name="calendar-outline" size={18} color={colors.warm.muted} />
       </TouchableOpacity>
 
       {hasError && (
@@ -173,10 +174,7 @@ const styles = StyleSheet.create({
   placeholder: {
     color: '#7b625b',
   },
-  calendarIcon: {
-    fontSize: 16,
-  },
-  errorText: {
+errorText: {
     marginTop: spacing[1],
     color: colors.error[500],
   },
