@@ -62,29 +62,29 @@ export const colors = {
   },
 
   /**
-   * Warm light palette — used for all "light" screens (discover, search, profile, etc.)
-   * The liquid-glass look is built on these tokens.
+   * Warm palette — surfaces are solid beige; page-level text is light on the dark bg.
+   * Any component with a warm.surface background must use explicit dark text (#28020a).
    */
   warm: {
     /** Page background — dark */
     bg: '#28020a',
-    /** Card / surface — beige */
-    surface: 'rgba(205, 193, 173, 0.18)',
-    /** Slightly more opaque surface for elevated cards */
-    elevated: 'rgba(205, 193, 173, 0.24)',
-    /** Card border — warm translucent line */
+    /** Card / surface — solid beige */
+    surface: '#cdc1ad',
+    /** Elevated inner surface */
+    elevated: '#bfb49d',
+    /** Border (beige, for use on dark page bg) */
     border: 'rgba(205, 193, 173, 0.18)',
     /** Stronger border for focused states */
     borderFocus: 'rgba(205, 193, 173, 0.45)',
-    /** Page titles — warm sand */
+    /** Page-level titles on dark bg */
     title: '#cdc1ad',
-    /** Body text */
+    /** Page-level body text on dark bg */
     body: 'rgba(205, 193, 173, 0.85)',
-    /** Secondary / muted text */
+    /** Page-level muted text on dark bg */
     muted: 'rgba(205, 193, 173, 0.45)',
     /** Faint dividers */
     divider: 'rgba(205, 193, 173, 0.08)',
-    /** Shadow tint for glass cards */
+    /** Shadow tint for cards */
     shadow: '#000000',
   },
 

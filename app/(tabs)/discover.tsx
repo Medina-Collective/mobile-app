@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
   },
   chipLabel: {
-    color: colors.warm.body,
+    color: '#28020a',
     fontWeight: '500',
   },
   chipLabelActive: {

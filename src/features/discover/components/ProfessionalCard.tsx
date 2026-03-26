@@ -48,7 +48,7 @@ export function ProfessionalCard({ professional }: Readonly<ProfessionalCardProp
             : ''}
         </Text>
         <View style={styles.meta}>
-          <Ionicons name="location-outline" size={11} color={colors.warm.muted} />
+          <Ionicons name="location-outline" size={11} color="rgba(40, 2, 10, 0.55)" />
           <Text style={styles.metaText}>{professional.basedIn}</Text>
           {professional.priceRange !== undefined && (
             <>
@@ -76,11 +76,11 @@ const styles = StyleSheet.create({
     gap: spacing[3],
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[4],
-    backgroundColor: 'rgba(255, 252, 249, 0.88)',
+    backgroundColor: colors.warm.surface,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.75)',
-    shadowColor: colors.warm.shadow,
+    borderColor: 'rgba(40, 2, 10, 0.12)',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.11,
     shadowRadius: 24,
@@ -90,9 +90,9 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(68, 0, 7, 0.08)',
+    backgroundColor: 'rgba(40, 2, 10, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(68, 0, 7, 0.15)',
+    borderColor: 'rgba(40, 2, 10, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     flexShrink: 0,
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   avatarInitials: {
     fontSize: fontSize.sm,
     fontWeight: '700',
-    color: colors.burgundy.mid,
+    color: '#28020a',
     letterSpacing: 0.5,
   },
   info: {
@@ -110,11 +110,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: fontSize.sm,
     fontWeight: '600',
-    color: colors.warm.title,
+    color: '#28020a',
   },
   category: {
     fontSize: fontSize.xs,
-    color: colors.warm.body,
+    color: 'rgba(40, 2, 10, 0.80)',
   },
   meta: {
     flexDirection: 'row',
@@ -124,24 +124,24 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: fontSize.xs,
-    color: colors.warm.muted,
+    color: 'rgba(40, 2, 10, 0.55)',
   },
   metaDot: {
     fontSize: fontSize.xs,
-    color: colors.warm.muted,
+    color: 'rgba(40, 2, 10, 0.55)',
   },
   badge: {
     paddingVertical: 3,
     paddingHorizontal: spacing[2],
     borderRadius: 20,
-    backgroundColor: 'rgba(68, 0, 7, 0.07)',
+    backgroundColor: 'rgba(40, 2, 10, 0.07)',
     borderWidth: 1,
-    borderColor: 'rgba(68, 0, 7, 0.15)',
+    borderColor: 'rgba(40, 2, 10, 0.15)',
     flexShrink: 0,
   },
   badgeText: {
     fontSize: 10,
-    color: colors.burgundy.mid,
+    color: '#28020a',
     fontWeight: '600',
     letterSpacing: 0.2,
   },

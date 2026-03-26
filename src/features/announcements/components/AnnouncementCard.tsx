@@ -89,7 +89,7 @@ export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProp
           <View style={styles.proRow}>
             {announcement.professionalLogoUrl === undefined ? (
               <View style={[styles.proLogo, styles.proLogoFallback]}>
-                <Ionicons name="storefront-outline" size={10} color={colors.warm.muted} />
+                <Ionicons name="storefront-outline" size={10} color="rgba(40, 2, 10, 0.55)" />
               </View>
             ) : (
               <Image
@@ -105,7 +105,7 @@ export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProp
         {/* Location */}
         {announcement.location !== undefined && (
           <View style={styles.metaRow}>
-            <Ionicons name="location-outline" size={13} color={colors.warm.muted} />
+            <Ionicons name="location-outline" size={13} color="rgba(40, 2, 10, 0.55)" />
             <Text style={styles.metaText}>{announcement.location}</Text>
           </View>
         )}
@@ -113,14 +113,14 @@ export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProp
         {/* Event dates */}
         {eventDateLabel !== undefined && (
           <View style={styles.metaRow}>
-            <Ionicons name="calendar-outline" size={13} color={colors.warm.muted} />
+            <Ionicons name="calendar-outline" size={13} color="rgba(40, 2, 10, 0.55)" />
             <Text style={styles.metaText}>{eventDateLabel}</Text>
           </View>
         )}
 
         {/* Visibility end */}
         <View style={styles.metaRow}>
-          <Ionicons name="time-outline" size={12} color={colors.warm.muted} />
+          <Ionicons name="time-outline" size={12} color="rgba(40, 2, 10, 0.55)" />
           <Text style={styles.visibility}>Visible until {visibilityEndLabel}</Text>
         </View>
 
@@ -145,10 +145,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.warm.surface,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: colors.warm.border,
+    borderColor: 'rgba(40, 2, 10, 0.12)',
     overflow: 'hidden',
-    // top highlight — the glass catch-light
-    shadowColor: colors.warm.shadow,
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.13,
     shadowRadius: 32,
@@ -157,7 +156,7 @@ const styles = StyleSheet.create({
   coverImage: {
     width: '100%',
     height: 180,
-    backgroundColor: colors.warm.bg,
+    backgroundColor: colors.warm.elevated,
   },
   body: {
     padding: spacing[4],
@@ -209,7 +208,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 17,
     fontWeight: '700',
-    color: colors.warm.title,
+    color: '#28020a',
     lineHeight: 23,
   },
   proRow: {
@@ -223,13 +222,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   proLogoFallback: {
-    backgroundColor: colors.warm.bg,
+    backgroundColor: colors.warm.elevated,
     justifyContent: 'center',
     alignItems: 'center',
   },
   proName: {
     fontSize: 12,
-    color: colors.warm.muted,
+    color: 'rgba(40, 2, 10, 0.55)',
     fontWeight: '500',
     flex: 1,
   },
@@ -240,11 +239,11 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 13,
-    color: colors.warm.body,
+    color: 'rgba(40, 2, 10, 0.80)',
   },
   visibility: {
     fontSize: 11,
-    color: colors.warm.muted,
+    color: 'rgba(40, 2, 10, 0.55)',
   },
   participationWrapper: {
     marginTop: spacing[2],
