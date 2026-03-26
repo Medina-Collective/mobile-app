@@ -71,7 +71,7 @@ export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProp
             </View>
             {announcement.audience === 'pro_only' && (
               <View style={styles.proBadge}>
-                <Ionicons name="people-outline" size={11} color="#4a2280" />
+                <Ionicons name="people-outline" size={11} color="#c4a8f0" />
                 <Text style={styles.proBadgeText}>PROs only</Text>
               </View>
             )}
@@ -142,10 +142,10 @@ export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProp
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: 'rgba(255, 252, 249, 0.88)',
+    backgroundColor: colors.warm.surface,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.75)',
+    borderColor: colors.warm.border,
     overflow: 'hidden',
     // top highlight — the glass catch-light
     shadowColor: colors.warm.shadow,
@@ -191,14 +191,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[1],
     gap: spacing[1],
-    backgroundColor: 'rgba(74, 34, 128, 0.08)',
+    backgroundColor: 'rgba(150, 100, 240, 0.15)',
     borderWidth: 1,
-    borderColor: 'rgba(74, 34, 128, 0.15)',
+    borderColor: 'rgba(150, 100, 240, 0.25)',
   },
   proBadgeText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#4a2280',
+    color: '#c4a8f0',
     letterSpacing: 0.3,
   },
   badgeText: {

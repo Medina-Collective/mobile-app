@@ -97,7 +97,7 @@ export default function AnnouncementDetailScreen() {
             </View>
             {announcement.audience === 'pro_only' && (
               <View style={styles.proBadge}>
-                <Ionicons name="people-outline" size={12} color="#4a2280" />
+                <Ionicons name="people-outline" size={12} color="#c4a8f0" />
                 <Text style={styles.proBadgeText}>PROs only</Text>
               </View>
             )}
@@ -245,14 +245,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[1],
-    backgroundColor: 'rgba(74, 34, 128, 0.08)',
+    backgroundColor: 'rgba(150, 100, 240, 0.15)',
     borderWidth: 1,
-    borderColor: 'rgba(74, 34, 128, 0.15)',
+    borderColor: 'rgba(150, 100, 240, 0.25)',
   },
   proBadgeText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#4a2280',
+    color: '#c4a8f0',
     letterSpacing: 0.3,
   },
   badgeText: {
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[4],
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.6)',
+    borderColor: colors.warm.border,
   },
   metaRow: {
     flexDirection: 'row',
@@ -310,11 +310,11 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   descriptionBlock: {
-    backgroundColor: 'rgba(255, 252, 249, 0.88)',
+    backgroundColor: colors.warm.surface,
     borderRadius: 20,
     padding: spacing[4],
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.75)',
+    borderColor: colors.warm.border,
     shadowColor: colors.warm.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
@@ -326,10 +326,10 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   participationBlock: {
-    backgroundColor: 'rgba(255, 252, 249, 0.88)',
+    backgroundColor: colors.warm.surface,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.75)',
+    borderColor: colors.warm.border,
     padding: spacing[5],
     gap: spacing[3],
     shadowColor: colors.warm.shadow,

@@ -170,8 +170,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.7)',
-    backgroundColor: 'rgba(255, 252, 249, 0.88)',
+    borderColor: colors.warm.border,
+    backgroundColor: colors.warm.surface,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.warm.shadow,
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   chipLabelActive: {
-    color: colors.beige[100],
+    color: '#28020a',
     fontWeight: '600',
   },
   list: {
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.18)',
-    shadowColor: colors.burgundy.mid,
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 16,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
   fabIcon: {
     fontSize: 28,
-    color: colors.beige[100],
+    color: '#28020a',
     lineHeight: 32,
   },
 });

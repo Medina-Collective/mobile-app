@@ -66,11 +66,11 @@ const styles = StyleSheet.create({
   card: {
     width: '47%',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.75)',
+    borderColor: colors.warm.border,
     borderRadius: 20,
     padding: spacing[3],
     gap: spacing[1],
-    backgroundColor: 'rgba(255, 252, 249, 0.88)',
+    backgroundColor: colors.warm.surface,
     shadowColor: colors.warm.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,

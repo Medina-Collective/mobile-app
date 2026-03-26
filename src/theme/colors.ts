@@ -1,24 +1,24 @@
 /**
- * Medina Collective Design System — Color Tokens
+ * Medina Collective Design System — Color Tokens (Dark Theme)
  *
  * Palette sourced directly from the brand identity:
- *   Deep Burgundy  #330b14  — page background
- *   Dark Merlot    #541623  — cards, surfaces
- *   Beige          #ffd3c0  — primary text & warm highlights
- *   Light Crimson  #ff6f97  — accent, active states, decorative
- *   Cranberry Red  #440007  — mid-tones, borders, secondary surfaces
+ *   Dark Background  #28020a  — page background
+ *   Dark Merlot      #541623  — cards, surfaces
+ *   Beige            #ffd3c0  — primary text & warm highlights
+ *   Light Crimson    #ff6f97  — accent, active states, decorative
+ *   Warm Sand        #cdc1ad  — primary accent / secondary
  */
 export const colors = {
   // ── Brand palette ──────────────────────────────────────────────────────────
   burgundy: {
     /** Page background — the deepest tone */
-    deep: '#330b14',
+    deep: '#28020a',
     /** Card / surface background */
     surface: '#541623',
     /** Elevated surface, hover states */
     raised: '#6a2030',
     /** Mid-tone — borders, dividers */
-    mid: '#440007',
+    mid: '#cdc1ad',
     /** Muted text / decorative */
     muted: '#b05060',
     /** Subtle tint over background */
@@ -66,26 +66,26 @@ export const colors = {
    * The liquid-glass look is built on these tokens.
    */
   warm: {
-    /** Page background — soft warm cream */
-    bg: '#f5ede6',
-    /** Card / surface — frosted warm white */
-    surface: 'rgba(255, 252, 249, 0.88)',
+    /** Page background — dark */
+    bg: '#28020a',
+    /** Card / surface — frosted dark */
+    surface: 'rgba(205, 193, 173, 0.09)',
     /** Slightly more opaque surface for elevated cards */
-    elevated: '#fdf8f4',
+    elevated: 'rgba(205, 193, 173, 0.14)',
     /** Card border — warm translucent line */
-    border: 'rgba(160, 122, 95, 0.18)',
+    border: 'rgba(205, 193, 173, 0.18)',
     /** Stronger border for focused states */
-    borderFocus: 'rgba(68, 0, 7, 0.35)',
-    /** Page titles — deep burgundy */
-    title: '#440007',
+    borderFocus: 'rgba(205, 193, 173, 0.45)',
+    /** Page titles — warm sand */
+    title: '#cdc1ad',
     /** Body text */
-    body: '#4a2d2d',
+    body: 'rgba(205, 193, 173, 0.85)',
     /** Secondary / muted text */
-    muted: '#8a6a5a',
+    muted: 'rgba(205, 193, 173, 0.45)',
     /** Faint dividers */
-    divider: 'rgba(160, 122, 95, 0.12)',
+    divider: 'rgba(205, 193, 173, 0.08)',
     /** Shadow tint for glass cards */
-    shadow: '#7b625b',
+    shadow: '#000000',
   },
 
   success: { 50: '#f0fdf4', 500: '#22c55e', 700: '#15803d' },

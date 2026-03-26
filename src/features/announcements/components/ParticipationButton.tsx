@@ -26,7 +26,7 @@ export function ParticipationButton({
 
   let buttonContent: React.ReactNode;
   if (isToggling) {
-    buttonContent = <ActivityIndicator size="small" color={colors.beige[100]} />;
+    buttonContent = <ActivityIndicator size="small" color={isParticipating ? colors.beige[100] : '#28020a'} />;
   } else if (isFull) {
     buttonContent = (
       <View style={styles.row}>
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   label: {
-    color: colors.neutral[0],
+    color: '#28020a',
     fontSize: 13,
     fontWeight: '600',
   },

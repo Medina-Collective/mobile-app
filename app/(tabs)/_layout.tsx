@@ -25,7 +25,7 @@ function GlassTabBar() {
     <View style={styles.blurWrapper} pointerEvents="none">
       <BlurView
         intensity={60}
-        tint="light"
+        tint="dark"
         style={StyleSheet.absoluteFill}
       />
       {/* warm tint overlay */}
@@ -65,7 +65,7 @@ export default function TabsLayout() {
           right: 20,
           height: 68,
           borderRadius: 34,
-          backgroundColor: Platform.OS === 'android' ? 'rgba(250, 243, 236, 0.92)' : 'transparent',
+          backgroundColor: Platform.OS === 'android' ? 'rgba(40, 2, 10, 0.96)' : 'transparent',
           borderTopWidth: 0,
           // shadow
           shadowColor: colors.warm.shadow,
@@ -109,14 +109,14 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   tintOverlay: {
-    backgroundColor: 'rgba(250, 243, 236, 0.55)',
+    backgroundColor: 'rgba(40, 2, 10, 0.75)',
     borderRadius: 34,
   },
   glassHighlight: {
     borderRadius: 34,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.55)',
+    borderColor: 'rgba(205, 193, 173, 0.2)',
     // inner top highlight
-    borderTopColor: 'rgba(255, 255, 255, 0.8)',
+    borderTopColor: 'rgba(205, 193, 173, 0.35)',
   },
 });

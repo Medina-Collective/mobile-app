@@ -64,12 +64,12 @@ export const ANNOUNCEMENT_TYPE_ICONS: Record<AnnouncementType, string> = {
   other: 'notifications-outline',
 };
 
-/** Badge colors for each type — bg + text that work on white card surfaces */
+/** Badge colors for each type — bg + text that work on dark card surfaces */
 export const ANNOUNCEMENT_TYPE_COLORS: Record<AnnouncementType, { bg: string; text: string }> = {
-  activity_event: { bg: '#fce7ef', text: '#440007' },
-  bazaar: { bg: '#fff8e1', text: '#7b5e00' },
-  brand_popup: { bg: '#ede7f6', text: '#4a2280' },
-  halaqa: { bg: '#e8f5e9', text: '#1b5e20' },
-  limited_offer: { bg: '#fff3e0', text: '#b45309' },
-  other: { bg: '#f3f4f6', text: '#374151' },
+  activity_event: { bg: 'rgba(252, 100, 150, 0.15)', text: '#f9a8c0' },
+  bazaar: { bg: 'rgba(255, 200, 50, 0.12)', text: '#e8c060' },
+  brand_popup: { bg: 'rgba(150, 100, 240, 0.15)', text: '#c4a8f0' },
+  halaqa: { bg: 'rgba(80, 200, 100, 0.13)', text: '#88c890' },
+  limited_offer: { bg: 'rgba(240, 150, 50, 0.13)', text: '#e8a855' },
+  other: { bg: 'rgba(150, 160, 180, 0.13)', text: '#a8b0c0' },
 };

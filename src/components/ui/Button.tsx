@@ -39,7 +39,7 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'solid' ? colors.beige[100] : colors.burgundy.mid}
+          color={variant === 'solid' ? '#28020a' : colors.burgundy.mid}
           size="small"
         />
       ) : (
@@ -77,13 +77,13 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   label: {
-    color: colors.beige[100],
+    color: '#28020a',
     letterSpacing: 0.5,
     fontSize: 14,
     fontWeight: '700',
   },
   labelAlt: {
-    color: '#7b625b',
+    color: colors.warm.body,
     fontWeight: '400',
   },
 });
