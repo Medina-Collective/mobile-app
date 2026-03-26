@@ -3,11 +3,10 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@components/ui';
 import { spacing } from '@theme/spacing';
+import { colors } from '@theme/colors';
 
 const welcomeImage = require('@assets/images/welcome-page-design.png') as number;
 
-/** Soft beige matching the MC monogram in the Canva design */
-const MC_BEIGE = '#cdc1ad';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -52,7 +51,7 @@ const styles = StyleSheet.create({
   },
   joinButton: {
     width: '100%',
-    backgroundColor: MC_BEIGE,
+    backgroundColor: colors.burgundy.mid,
   },
   button: {
     width: '100%',

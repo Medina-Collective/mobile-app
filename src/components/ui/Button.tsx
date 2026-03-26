@@ -16,6 +16,7 @@ interface ButtonProps extends Omit<TouchableOpacityProps, 'style'> {
   variant?: ButtonVariant | undefined;
   loading?: boolean | undefined;
   style?: ViewStyle | undefined;
+  textColor?: string | undefined;
 }
 
 export function Button({
@@ -23,6 +24,7 @@ export function Button({
   variant = 'solid',
   loading = false,
   style,
+  textColor,
   disabled,
   ...props
 }: Readonly<ButtonProps>) {
@@ -41,7 +43,7 @@ export function Button({
           size="small"
         />
       ) : (
-        <Text variant="label" style={[styles.label, variant !== 'solid' && styles.labelAlt]}>
+        <Text variant="label" style={[styles.label, variant !== 'solid' && styles.labelAlt, textColor !== undefined && { color: textColor }]}>
           {title}
         </Text>
       )}
