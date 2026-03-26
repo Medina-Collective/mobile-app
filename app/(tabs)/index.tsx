@@ -321,6 +321,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.warm.border,
   },
   headerLeft: {
+    flex: 1,
     gap: 2,
   },
   greeting: {
