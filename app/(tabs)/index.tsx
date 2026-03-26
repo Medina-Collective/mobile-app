@@ -120,23 +120,22 @@ export default function HomeScreen() {
 
   return (
     <Screen noHorizontalPadding>
+      {/* ── 1. Header (fixed, outside ScrollView) ──────────────────────── */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.greeting}>Assalamu Alaikum</Text>
+          <Text style={styles.firstName}>{firstName}</Text>
+        </View>
+        <View style={styles.notificationBtn}>
+          <Ionicons name="notifications-outline" size={20} color={colors.warm.title} />
+          <View style={styles.notificationDot} />
+        </View>
+      </View>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-        stickyHeaderIndices={[0]}
       >
-        {/* ── 1. Header (sticky) ─────────────────────────────────────────── */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.greeting}>Assalamu Alaikum</Text>
-            <Text style={styles.firstName}>{firstName}</Text>
-          </View>
-          <View style={styles.notificationBtn}>
-            <Ionicons name="notifications-outline" size={20} color={colors.warm.title} />
-            <View style={styles.notificationDot} />
-          </View>
-        </View>
-
         {/* ── 2. Coming Up Card ──────────────────────────────────────────── */}
         <View style={styles.comingUpWrapper}>
           {upcomingAnnouncement !== undefined ? (
