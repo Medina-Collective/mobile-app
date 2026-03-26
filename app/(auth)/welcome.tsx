@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@components/ui';
 import { spacing } from '@theme/spacing';
-import { colors } from '@theme/colors';
 
 const MC_BEIGE = '#cdc1ad';
 
@@ -25,7 +24,7 @@ export default function WelcomeScreen() {
             title="Join the community"
             onPress={() => router.push('/(auth)/sign-up')}
             style={styles.joinButton}
-            textColor={colors.burgundy.mid}
+            textColor='#28020a'
           />
           <Button
             title="Sign in"
