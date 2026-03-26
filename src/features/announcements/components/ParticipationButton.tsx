@@ -37,7 +37,7 @@ export function ParticipationButton({
   } else if (isParticipating) {
     buttonContent = (
       <View style={styles.row}>
-        <Ionicons name="checkmark" size={15} color="#cdc1ad" />
+        <Ionicons name="checkmark" size={15} color="#CEC1AE" />
         <Text variant="label" style={[styles.label, styles.labelActive]} numberOfLines={1}>Going</Text>
       </View>
     );
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     paddingHorizontal: spacing[5],
-    backgroundColor: '#28020a',
+    backgroundColor: '#2F0A0A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
   },
   buttonActive: {
-    backgroundColor: '#28020a',
+    backgroundColor: '#2F0A0A',
   },
   buttonFull: {
     backgroundColor: colors.neutral[300],
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   labelActive: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
   },
   labelFull: {
     color: colors.neutral[500],

@@ -217,15 +217,15 @@ const styles = StyleSheet.create({
     gap: spacing[1],
     backgroundColor: 'transparent',
   },
-  roleCardSelected: { borderColor: '#28020a', backgroundColor: 'rgba(40, 2, 10, 0.04)' },
+  roleCardSelected: { borderColor: '#2F0A0A', backgroundColor: 'rgba(40, 2, 10, 0.04)' },
   roleLabel: { fontSize: 13, fontWeight: '600', color: 'rgba(26, 18, 18, 0.55)', letterSpacing: 0.3 },
   roleLabelSelected: { color: '#1a1212' },
   roleDesc: { fontSize: 11, color: 'rgba(26, 18, 18, 0.45)', lineHeight: 15, opacity: 0.7 },
   roleDescSelected: { color: 'rgba(26, 18, 18, 0.55)', opacity: 1 },
 
   serverError: { color: '#e57373', textAlign: 'center', marginTop: spacing[2] },
-  cta: { width: '100%', marginTop: spacing[4], backgroundColor: '#28020a' },
+  cta: { width: '100%', marginTop: spacing[4], backgroundColor: '#2F0A0A' },
   footer: { marginTop: spacing[8], alignItems: 'center' },
   footerText: { color: 'rgba(26, 18, 18, 0.45)' },
-  footerLink: { color: '#28020a', fontWeight: '600' },
+  footerLink: { color: '#2F0A0A', fontWeight: '600' },
 });

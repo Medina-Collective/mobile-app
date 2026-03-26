@@ -7,7 +7,6 @@ import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { fontFamily } from '@theme/typography';
-import { ANNOUNCEMENT_TYPE_LABELS } from '@app-types/announcement';
 import { ParticipationButton } from './ParticipationButton';
 import { SaveButton } from './SaveButton';
 import type { Announcement, AnnouncementType } from '@app-types/announcement';
@@ -19,21 +18,54 @@ interface AnnouncementCardProps {
   variant?: AnnouncementCardVariant | undefined;
 }
 
-/** Dark badge types — dark bg, white text */
-const DARK_BADGE_TYPES = new Set<AnnouncementType>(['activity_event', 'halaqa', 'bazaar']);
+// ── Type config ────────────────────────────────────────────────────────────────
 
-function getBadgeStyle(type: AnnouncementType): { bg: string; text: string } {
-  if (DARK_BADGE_TYPES.has(type)) {
-    return { bg: '#28020a', text: '#ffffff' };
+function getTypeConfig(
+  type: AnnouncementType,
+): { label: string; cta: string; badgeBg: string; badgeText: string } {
+  if (type === 'activity_event' || type === 'halaqa' || type === 'bazaar') {
+    return { label: 'Event', cta: 'Participate', badgeBg: '#2F0A0A', badgeText: '#ffffff' };
   }
-  return { bg: 'rgba(160, 122, 95, 0.15)', text: '#5a3a2a' };
+  if (type === 'limited_offer') {
+    return {
+      label: 'Offer',
+      cta: 'View Offer',
+      badgeBg: 'rgba(206, 193, 174, 0.5)',
+      badgeText: '#2F0A0A',
+    };
+  }
+  if (type === 'brand_popup') {
+    return {
+      label: 'Offer',
+      cta: 'View Offer',
+      badgeBg: 'rgba(206, 193, 174, 0.5)',
+      badgeText: '#2F0A0A',
+    };
+  }
+  return {
+    label: 'Announcement',
+    cta: 'Learn More',
+    badgeBg: colors.warm.elevated,
+    badgeText: colors.warm.body,
+  };
+}
+
+function getCtaLabel(
+  typeConfig: ReturnType<typeof getTypeConfig>,
+  participationEnabled: boolean,
+): string {
+  if (typeConfig.cta === 'Participate' && participationEnabled) {
+    return 'Participate';
+  }
+  return typeConfig.cta;
 }
 
 // ── Default variant ────────────────────────────────────────────────────────────
 
 function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>) {
   const router = useRouter();
-  const badge = getBadgeStyle(announcement.type);
+  const typeConfig = getTypeConfig(announcement.type);
+  const ctaLabel = getCtaLabel(typeConfig, announcement.participationEnabled);
 
   const dateLabel =
     announcement.eventStart === undefined
@@ -47,102 +79,98 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
 
   return (
     <TouchableOpacity
-      style={styles.card}
+      style={defaultStyles.card}
       activeOpacity={0.88}
       onPress={() => router.push(`/announcements/${announcement.id}`)}
     >
+      {/* Top row: avatar + brand column + save button */}
+      <View style={defaultStyles.topRow}>
+        {/* Left group: avatar + name + badge */}
+        <View style={defaultStyles.topLeft}>
+          {/* Avatar */}
+          {announcement.professionalLogoUrl !== undefined ? (
+            <Image
+              source={{ uri: announcement.professionalLogoUrl }}
+              style={defaultStyles.avatar}
+              contentFit="cover"
+            />
+          ) : (
+            <View style={defaultStyles.avatarFallback} />
+          )}
+
+          {/* Name + badge column */}
+          <View style={defaultStyles.topLeftText}>
+            {announcement.professionalName.length > 0 && (
+              <Text style={defaultStyles.brandName} numberOfLines={1}>
+                {announcement.professionalName}
+              </Text>
+            )}
+            <View
+              style={[defaultStyles.badge, { backgroundColor: typeConfig.badgeBg }]}
+            >
+              <Text style={[defaultStyles.badgeText, { color: typeConfig.badgeText }]}>
+                {typeConfig.label.toUpperCase()}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Save button (bookmark icon) */}
+        <SaveButton announcementId={announcement.id} />
+      </View>
+
       {/* Cover image */}
       {announcement.coverImageUrl !== undefined && (
         <Image
           source={{ uri: announcement.coverImageUrl }}
-          style={styles.coverImage}
+          style={defaultStyles.coverImage}
           contentFit="cover"
         />
       )}
 
-      <View style={styles.body}>
-        {/* Top row: avatar + name + badge + save button */}
-        <View style={styles.topRow}>
-          {/* Avatar */}
-          {announcement.professionalLogoUrl === undefined ? (
-            <View style={styles.avatarFallback}>
-              <Ionicons name="storefront-outline" size={12} color="rgba(40, 2, 10, 0.45)" />
-            </View>
-          ) : (
-            <Image
-              source={{ uri: announcement.professionalLogoUrl }}
-              style={styles.avatar}
-              contentFit="cover"
-            />
-          )}
+      {/* Title */}
+      <Text style={defaultStyles.title} numberOfLines={2}>
+        {announcement.title}
+      </Text>
 
-          {/* Professional name */}
-          {announcement.professionalName.length > 0 && (
-            <Text style={styles.proName} numberOfLines={1}>
-              {announcement.professionalName}
-            </Text>
-          )}
-
-          {/* Type badge */}
-          <View style={[styles.badge, { backgroundColor: badge.bg }]}>
-            <Text style={[styles.badgeText, { color: badge.text }]}>
-              {ANNOUNCEMENT_TYPE_LABELS[announcement.type].toUpperCase()}
-            </Text>
-          </View>
-
-          {/* PRO-only badge */}
-          {announcement.audience === 'pro_only' && (
-            <View style={styles.proBadge}>
-              <Ionicons name="people-outline" size={10} color="#9b6fd4" />
-              <Text style={styles.proBadgeText}>PRO</Text>
-            </View>
-          )}
-
-          <View style={styles.spacer} />
-
-          {/* Save button */}
-          <SaveButton announcementId={announcement.id} />
-        </View>
-
-        {/* Title */}
-        <Text style={styles.title} numberOfLines={2}>
-          {announcement.title}
+      {/* Description */}
+      {announcement.description !== undefined && (
+        <Text style={defaultStyles.description} numberOfLines={2}>
+          {announcement.description}
         </Text>
+      )}
 
-        {/* Description */}
-        {announcement.description !== undefined && (
-          <Text style={styles.description} numberOfLines={2}>
-            {announcement.description}
-          </Text>
-        )}
+      {/* Meta row */}
+      {(dateLabel !== undefined || announcement.location !== undefined) && (
+        <View style={defaultStyles.metaRow}>
+          {dateLabel !== undefined && (
+            <View style={defaultStyles.metaItem}>
+              <Ionicons name="calendar-outline" size={12} color={colors.warm.body} />
+              <Text style={defaultStyles.metaText}>{dateLabel}</Text>
+            </View>
+          )}
+          {timeLabel !== undefined && (
+            <View style={defaultStyles.metaItem}>
+              <Ionicons name="time-outline" size={12} color={colors.warm.body} />
+              <Text style={defaultStyles.metaText}>{timeLabel}</Text>
+            </View>
+          )}
+          {announcement.location !== undefined && (
+            <View style={defaultStyles.metaItem}>
+              <Ionicons name="location-outline" size={12} color={colors.warm.body} />
+              <Text style={defaultStyles.metaText} numberOfLines={1}>
+                {announcement.location}
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
 
-        {/* Meta row */}
-        {(dateLabel !== undefined || announcement.location !== undefined) && (
-          <View style={styles.metaRow}>
-            {dateLabel !== undefined && (
-              <View style={styles.metaItem}>
-                <Ionicons name="calendar-outline" size={12} color={colors.warm.muted} />
-                <Text style={styles.metaText}>{dateLabel}</Text>
-              </View>
-            )}
-            {timeLabel !== undefined && (
-              <View style={styles.metaItem}>
-                <Ionicons name="time-outline" size={12} color={colors.warm.muted} />
-                <Text style={styles.metaText}>{timeLabel}</Text>
-              </View>
-            )}
-            {announcement.location !== undefined && (
-              <View style={styles.metaItem}>
-                <Ionicons name="location-outline" size={12} color={colors.warm.muted} />
-                <Text style={styles.metaText} numberOfLines={1}>{announcement.location}</Text>
-              </View>
-            )}
-          </View>
-        )}
-
-        {/* Participation button */}
-        {announcement.participationEnabled && (
-          <View style={styles.participationWrapper}>
+      {/* Buttons row */}
+      <View style={defaultStyles.buttonsRow}>
+        {/* Primary CTA */}
+        {announcement.participationEnabled ? (
+          <View style={defaultStyles.ctaWrapper}>
             <ParticipationButton
               announcementId={announcement.id}
               participantCount={announcement.participantCount}
@@ -150,7 +178,20 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
               compact
             />
           </View>
+        ) : (
+          <TouchableOpacity
+            style={defaultStyles.ctaButton}
+            activeOpacity={0.8}
+            onPress={() => router.push(`/announcements/${announcement.id}`)}
+          >
+            <Text style={defaultStyles.ctaButtonText}>{ctaLabel}</Text>
+          </TouchableOpacity>
         )}
+
+        {/* Save outline button */}
+        <TouchableOpacity style={defaultStyles.saveOutlineButton} activeOpacity={0.8}>
+          <Text style={defaultStyles.saveOutlineText}>Save</Text>
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
@@ -160,7 +201,8 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
 
 function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>) {
   const router = useRouter();
-  const badge = getBadgeStyle(announcement.type);
+  const typeConfig = getTypeConfig(announcement.type);
+  const ctaLabel = getCtaLabel(typeConfig, announcement.participationEnabled);
 
   const dateLabel =
     announcement.eventStart === undefined
@@ -178,7 +220,7 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
       activeOpacity={0.88}
       onPress={() => router.push(`/announcements/${announcement.id}`)}
     >
-      {/* Cover image */}
+      {/* Cover image at top */}
       {announcement.coverImageUrl !== undefined ? (
         <Image
           source={{ uri: announcement.coverImageUrl }}
@@ -190,37 +232,26 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
       )}
 
       <View style={featuredStyles.body}>
-        {/* Badge + heart row */}
-        <View style={featuredStyles.badgeRow}>
-          <View style={[featuredStyles.badge, { backgroundColor: badge.bg }]}>
-            <Text style={[featuredStyles.badgeText, { color: badge.text }]}>
-              {ANNOUNCEMENT_TYPE_LABELS[announcement.type].toUpperCase()}
+        {/* Badge + save row */}
+        <View style={featuredStyles.badgeSaveRow}>
+          <View style={[featuredStyles.badge, { backgroundColor: typeConfig.badgeBg }]}>
+            <Text style={[featuredStyles.badgeText, { color: typeConfig.badgeText }]}>
+              {typeConfig.label.toUpperCase()}
             </Text>
           </View>
-
-          {announcement.audience === 'pro_only' && (
-            <View style={styles.proBadge}>
-              <Ionicons name="people-outline" size={10} color="#9b6fd4" />
-              <Text style={styles.proBadgeText}>PRO</Text>
-            </View>
-          )}
-
-          <View style={styles.spacer} />
           <SaveButton announcementId={announcement.id} />
         </View>
 
-        {/* Avatar + brand row */}
+        {/* Brand row */}
         <View style={featuredStyles.brandRow}>
-          {announcement.professionalLogoUrl === undefined ? (
-            <View style={featuredStyles.avatarFallback}>
-              <Ionicons name="storefront-outline" size={10} color="rgba(40, 2, 10, 0.45)" />
-            </View>
-          ) : (
+          {announcement.professionalLogoUrl !== undefined ? (
             <Image
               source={{ uri: announcement.professionalLogoUrl }}
               style={featuredStyles.avatar}
               contentFit="cover"
             />
+          ) : (
+            <View style={featuredStyles.avatarFallback} />
           )}
           {announcement.professionalName.length > 0 && (
             <Text style={featuredStyles.brandName} numberOfLines={1}>
@@ -241,39 +272,47 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
           </Text>
         )}
 
-        {/* Meta */}
+        {/* Meta row */}
         {(dateLabel !== undefined || announcement.location !== undefined) && (
-          <View style={styles.metaRow}>
+          <View style={featuredStyles.metaRow}>
             {dateLabel !== undefined && (
-              <View style={styles.metaItem}>
-                <Ionicons name="calendar-outline" size={11} color={colors.warm.muted} />
+              <View style={featuredStyles.metaItem}>
+                <Ionicons name="calendar-outline" size={12} color={colors.warm.body} />
                 <Text style={featuredStyles.metaText}>{dateLabel}</Text>
               </View>
             )}
             {timeLabel !== undefined && (
-              <View style={styles.metaItem}>
-                <Ionicons name="time-outline" size={11} color={colors.warm.muted} />
+              <View style={featuredStyles.metaItem}>
+                <Ionicons name="time-outline" size={12} color={colors.warm.body} />
                 <Text style={featuredStyles.metaText}>{timeLabel}</Text>
               </View>
             )}
             {announcement.location !== undefined && (
-              <View style={styles.metaItem}>
-                <Ionicons name="location-outline" size={11} color={colors.warm.muted} />
-                <Text style={featuredStyles.metaText} numberOfLines={1}>{announcement.location}</Text>
+              <View style={featuredStyles.metaItem}>
+                <Ionicons name="location-outline" size={12} color={colors.warm.body} />
+                <Text style={featuredStyles.metaText} numberOfLines={1}>
+                  {announcement.location}
+                </Text>
               </View>
             )}
           </View>
         )}
 
-        {/* Full-width participation button */}
-        {announcement.participationEnabled && (
-          <View style={featuredStyles.participationWrapper}>
-            <ParticipationButton
-              announcementId={announcement.id}
-              participantCount={announcement.participantCount}
-              maxCapacity={announcement.maxCapacity}
-            />
-          </View>
+        {/* Full-width CTA */}
+        {announcement.participationEnabled ? (
+          <ParticipationButton
+            announcementId={announcement.id}
+            participantCount={announcement.participantCount}
+            maxCapacity={announcement.maxCapacity}
+          />
+        ) : (
+          <TouchableOpacity
+            style={featuredStyles.ctaButton}
+            activeOpacity={0.8}
+            onPress={() => router.push(`/announcements/${announcement.id}`)}
+          >
+            <Text style={featuredStyles.ctaButtonText}>{ctaLabel}</Text>
+          </TouchableOpacity>
         )}
       </View>
     </TouchableOpacity>
@@ -296,7 +335,7 @@ function CompactCard({ announcement }: Readonly<{ announcement: Announcement }>)
       activeOpacity={0.88}
       onPress={() => router.push(`/announcements/${announcement.id}`)}
     >
-      {/* Left: square image */}
+      {/* Left: image / placeholder */}
       {announcement.coverImageUrl !== undefined ? (
         <Image
           source={{ uri: announcement.coverImageUrl }}
@@ -314,12 +353,12 @@ function CompactCard({ announcement }: Readonly<{ announcement: Announcement }>)
             {announcement.professionalName}
           </Text>
         )}
-        <Text style={compactStyles.title} numberOfLines={2}>
+        <Text style={compactStyles.title} numberOfLines={1}>
           {announcement.title}
         </Text>
         {dateLabel !== undefined && (
           <View style={compactStyles.dateRow}>
-            <Ionicons name="calendar-outline" size={11} color={colors.warm.muted} />
+            <Ionicons name="calendar-outline" size={10} color={colors.warm.muted} />
             <Text style={compactStyles.dateText}>{dateLabel}</Text>
           </View>
         )}
@@ -346,88 +385,73 @@ export function AnnouncementCard({
   return <DefaultCard announcement={announcement} />;
 }
 
-// ── Shared styles ──────────────────────────────────────────────────────────────
+// ── Default styles ─────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const defaultStyles = StyleSheet.create({
   card: {
-    backgroundColor: colors.warm.surface,
+    backgroundColor: '#ffffff',
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.warm.border,
-    overflow: 'hidden',
+    borderColor: 'rgba(160, 122, 95, 0.14)',
+    padding: spacing[4],
+    gap: spacing[3],
     shadowColor: colors.warm.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
     elevation: 3,
   },
-  coverImage: {
-    width: '100%',
-    height: 180,
-    backgroundColor: colors.warm.elevated,
-  },
-  body: {
-    padding: spacing[4],
-    gap: spacing[3],
-  },
   topRow: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  topLeft: {
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[2],
+    gap: spacing[2.5],
+    flex: 1,
+    minWidth: 0,
   },
   avatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     flexShrink: 0,
   },
   avatarFallback: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(40, 2, 10, 0.07)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.warm.elevated,
     flexShrink: 0,
   },
-  proName: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: colors.warm.body,
-    flexShrink: 1,
-    flexGrow: 0,
+  topLeftText: {
+    flex: 1,
+    minWidth: 0,
+    gap: 3,
+  },
+  brandName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.warm.title,
   },
   badge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderRadius: 20,
-    paddingHorizontal: spacing[2],
-    paddingVertical: 3,
-    flexShrink: 0,
   },
   badgeText: {
     fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
-  proBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-    borderRadius: 20,
-    paddingHorizontal: spacing[2],
-    paddingVertical: 3,
-    backgroundColor: 'rgba(130, 80, 210, 0.10)',
-    borderWidth: 1,
-    borderColor: 'rgba(130, 80, 210, 0.20)',
-    flexShrink: 0,
-  },
-  proBadgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#9b6fd4',
-    letterSpacing: 0.3,
-  },
-  spacer: {
-    flex: 1,
+  coverImage: {
+    width: '100%',
+    height: 160,
+    borderRadius: 12,
   },
   title: {
     fontFamily: fontFamily.serifBold,
@@ -436,7 +460,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   description: {
-    fontFamily: fontFamily.sansRegular,
     fontSize: 13,
     color: colors.warm.muted,
     lineHeight: 19,
@@ -444,7 +467,8 @@ const styles = StyleSheet.create({
   metaRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing[3],
+    gap: spacing[2],
+    alignItems: 'center',
   },
   metaItem: {
     flexDirection: 'row',
@@ -454,9 +478,41 @@ const styles = StyleSheet.create({
   metaText: {
     fontSize: 12,
     color: colors.warm.body,
+    fontFamily: fontFamily.sansMedium,
   },
-  participationWrapper: {
-    marginTop: spacing[1],
+  buttonsRow: {
+    flexDirection: 'row',
+    gap: spacing[2],
+  },
+  ctaWrapper: {
+    flex: 1,
+  },
+  ctaButton: {
+    flex: 1,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#2F0A0A',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ctaButtonText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  saveOutlineButton: {
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: '#2F0A0A',
+    paddingHorizontal: spacing[4],
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  saveOutlineText: {
+    color: '#2F0A0A',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
 
@@ -464,7 +520,7 @@ const styles = StyleSheet.create({
 
 const featuredStyles = StyleSheet.create({
   card: {
-    backgroundColor: colors.warm.surface,
+    backgroundColor: '#ffffff',
     borderRadius: 20,
     overflow: 'hidden',
     shadowColor: colors.warm.shadow,
@@ -475,33 +531,32 @@ const featuredStyles = StyleSheet.create({
   },
   coverImage: {
     width: '100%',
-    height: 180,
-    backgroundColor: colors.warm.elevated,
+    height: 176,
   },
   coverPlaceholder: {
     width: '100%',
-    height: 180,
+    height: 176,
     backgroundColor: colors.warm.elevated,
   },
   body: {
     padding: spacing[4],
-    gap: spacing[2],
+    gap: spacing[3],
   },
-  badgeRow: {
+  badgeSaveRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[2],
+    justifyContent: 'space-between',
   },
   badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderRadius: 20,
-    paddingHorizontal: spacing[2],
-    paddingVertical: 3,
-    flexShrink: 0,
   },
   badgeText: {
     fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   brandRow: {
     flexDirection: 'row',
@@ -518,35 +573,54 @@ const featuredStyles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: 'rgba(40, 2, 10, 0.07)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: colors.warm.elevated,
     flexShrink: 0,
   },
   brandName: {
     fontSize: 12,
     fontWeight: '500',
-    color: colors.warm.body,
+    color: colors.warm.muted,
     flexShrink: 1,
   },
   title: {
-    fontFamily: fontFamily.serifBold,
-    fontSize: 15,
+    fontFamily: fontFamily.serifSemiBold,
+    fontSize: 18,
     color: colors.warm.title,
-    lineHeight: 21,
+    lineHeight: 25,
   },
   description: {
-    fontFamily: fontFamily.sansRegular,
-    fontSize: 12,
+    fontSize: 13,
     color: colors.warm.muted,
-    lineHeight: 18,
+    lineHeight: 19,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[2],
+    alignItems: 'center',
+  },
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[1],
   },
   metaText: {
-    fontSize: 11,
+    fontSize: 12,
     color: colors.warm.body,
+    fontFamily: fontFamily.sansMedium,
   },
-  participationWrapper: {
-    marginTop: spacing[2],
+  ctaButton: {
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#2F0A0A',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ctaButtonText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
 
@@ -556,12 +630,12 @@ const compactStyles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.warm.surface,
+    gap: spacing[3],
+    padding: spacing[3],
+    backgroundColor: '#ffffff',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.warm.border,
-    padding: spacing[3],
-    gap: spacing[3],
+    borderColor: 'rgba(160, 122, 95, 0.14)',
     shadowColor: colors.warm.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
@@ -569,21 +643,21 @@ const compactStyles = StyleSheet.create({
     elevation: 2,
   },
   image: {
-    width: 64,
-    height: 64,
-    borderRadius: 12,
+    width: 56,
+    height: 56,
+    borderRadius: 10,
     flexShrink: 0,
   },
   imagePlaceholder: {
-    width: 64,
-    height: 64,
-    borderRadius: 12,
+    width: 56,
+    height: 56,
+    borderRadius: 10,
     backgroundColor: colors.warm.elevated,
     flexShrink: 0,
   },
   content: {
     flex: 1,
-    gap: spacing[1],
+    minWidth: 0,
   },
   brandName: {
     fontSize: 11,
@@ -594,7 +668,6 @@ const compactStyles = StyleSheet.create({
     fontFamily: fontFamily.serifSemiBold,
     fontSize: 14,
     color: colors.warm.title,
-    lineHeight: 19,
   },
   dateRow: {
     flexDirection: 'row',

@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@components/ui';
 import { spacing } from '@theme/spacing';
 
-const MC_BEIGE = '#cdc1ad';
+const MC_BEIGE = '#CEC1AE';
 
 const welcomeImage = require('@assets/images/welcome-page-design.png') as number;
 
@@ -24,7 +24,7 @@ export default function WelcomeScreen() {
             title="Join the community"
             onPress={() => router.push('/(auth)/sign-up')}
             style={styles.joinButton}
-            textColor='#28020a'
+            textColor='#2F0A0A'
           />
           <Button
             title="Sign in"

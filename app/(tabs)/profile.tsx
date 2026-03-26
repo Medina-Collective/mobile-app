@@ -51,7 +51,7 @@ function ProProfileSection({
   onEdit,
   onCreate,
 }: Readonly<ProProfileSectionProps>) {
-  if (isLoading) return <ActivityIndicator color="#cdc1ad" />;
+  if (isLoading) return <ActivityIndicator color="#CEC1AE" />;
 
   if (profile === null) {
     return (
@@ -81,13 +81,13 @@ function ProProfileSection({
 
       {profile.status === 'approved' && (
         <TouchableOpacity style={styles.menuRow} onPress={() => onView(profile.id)}>
-          <Ionicons name="eye-outline" size={18} color="#cdc1ad" />
+          <Ionicons name="eye-outline" size={18} color="#CEC1AE" />
           <Text style={styles.proMenuLabel}>View my profile</Text>
           <Ionicons name="chevron-forward" size={16} color="#7b625b" />
         </TouchableOpacity>
       )}
       <TouchableOpacity style={styles.menuRow} onPress={() => onEdit(profile.id)}>
-        <Ionicons name="create-outline" size={18} color="#cdc1ad" />
+        <Ionicons name="create-outline" size={18} color="#CEC1AE" />
         <Text style={styles.proMenuLabel}>Edit my profile</Text>
         <Ionicons name="chevron-forward" size={16} color="#7b625b" />
       </TouchableOpacity>
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.warm.divider,
   },
   menuLabel: { flex: 1, fontSize: 14, color: colors.warm.body },
-  proMenuLabel: { flex: 1, fontSize: 14, color: '#cdc1ad' },
+  proMenuLabel: { flex: 1, fontSize: 14, color: '#CEC1AE' },
   proSection: { marginTop: spacing[2] },
   proCard: {
     backgroundColor: colors.burgundy.surface,
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: spacing[2],
   },
-  proName: { fontSize: 15, fontWeight: '700', color: '#cdc1ad', flex: 1 },
+  proName: { fontSize: 15, fontWeight: '700', color: '#CEC1AE', flex: 1 },
   proMeta: { fontSize: 12, color: '#7b625b' },
   statusBadge: {
     paddingHorizontal: spacing[2],

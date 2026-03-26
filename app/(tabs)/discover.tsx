@@ -181,8 +181,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   chipActive: {
-    backgroundColor: '#28020a',
-    borderColor: '#28020a',
+    backgroundColor: '#2F0A0A',
+    borderColor: '#2F0A0A',
     shadowOpacity: 0,
   },
   chipLabel: {

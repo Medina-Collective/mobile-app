@@ -49,7 +49,7 @@ function ContactRow({
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.contactRow}>
       <View style={styles.contactIconWrap}>
-        <Ionicons name={icon} size={16} color="#cdc1ad" />
+        <Ionicons name={icon} size={16} color="#CEC1AE" />
       </View>
       <Text style={styles.contactLabel}>{label}</Text>
       <Ionicons name="chevron-forward" size={14} color={colors.burgundy.muted} />
@@ -91,11 +91,11 @@ export default function ProfessionalProfileScreen() {
             style={styles.headerBtn}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="arrow-back" size={22} color="#cdc1ad" />
+            <Ionicons name="arrow-back" size={22} color="#CEC1AE" />
           </TouchableOpacity>
         </View>
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#cdc1ad" />
+          <ActivityIndicator size="large" color="#CEC1AE" />
         </View>
       </SafeAreaView>
     );
@@ -112,7 +112,7 @@ export default function ProfessionalProfileScreen() {
             style={styles.headerBtn}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="arrow-back" size={22} color="#cdc1ad" />
+            <Ionicons name="arrow-back" size={22} color="#CEC1AE" />
           </TouchableOpacity>
         </View>
         <View style={styles.centered}>
@@ -145,7 +145,7 @@ export default function ProfessionalProfileScreen() {
           style={styles.headerBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="arrow-back" size={22} color="#cdc1ad" />
+          <Ionicons name="arrow-back" size={22} color="#CEC1AE" />
         </TouchableOpacity>
         <TouchableOpacity
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -153,7 +153,7 @@ export default function ProfessionalProfileScreen() {
           style={styles.headerBtn}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="create-outline" size={20} color="#cdc1ad" />
+          <Ionicons name="create-outline" size={20} color="#CEC1AE" />
         </TouchableOpacity>
       </View>
 
@@ -366,11 +366,11 @@ const styles = StyleSheet.create({
   avatarInitials: {
     fontSize: fontSize.xl,
     fontWeight: '700',
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     letterSpacing: 1,
   },
   businessName: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     textAlign: 'center',
   },
   badgeRow: {
@@ -388,11 +388,11 @@ const styles = StyleSheet.create({
     borderColor: colors.burgundy.mid,
   },
   badgePrice: {
-    borderColor: '#cdc1ad',
+    borderColor: '#CEC1AE',
   },
   badgeText: {
     fontSize: fontSize.xs,
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     fontWeight: '600',
     letterSpacing: 0.3,
   },
@@ -428,11 +428,11 @@ const styles = StyleSheet.create({
     borderColor: colors.burgundy.mid,
   },
   chipAccent: {
-    borderColor: '#cdc1ad',
+    borderColor: '#CEC1AE',
   },
   chipText: {
     fontSize: fontSize.xs,
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     fontWeight: '500',
   },
   chipTextAccent: {
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   locationText: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
   },
   servesText: {
     color: colors.burgundy.muted,
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
   contactLabel: {
     flex: 1,
     fontSize: fontSize.sm,
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     fontWeight: '500',
   },
 });

@@ -4,7 +4,6 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,7 +14,6 @@ import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { fontFamily } from '@theme/typography';
 import { useAuth } from '@features/auth';
-import { useFollowedAnnouncements } from '@features/follows/hooks/useFollowedAnnouncements';
 import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncement';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
 import type { AnnouncementType } from '@app-types/announcement';
@@ -101,10 +99,6 @@ export default function HomeScreen() {
     HOME_FILTERS[activeFilterIndex]?.type;
 
   const { data: allAnnouncements = [] } = useListAnnouncements(activeFilterType);
-  const {
-    data: followedAnnouncements,
-    isLoading: feedLoading,
-  } = useFollowedAnnouncements();
 
   // "Coming Up" card — first announcement with a future eventStart, else first item
   const now = new Date();
@@ -113,17 +107,15 @@ export default function HomeScreen() {
       (a) => a.eventStart !== undefined && new Date(a.eventStart) > now,
     ) ?? allAnnouncements[0];
 
-  // Upcoming events list (max 3)
+  // "Your Feed" — filtered announcements, up to 4
+  const feedItems = allAnnouncements.slice(0, 4);
+
+  // Upcoming events list (max 2, compact)
   const upcomingEvents = allAnnouncements
     .filter((a) => a.eventStart !== undefined)
-    .sort((a, b) => {
-      const dateA = a.eventStart !== undefined ? new Date(a.eventStart).getTime() : 0;
-      const dateB = b.eventStart !== undefined ? new Date(b.eventStart).getTime() : 0;
-      return dateA - dateB;
-    })
-    .slice(0, 3);
+    .slice(0, 2);
 
-  // Limited offers
+  // Limited offers (featured, fixed width 260px)
   const limitedOffers = allAnnouncements.filter((a) => a.type === 'limited_offer');
 
   return (
@@ -131,8 +123,9 @@ export default function HomeScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        stickyHeaderIndices={[0]}
       >
-        {/* ── 1. Header ──────────────────────────────────────────────────── */}
+        {/* ── 1. Header (sticky) ─────────────────────────────────────────── */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Text style={styles.greeting}>Assalamu Alaikum</Text>
@@ -212,7 +205,7 @@ export default function HomeScreen() {
         </ScrollView>
 
         {/* ── 4. Featured Section ────────────────────────────────────────── */}
-        <View style={styles.section}>
+        <View style={styles.featuredSection}>
           <SectionHeader
             title="Featured"
             subtitle="Curated for you"
@@ -238,25 +231,21 @@ export default function HomeScreen() {
         </View>
 
         {/* ── 5. Your Feed Section ──────────────────────────────────────── */}
-        <View style={styles.section}>
+        <View style={styles.feedSection}>
           <SectionHeader
             title="Your Feed"
             subtitle="From accounts you follow"
             onSeeAll={() => router.push('/(tabs)/discover')}
           />
-          {feedLoading ? (
-            <View style={styles.centeredRow}>
-              <ActivityIndicator color={colors.burgundy.mid} />
-            </View>
-          ) : followedAnnouncements === undefined || followedAnnouncements.length === 0 ? (
+          {feedItems.length === 0 ? (
             <View style={styles.emptyRow}>
               <Text style={styles.emptyText}>
-                Follow professionals to see their announcements here
+                No announcements yet — check back soon!
               </Text>
             </View>
           ) : (
-            <View style={styles.feedList}>
-              {followedAnnouncements.map((item, index) => (
+            <View style={[styles.feedList, styles.feedListPadded]}>
+              {feedItems.map((item, index) => (
                 <View
                   key={item.id}
                   style={index > 0 ? styles.feedItemGap : undefined}
@@ -270,7 +259,7 @@ export default function HomeScreen() {
 
         {/* ── 6. Upcoming Events Section ────────────────────────────────── */}
         {upcomingEvents.length > 0 && (
-          <View style={styles.section}>
+          <View style={styles.upcomingSection}>
             <SectionHeader
               title="Upcoming Events"
               onSeeAll={() => router.push('/(tabs)/discover')}
@@ -290,7 +279,7 @@ export default function HomeScreen() {
 
         {/* ── 7. Limited Offers Section ─────────────────────────────────── */}
         {limitedOffers.length > 0 && (
-          <View style={[styles.section, styles.lastSection]}>
+          <View style={styles.offersSection}>
             <SectionHeader
               title="Limited Offers"
               subtitle="Don't miss out"
@@ -302,7 +291,7 @@ export default function HomeScreen() {
               contentContainerStyle={styles.featuredScrollContent}
             >
               {limitedOffers.map((item) => (
-                <View key={item.id} style={styles.featuredCardWrapper}>
+                <View key={item.id} style={styles.offersCardWrapper}>
                   <AnnouncementCard announcement={item} variant="featured" />
                 </View>
               ))}
@@ -319,14 +308,17 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[28],
   },
 
-  // Header
+  // Header (sticky)
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing[5],
-    paddingTop: spacing[6],
+    paddingTop: spacing[14],
     paddingBottom: spacing[4],
+    backgroundColor: colors.warm.bg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.warm.border,
   },
   headerLeft: {
     gap: spacing[1],
@@ -374,10 +366,11 @@ const styles = StyleSheet.create({
   // Coming Up Card
   comingUpWrapper: {
     paddingHorizontal: spacing[5],
+    marginTop: spacing[5],
     marginBottom: spacing[5],
   },
   comingUpCard: {
-    backgroundColor: '#28020a',
+    backgroundColor: '#2F0A0A',
     borderRadius: 20,
     padding: spacing[5],
     gap: spacing[2],
@@ -419,7 +412,7 @@ const styles = StyleSheet.create({
 
   // Filter chips
   filtersScroll: {
-    marginTop: spacing[5],
+    marginTop: spacing[6],
     marginBottom: spacing[5],
     height: 40,
   },
@@ -445,8 +438,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   chipActive: {
-    backgroundColor: '#28020a',
-    borderColor: '#28020a',
+    backgroundColor: '#2F0A0A',
+    borderColor: '#2F0A0A',
     shadowOpacity: 0,
   },
   chipLabel: {
@@ -459,12 +452,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Sections
-  section: {
-    marginBottom: spacing[6],
+  // Section spacing
+  featuredSection: {
+    marginTop: spacing[6],
   },
-  lastSection: {
-    marginBottom: 0,
+  feedSection: {
+    marginTop: spacing[8],
+  },
+  upcomingSection: {
+    marginTop: spacing[8],
+  },
+  offersSection: {
+    marginTop: spacing[8],
   },
 
   // Featured horizontal scroll
@@ -476,6 +475,10 @@ const styles = StyleSheet.create({
   featuredCardWrapper: {
     minWidth: 280,
     maxWidth: 280,
+  },
+  offersCardWrapper: {
+    minWidth: 260,
+    maxWidth: 260,
   },
 
   // Feed list (vertical)
@@ -489,7 +492,7 @@ const styles = StyleSheet.create({
     marginTop: spacing[3],
   },
 
-  // Empty / loading states
+  // Empty states
   emptyRow: {
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
@@ -498,9 +501,5 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.warm.muted,
     textAlign: 'center',
-  },
-  centeredRow: {
-    paddingVertical: spacing[6],
-    alignItems: 'center',
   },
 });

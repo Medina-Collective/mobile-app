@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     gap: spacing[1],
   },
   cardSelected: {
-    borderColor: '#cdc1ad',
+    borderColor: '#CEC1AE',
     backgroundColor: colors.burgundy.raised,
   },
   cardLabel: {
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   cardLabelSelected: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
   },
   cardDesc: {
     fontSize: 11,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   cardDescSelected: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     opacity: 0.8,
   },
   error: {

@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   chipSelected: {
     backgroundColor: colors.burgundy.raised,
-    borderColor: '#cdc1ad',
+    borderColor: '#CEC1AE',
   },
   chipLabel: {
     fontSize: 13,
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     color: colors.burgundy.muted,
   },
   chipLabelSelected: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     fontWeight: '600',
   },
   error: {

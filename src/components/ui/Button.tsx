@@ -62,13 +62,13 @@ const styles = StyleSheet.create({
   },
   /** Deep dark burgundy fill — the primary CTA */
   solid: {
-    backgroundColor: '#28020a',
+    backgroundColor: '#2F0A0A',
   },
   /** Outline border — secondary action */
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#28020a',
+    borderColor: '#2F0A0A',
   },
   ghost: {
     backgroundColor: 'transparent',

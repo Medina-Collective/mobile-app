@@ -116,8 +116,8 @@ const styles = StyleSheet.create({
   subtitle: { color: 'rgba(26, 18, 18, 0.45)' },
   forgotLink: { alignSelf: 'flex-end', marginTop: -spacing[2] },
   forgotText: { color: 'rgba(26, 18, 18, 0.45)' },
-  cta: { marginTop: spacing[10], width: '100%', backgroundColor: '#28020a' },
+  cta: { marginTop: spacing[10], width: '100%', backgroundColor: '#2F0A0A' },
   footer: { paddingBottom: spacing[6], alignItems: 'center' },
   footerText: { color: 'rgba(26, 18, 18, 0.45)' },
-  footerLink: { color: '#28020a', fontWeight: '600' },
+  footerLink: { color: '#2F0A0A', fontWeight: '600' },
 });

@@ -86,11 +86,11 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.burgundy.mid,
   },
   inputDark: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     borderBottomColor: '#7b625b',
   },
   inputDarkFocused: {
-    borderBottomColor: '#cdc1ad',
+    borderBottomColor: '#CEC1AE',
   },
   inputError: {
     borderBottomColor: colors.error[500],

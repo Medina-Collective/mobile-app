@@ -54,7 +54,7 @@ export default function AdminPanelScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={22} color="#cdc1ad" />
+          <Ionicons name="arrow-back" size={22} color="#CEC1AE" />
         </TouchableOpacity>
         <View>
           <Text style={styles.title}>Admin Panel</Text>
@@ -85,7 +85,7 @@ export default function AdminPanelScreen() {
 
       {isLoading ? (
         <View style={styles.centered}>
-          <ActivityIndicator color="#cdc1ad" size="large" />
+          <ActivityIndicator color="#CEC1AE" size="large" />
         </View>
       ) : (
         <FlatList
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: { fontSize: 18, fontWeight: '700', color: '#cdc1ad' },
+  title: { fontSize: 18, fontWeight: '700', color: '#CEC1AE' },
   subtitle: { fontSize: 12, color: '#7b625b', marginTop: 2 },
   filterRow: {
     flexDirection: 'row',
@@ -223,9 +223,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexShrink: 0,
   },
-  avatarText: { fontSize: 20, fontWeight: '700', color: '#cdc1ad' },
+  avatarText: { fontSize: 20, fontWeight: '700', color: '#CEC1AE' },
   cardInfo: { flex: 1, gap: 3 },
-  bizName: { fontSize: 15, fontWeight: '700', color: '#cdc1ad' },
+  bizName: { fontSize: 15, fontWeight: '700', color: '#CEC1AE' },
   bizMeta: { fontSize: 12, color: '#9b8070' },
   bizLocation: { fontSize: 12, color: '#7b625b' },
   cardRight: { alignItems: 'flex-end', gap: spacing[1] },

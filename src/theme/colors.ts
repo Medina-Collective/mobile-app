@@ -2,23 +2,23 @@
  * Medina Collective Design System — Color Tokens (Dark Theme)
  *
  * Palette sourced directly from the brand identity:
- *   Dark Background  #28020a  — page background
+ *   Dark Background  #2F0A0A  — page background
  *   Dark Merlot      #541623  — cards, surfaces
  *   Beige            #ffd3c0  — primary text & warm highlights
  *   Light Crimson    #ff6f97  — accent, active states, decorative
- *   Warm Sand        #cdc1ad  — primary accent / secondary
+ *   Warm Sand        #CEC1AE  — primary accent / secondary
  */
 export const colors = {
   // ── Brand palette ──────────────────────────────────────────────────────────
   burgundy: {
     /** Page background — the deepest tone */
-    deep: '#330b14',
+    deep: '#2F0A0A',
     /** Card / surface background */
     surface: '#541623',
     /** Elevated surface, hover states */
     raised: '#6a2030',
     /** Mid-tone — primary CTA / accent color */
-    mid: '#28020a',
+    mid: '#2F0A0A',
     /** Muted text / decorative */
     muted: '#b05060',
     /** Subtle tint over background */

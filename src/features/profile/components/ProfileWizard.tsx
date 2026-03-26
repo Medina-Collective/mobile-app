@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   stepTitle: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
   },
   stepSubtitle: {
     color: '#7b625b',
@@ -576,7 +576,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[2],
     paddingHorizontal: 0,
     fontSize: fontSize.base,
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     backgroundColor: 'transparent',
     textAlignVertical: 'top',
   },
@@ -627,7 +627,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   priceChipSelected: {
-    borderColor: '#cdc1ad',
+    borderColor: '#CEC1AE',
     backgroundColor: colors.burgundy.raised,
   },
   priceLabel: {
@@ -636,7 +636,7 @@ const styles = StyleSheet.create({
     color: colors.burgundy.muted,
   },
   priceLabelSelected: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     fontWeight: '700',
   },
 
@@ -672,6 +672,6 @@ const styles = StyleSheet.create({
   },
   nextBtn: {
     flex: 2,
-    backgroundColor: '#cdc1ad',
+    backgroundColor: '#CEC1AE',
   },
 });

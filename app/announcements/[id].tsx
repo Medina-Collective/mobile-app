@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
     textTransform: 'uppercase',
-    color: '#28020a',
+    color: '#2F0A0A',
   },
   participationHint: {
     fontSize: 13,

@@ -35,7 +35,7 @@ export function FollowButton({
           <Ionicons
             name={isFollowing ? 'person-remove-outline' : 'person-add-outline'}
             size={18}
-            color={isFollowing ? colors.burgundy.muted : '#cdc1ad'}
+            color={isFollowing ? colors.burgundy.muted : '#CEC1AE'}
           />
         )}
       </TouchableOpacity>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[2],
     borderRadius: 20,
-    backgroundColor: '#cdc1ad',
+    backgroundColor: '#CEC1AE',
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: 90,

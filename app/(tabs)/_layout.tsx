@@ -55,7 +55,7 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#28020a',
+        tabBarActiveTintColor: '#2F0A0A',
         tabBarInactiveTintColor: 'rgba(26, 18, 18, 0.40)',
         tabBarBackground: () => <GlassTabBar />,
         tabBarStyle: {

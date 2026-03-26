@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   tagSelected: {
     backgroundColor: colors.burgundy.raised,
-    borderColor: '#cdc1ad',
+    borderColor: '#CEC1AE',
   },
   tagLabel: {
     fontSize: 13,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     color: colors.burgundy.muted,
   },
   tagLabelSelected: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     fontWeight: '600',
   },
 });
