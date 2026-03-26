@@ -6,7 +6,7 @@
  *   Dark Merlot    #541623  — cards, surfaces
  *   Beige          #ffd3c0  — primary text & warm highlights
  *   Light Crimson  #ff6f97  — accent, active states, decorative
- *   Cranberry Red  #8c1e29  — mid-tones, borders, secondary surfaces
+ *   Cranberry Red  #28020a  — mid-tones, borders, secondary surfaces
  */
 export const colors = {
   // ── Brand palette ──────────────────────────────────────────────────────────
@@ -18,7 +18,7 @@ export const colors = {
     /** Elevated surface, hover states */
     raised: '#6a2030',
     /** Mid-tone — borders, dividers */
-    mid: '#8c1e29',
+    mid: '#28020a',
     /** Muted text / decorative */
     muted: '#b05060',
     /** Subtle tint over background */
@@ -75,9 +75,9 @@ export const colors = {
     /** Card border — warm translucent line */
     border: 'rgba(160, 122, 95, 0.18)',
     /** Stronger border for focused states */
-    borderFocus: 'rgba(140, 30, 41, 0.35)',
+    borderFocus: 'rgba(40, 2, 10, 0.35)',
     /** Page titles — deep burgundy */
-    title: '#28030a',
+    title: '#28020a',
     /** Body text */
     body: '#4a2d2d',
     /** Secondary / muted text */
@@ -112,7 +112,7 @@ export const colors = {
     800: '#3d0f1a',
     700: '#541623',
     600: '#6a2030',
-    500: '#8c1e29',
+    500: '#28020a',
     400: '#b05060',
     300: '#c47a88',
     200: '#daa8b4',

@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
   },
   audienceOptionActive: {
     borderColor: colors.burgundy.mid,
-    backgroundColor: 'rgba(140, 30, 41, 0.06)',
+    backgroundColor: 'rgba(40, 2, 10, 0.06)',
   },
   audienceIcon: {
     fontSize: 24,

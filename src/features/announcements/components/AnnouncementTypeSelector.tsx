@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
   cardSelected: {
     borderColor: colors.burgundy.mid,
-    backgroundColor: 'rgba(140, 30, 41, 0.06)',
+    backgroundColor: 'rgba(40, 2, 10, 0.06)',
   },
   label: {
     fontSize: 13,

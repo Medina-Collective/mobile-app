@@ -65,7 +65,7 @@ export const ANNOUNCEMENT_TYPE_ICONS: Record<AnnouncementType, string> = {
 
 /** Badge colors for each type — bg + text that work on white card surfaces */
 export const ANNOUNCEMENT_TYPE_COLORS: Record<AnnouncementType, { bg: string; text: string }> = {
-  activity_event: { bg: '#fce7ef', text: '#8c1e29' },
+  activity_event: { bg: '#fce7ef', text: '#28020a' },
   bazaar: { bg: '#fff8e1', text: '#7b5e00' },
   brand_popup: { bg: '#ede7f6', text: '#4a2280' },
   halaqa: { bg: '#e8f5e9', text: '#1b5e20' },
