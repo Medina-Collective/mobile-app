@@ -31,6 +31,7 @@ export default function WelcomeScreen() {
             variant="ghost"
             onPress={() => router.push('/(auth)/sign-in')}
             style={styles.button}
+            textColor={MC_BEIGE}
           />
         </View>
       </SafeAreaView>
