@@ -39,7 +39,7 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'solid' ? '#28020a' : colors.burgundy.mid}
+          color={variant === 'solid' ? '#ffffff' : colors.burgundy.mid}
           size="small"
         />
       ) : (
@@ -60,15 +60,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[6],
   },
-  /** Deep burgundy fill — the primary CTA */
+  /** Deep dark burgundy fill — the primary CTA */
   solid: {
-    backgroundColor: colors.burgundy.mid,
+    backgroundColor: '#28020a',
   },
-  /** Subtle merlot border — secondary action */
+  /** Outline border — secondary action */
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: '#28020a',
   },
   ghost: {
     backgroundColor: 'transparent',
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   label: {
-    color: '#28020a',
+    color: '#ffffff',
     letterSpacing: 0.5,
     fontSize: 14,
     fontWeight: '700',

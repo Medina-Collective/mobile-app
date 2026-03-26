@@ -26,7 +26,7 @@ export function ParticipationButton({
 
   let buttonContent: React.ReactNode;
   if (isToggling) {
-    buttonContent = <ActivityIndicator size="small" color={isParticipating ? colors.beige[100] : '#28020a'} />;
+    buttonContent = <ActivityIndicator size="small" color="#ffffff" />;
   } else if (isFull) {
     buttonContent = (
       <View style={styles.row}>
@@ -37,14 +37,14 @@ export function ParticipationButton({
   } else if (isParticipating) {
     buttonContent = (
       <View style={styles.row}>
-        <Ionicons name="checkmark" size={15} color={colors.beige[100]} />
+        <Ionicons name="checkmark" size={15} color="#cdc1ad" />
         <Text variant="label" style={[styles.label, styles.labelActive]} numberOfLines={1}>Going</Text>
       </View>
     );
   } else {
     buttonContent = (
       <View style={styles.row}>
-        <Ionicons name="add" size={15} color={colors.neutral[0]} />
+        <Ionicons name="add" size={15} color="#ffffff" />
         <Text variant="label" style={styles.label} numberOfLines={1}>Confirm Participation</Text>
       </View>
     );
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     paddingHorizontal: spacing[5],
-    backgroundColor: colors.burgundy.mid,
+    backgroundColor: '#28020a',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
   },
   buttonActive: {
-    backgroundColor: colors.burgundy.raised,
+    backgroundColor: '#28020a',
   },
   buttonFull: {
     backgroundColor: colors.neutral[300],
@@ -107,12 +107,12 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   label: {
-    color: '#28020a',
+    color: '#ffffff',
     fontSize: 13,
     fontWeight: '600',
   },
   labelActive: {
-    color: colors.beige[100],
+    color: '#cdc1ad',
   },
   labelFull: {
     color: colors.neutral[500],
@@ -120,6 +120,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   count: {
-    color: colors.neutral[500],
+    color: colors.warm.muted,
   },
 });

@@ -48,7 +48,7 @@ export function ProfessionalCard({ professional }: Readonly<ProfessionalCardProp
             : ''}
         </Text>
         <View style={styles.meta}>
-          <Ionicons name="location-outline" size={11} color="rgba(40, 2, 10, 0.55)" />
+          <Ionicons name="location-outline" size={11} color={colors.warm.muted} />
           <Text style={styles.metaText}>{professional.basedIn}</Text>
           {professional.priceRange !== undefined && (
             <>
@@ -79,11 +79,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.warm.surface,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(40, 2, 10, 0.12)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.11,
-    shadowRadius: 24,
+    borderColor: colors.warm.border,
+    shadowColor: colors.warm.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
     elevation: 3,
   },
   avatar: {
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   avatarInitials: {
     fontSize: fontSize.sm,
     fontWeight: '700',
-    color: '#28020a',
+    color: colors.warm.title,
     letterSpacing: 0.5,
   },
   info: {
@@ -110,11 +110,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: fontSize.sm,
     fontWeight: '600',
-    color: '#28020a',
+    color: colors.warm.title,
   },
   category: {
     fontSize: fontSize.xs,
-    color: 'rgba(40, 2, 10, 0.80)',
+    color: colors.warm.body,
   },
   meta: {
     flexDirection: 'row',
@@ -124,11 +124,11 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: fontSize.xs,
-    color: 'rgba(40, 2, 10, 0.55)',
+    color: colors.warm.muted,
   },
   metaDot: {
     fontSize: fontSize.xs,
-    color: 'rgba(40, 2, 10, 0.55)',
+    color: colors.warm.muted,
   },
   badge: {
     paddingVertical: 3,

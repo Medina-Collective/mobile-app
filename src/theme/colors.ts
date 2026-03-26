@@ -12,13 +12,13 @@ export const colors = {
   // ── Brand palette ──────────────────────────────────────────────────────────
   burgundy: {
     /** Page background — the deepest tone */
-    deep: '#28020a',
+    deep: '#330b14',
     /** Card / surface background */
     surface: '#541623',
     /** Elevated surface, hover states */
     raised: '#6a2030',
-    /** Mid-tone — borders, dividers */
-    mid: '#cdc1ad',
+    /** Mid-tone — primary CTA / accent color */
+    mid: '#28020a',
     /** Muted text / decorative */
     muted: '#b05060',
     /** Subtle tint over background */
@@ -62,30 +62,30 @@ export const colors = {
   },
 
   /**
-   * Warm palette — surfaces are solid beige; page-level text is light on the dark bg.
-   * Any component with a warm.surface background must use explicit dark text (#28020a).
+   * Warm palette — light theme. Off-white cream background, white card surfaces,
+   * dark text (#1a1212) on light backgrounds.
    */
   warm: {
-    /** Page background — dark */
-    bg: '#28020a',
-    /** Card / surface — solid beige */
-    surface: '#cdc1ad',
+    /** Page background — warm off-white cream */
+    bg: '#faf6f0',
+    /** Card / surface — pure white */
+    surface: '#ffffff',
     /** Elevated inner surface */
-    elevated: '#bfb49d',
-    /** Border (beige, for use on dark page bg) */
-    border: 'rgba(205, 193, 173, 0.18)',
+    elevated: '#fff9f5',
+    /** Border for cards on light bg */
+    border: 'rgba(160, 122, 95, 0.14)',
     /** Stronger border for focused states */
-    borderFocus: 'rgba(205, 193, 173, 0.45)',
-    /** Page-level titles on dark bg */
-    title: '#cdc1ad',
-    /** Page-level body text on dark bg */
-    body: 'rgba(205, 193, 173, 0.85)',
-    /** Page-level muted text on dark bg */
-    muted: 'rgba(205, 193, 173, 0.45)',
+    borderFocus: 'rgba(40, 2, 10, 0.35)',
+    /** Page-level titles — very dark */
+    title: '#1a1212',
+    /** Page-level body text */
+    body: 'rgba(26, 18, 18, 0.75)',
+    /** Page-level muted text */
+    muted: 'rgba(26, 18, 18, 0.45)',
     /** Faint dividers */
-    divider: 'rgba(205, 193, 173, 0.08)',
+    divider: 'rgba(160, 122, 95, 0.10)',
     /** Shadow tint for cards */
-    shadow: '#000000',
+    shadow: '#7b625b',
   },
 
   success: { 50: '#f0fdf4', 500: '#22c55e', 700: '#15803d' },

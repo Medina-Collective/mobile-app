@@ -170,8 +170,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.warm.border,
-    backgroundColor: colors.warm.surface,
+    borderColor: 'rgba(160, 122, 95, 0.14)',
+    backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.warm.shadow,
@@ -181,16 +181,16 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   chipActive: {
-    backgroundColor: colors.burgundy.mid,
-    borderColor: colors.burgundy.mid,
+    backgroundColor: '#28020a',
+    borderColor: '#28020a',
     shadowOpacity: 0,
   },
   chipLabel: {
-    color: '#28020a',
+    color: '#1a1212',
     fontWeight: '500',
   },
   chipLabelActive: {
-    color: '#28020a',
+    color: '#ffffff',
     fontWeight: '600',
   },
   list: {
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
   fabIcon: {
     fontSize: 28,
-    color: '#28020a',
+    color: '#ffffff',
     lineHeight: 32,
   },
 });

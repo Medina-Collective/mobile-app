@@ -35,7 +35,7 @@ export function AnnouncementTypeSelector({
               <Ionicons
                 name={option.icon as IoniconName}
                 size={22}
-                color={isSelected ? colors.burgundy.mid : 'rgba(40, 2, 10, 0.55)'}
+                color={isSelected ? colors.burgundy.mid : colors.warm.muted}
               />
               <Text style={[styles.label, isSelected && styles.labelSelected]} numberOfLines={1}>
                 {option.label}
@@ -66,36 +66,36 @@ const styles = StyleSheet.create({
   card: {
     width: '47%',
     borderWidth: 1,
-    borderColor: 'rgba(40, 2, 10, 0.12)',
+    borderColor: colors.warm.border,
     borderRadius: 20,
     padding: spacing[3],
     gap: spacing[1],
     backgroundColor: colors.warm.surface,
-    shadowColor: '#000000',
+    shadowColor: colors.warm.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 14,
     elevation: 2,
   },
   cardSelected: {
-    borderColor: colors.burgundy.mid,
-    backgroundColor: 'rgba(205, 193, 173, 0.55)',
+    borderColor: '#28020a',
+    backgroundColor: 'rgba(40, 2, 10, 0.06)',
   },
   label: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#28020a',
+    color: colors.warm.body,
   },
   labelSelected: {
-    color: '#28020a',
+    color: colors.burgundy.mid,
   },
   description: {
     fontSize: 11,
-    color: 'rgba(40, 2, 10, 0.55)',
+    color: colors.warm.muted,
     lineHeight: 15,
   },
   descriptionSelected: {
-    color: colors.burgundy.muted,
+    color: colors.warm.muted,
   },
   errorText: {
     marginTop: spacing[2],

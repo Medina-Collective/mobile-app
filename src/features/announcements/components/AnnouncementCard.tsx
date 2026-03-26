@@ -2,47 +2,42 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { format, isSameDay } from 'date-fns';
+import { format } from 'date-fns';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
-import {
-  ANNOUNCEMENT_TYPE_LABELS,
-  ANNOUNCEMENT_TYPE_ICONS,
-  ANNOUNCEMENT_TYPE_COLORS,
-} from '@app-types/announcement';
+import { ANNOUNCEMENT_TYPE_LABELS } from '@app-types/announcement';
 import { ParticipationButton } from './ParticipationButton';
 import { SaveButton } from './SaveButton';
-import type { Announcement } from '@app-types/announcement';
-import type { ComponentProps } from 'react';
-
-type IoniconName = ComponentProps<typeof Ionicons>['name'];
+import type { Announcement, AnnouncementType } from '@app-types/announcement';
 
 interface AnnouncementCardProps {
   announcement: Announcement;
 }
 
-function formatDateRange(start: string, end: string): string {
-  const s = new Date(start);
-  const e = new Date(end);
-  if (isSameDay(s, e)) return format(s, 'MMM d, yyyy');
-  const sFormatted = format(s, s.getFullYear() === e.getFullYear() ? 'MMM d' : 'MMM d, yyyy');
-  return `${sFormatted} – ${format(e, 'MMM d, yyyy')}`;
+/** Dark badge types — dark bg, white text */
+const DARK_BADGE_TYPES = new Set<AnnouncementType>(['activity_event', 'halaqa', 'bazaar']);
+
+function getBadgeStyle(type: AnnouncementType): { bg: string; text: string } {
+  if (DARK_BADGE_TYPES.has(type)) {
+    return { bg: '#28020a', text: '#ffffff' };
+  }
+  return { bg: 'rgba(160, 122, 95, 0.15)', text: '#5a3a2a' };
 }
 
 export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProps>) {
   const router = useRouter();
-  const typeColor = ANNOUNCEMENT_TYPE_COLORS[announcement.type];
-  const typeIcon = ANNOUNCEMENT_TYPE_ICONS[announcement.type] as IoniconName;
+  const badge = getBadgeStyle(announcement.type);
 
-  const eventDateLabel =
-    announcement.eventStart !== undefined
-      ? announcement.eventEnd !== undefined
-        ? formatDateRange(announcement.eventStart, announcement.eventEnd)
-        : format(new Date(announcement.eventStart), 'MMM d, yyyy')
-      : undefined;
+  const dateLabel =
+    announcement.eventStart === undefined
+      ? undefined
+      : format(new Date(announcement.eventStart), 'MMM d, yyyy');
 
-  const visibilityEndLabel = format(new Date(announcement.visibilityEnd), 'MMM d');
+  const timeLabel =
+    announcement.eventStart === undefined
+      ? undefined
+      : format(new Date(announcement.eventStart), 'HH:mm');
 
   return (
     <TouchableOpacity
@@ -60,22 +55,46 @@ export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProp
       )}
 
       <View style={styles.body}>
-        {/* Top row: badges + save button */}
+        {/* Top row: avatar + name + badge + save button */}
         <View style={styles.topRow}>
-          <View style={styles.badgeRow}>
-            <View style={[styles.badge, { backgroundColor: typeColor.bg }]}>
-              <Ionicons name={typeIcon} size={11} color={typeColor.text} />
-              <Text style={[styles.badgeText, { color: typeColor.text }]}>
-                {ANNOUNCEMENT_TYPE_LABELS[announcement.type]}
-              </Text>
+          {/* Avatar */}
+          {announcement.professionalLogoUrl === undefined ? (
+            <View style={styles.avatarFallback}>
+              <Ionicons name="storefront-outline" size={12} color="rgba(40, 2, 10, 0.45)" />
             </View>
-            {announcement.audience === 'pro_only' && (
-              <View style={styles.proBadge}>
-                <Ionicons name="people-outline" size={11} color="#c4a8f0" />
-                <Text style={styles.proBadgeText}>PROs only</Text>
-              </View>
-            )}
+          ) : (
+            <Image
+              source={{ uri: announcement.professionalLogoUrl }}
+              style={styles.avatar}
+              contentFit="cover"
+            />
+          )}
+
+          {/* Professional name */}
+          {announcement.professionalName.length > 0 && (
+            <Text style={styles.proName} numberOfLines={1}>
+              {announcement.professionalName}
+            </Text>
+          )}
+
+          {/* Type badge */}
+          <View style={[styles.badge, { backgroundColor: badge.bg }]}>
+            <Text style={[styles.badgeText, { color: badge.text }]}>
+              {ANNOUNCEMENT_TYPE_LABELS[announcement.type].toUpperCase()}
+            </Text>
           </View>
+
+          {/* PRO-only badge */}
+          {announcement.audience === 'pro_only' && (
+            <View style={styles.proBadge}>
+              <Ionicons name="people-outline" size={10} color="#9b6fd4" />
+              <Text style={styles.proBadgeText}>PRO</Text>
+            </View>
+          )}
+
+          <View style={styles.spacer} />
+
+          {/* Save button */}
           <SaveButton announcementId={announcement.id} />
         </View>
 
@@ -84,47 +103,38 @@ export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProp
           {announcement.title}
         </Text>
 
-        {/* Professional */}
-        {announcement.professionalName.length > 0 && (
-          <View style={styles.proRow}>
-            {announcement.professionalLogoUrl === undefined ? (
-              <View style={[styles.proLogo, styles.proLogoFallback]}>
-                <Ionicons name="storefront-outline" size={10} color="rgba(40, 2, 10, 0.55)" />
+        {/* Description */}
+        {announcement.description !== undefined && (
+          <Text style={styles.description} numberOfLines={2}>
+            {announcement.description}
+          </Text>
+        )}
+
+        {/* Meta row */}
+        {(dateLabel !== undefined || announcement.location !== undefined) && (
+          <View style={styles.metaRow}>
+            {dateLabel !== undefined && (
+              <View style={styles.metaItem}>
+                <Ionicons name="calendar-outline" size={12} color={colors.warm.muted} />
+                <Text style={styles.metaText}>{dateLabel}</Text>
               </View>
-            ) : (
-              <Image
-                source={{ uri: announcement.professionalLogoUrl }}
-                style={styles.proLogo}
-                contentFit="cover"
-              />
             )}
-            <Text style={styles.proName} numberOfLines={1}>{announcement.professionalName}</Text>
+            {timeLabel !== undefined && (
+              <View style={styles.metaItem}>
+                <Ionicons name="time-outline" size={12} color={colors.warm.muted} />
+                <Text style={styles.metaText}>{timeLabel}</Text>
+              </View>
+            )}
+            {announcement.location !== undefined && (
+              <View style={styles.metaItem}>
+                <Ionicons name="location-outline" size={12} color={colors.warm.muted} />
+                <Text style={styles.metaText} numberOfLines={1}>{announcement.location}</Text>
+              </View>
+            )}
           </View>
         )}
 
-        {/* Location */}
-        {announcement.location !== undefined && (
-          <View style={styles.metaRow}>
-            <Ionicons name="location-outline" size={13} color="rgba(40, 2, 10, 0.55)" />
-            <Text style={styles.metaText}>{announcement.location}</Text>
-          </View>
-        )}
-
-        {/* Event dates */}
-        {eventDateLabel !== undefined && (
-          <View style={styles.metaRow}>
-            <Ionicons name="calendar-outline" size={13} color="rgba(40, 2, 10, 0.55)" />
-            <Text style={styles.metaText}>{eventDateLabel}</Text>
-          </View>
-        )}
-
-        {/* Visibility end */}
-        <View style={styles.metaRow}>
-          <Ionicons name="time-outline" size={12} color="rgba(40, 2, 10, 0.55)" />
-          <Text style={styles.visibility}>Visible until {visibilityEndLabel}</Text>
-        </View>
-
-        {/* Participation */}
+        {/* Participation button */}
         {announcement.participationEnabled && (
           <View style={styles.participationWrapper}>
             <ParticipationButton
@@ -143,15 +153,15 @@ export function AnnouncementCard({ announcement }: Readonly<AnnouncementCardProp
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.warm.surface,
-    borderRadius: 24,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(40, 2, 10, 0.12)',
+    borderColor: colors.warm.border,
     overflow: 'hidden',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.13,
-    shadowRadius: 32,
-    elevation: 4,
+    shadowColor: colors.warm.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 3,
   },
   coverImage: {
     width: '100%',
@@ -160,92 +170,93 @@ const styles = StyleSheet.create({
   },
   body: {
     padding: spacing[4],
-    gap: spacing[2],
+    gap: spacing[3],
   },
   topRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
     gap: spacing[2],
-    flex: 1,
+  },
+  avatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    flexShrink: 0,
+  },
+  avatarFallback: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(40, 2, 10, 0.07)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
+  },
+  proName: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.warm.body,
+    flexShrink: 1,
+    flexGrow: 0,
   },
   badge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
     borderRadius: 20,
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[1],
-    gap: spacing[1],
+    paddingHorizontal: spacing[2],
+    paddingVertical: 3,
+    flexShrink: 0,
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   proBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-start',
+    gap: 3,
     borderRadius: 20,
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[1],
-    gap: spacing[1],
-    backgroundColor: 'rgba(150, 100, 240, 0.15)',
+    paddingHorizontal: spacing[2],
+    paddingVertical: 3,
+    backgroundColor: 'rgba(130, 80, 210, 0.10)',
     borderWidth: 1,
-    borderColor: 'rgba(150, 100, 240, 0.25)',
+    borderColor: 'rgba(130, 80, 210, 0.20)',
+    flexShrink: 0,
   },
   proBadgeText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#c4a8f0',
-    letterSpacing: 0.3,
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: '600',
-    letterSpacing: 0.3,
-  },
-  title: {
-    fontSize: 17,
+    fontSize: 10,
     fontWeight: '700',
-    color: '#28020a',
-    lineHeight: 23,
+    color: '#9b6fd4',
+    letterSpacing: 0.3,
   },
-  proRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[2],
-  },
-  proLogo: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-  },
-  proLogoFallback: {
-    backgroundColor: colors.warm.elevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  proName: {
-    fontSize: 12,
-    color: 'rgba(40, 2, 10, 0.55)',
-    fontWeight: '500',
+  spacer: {
     flex: 1,
   },
+  title: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.warm.title,
+    lineHeight: 22,
+  },
+  description: {
+    fontSize: 13,
+    color: colors.warm.muted,
+    lineHeight: 19,
+  },
   metaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[3],
+  },
+  metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[1],
   },
   metaText: {
-    fontSize: 13,
-    color: 'rgba(40, 2, 10, 0.80)',
-  },
-  visibility: {
-    fontSize: 11,
-    color: 'rgba(40, 2, 10, 0.55)',
+    fontSize: 12,
+    color: colors.warm.body,
   },
   participationWrapper: {
-    marginTop: spacing[2],
+    marginTop: spacing[1],
   },
 });

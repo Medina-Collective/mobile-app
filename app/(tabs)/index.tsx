@@ -88,7 +88,7 @@ export default function HomeScreen() {
   return (
     <Screen noHorizontalPadding>
       <View style={styles.header}>
-        <Text style={styles.greeting}>Welcome back</Text>
+        <Text style={styles.greeting}>Assalamu Alaikum</Text>
         <Text style={styles.title}>{firstName}</Text>
       </View>
       {renderContent()}
@@ -151,10 +151,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[6],
     paddingVertical: spacing[3],
     borderRadius: 24,
-    backgroundColor: colors.burgundy.mid,
+    backgroundColor: '#28020a',
   },
   ctaLabel: {
-    color: colors.beige[100],
+    color: '#ffffff',
     fontWeight: '600',
     fontSize: 14,
   },

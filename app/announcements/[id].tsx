@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     height: 260,
   },
   coverPlaceholder: {
-    backgroundColor: colors.warm.surface,
+    backgroundColor: colors.warm.elevated,
   },
   backButtonOverlay: {
     position: 'absolute',
