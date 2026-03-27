@@ -34,7 +34,7 @@ function SectionHeader({
   title,
   subtitle,
   onSeeAll,
-}: Readonly<{ title: string; subtitle?: string | undefined; onSeeAll?: (() => void) | undefined }>) {
+}: Readonly<{ title: string; subtitle?: string; onSeeAll?: () => void }>) {
   return (
     <View style={sectionHeaderStyles.row}>
       <View>
@@ -138,7 +138,15 @@ export default function HomeScreen() {
       >
         {/* ── 2. Coming Up Card ──────────────────────────────────────────── */}
         <View style={styles.comingUpWrapper}>
-          {upcomingAnnouncement !== undefined ? (
+          {upcomingAnnouncement === undefined ? (
+            <View style={styles.comingUpCard}>
+              <View style={styles.comingUpLabelRow}>
+                <Ionicons name="calendar-outline" size={16} color="#ffffff" />
+                <Text style={styles.comingUpLabel}>COMING UP</Text>
+              </View>
+              <Text style={styles.comingUpTitle}>No upcoming events</Text>
+            </View>
+          ) : (
             <TouchableOpacity
               style={styles.comingUpCard}
               activeOpacity={0.88}
@@ -168,14 +176,6 @@ export default function HomeScreen() {
                 <Ionicons name="chevron-forward" size={13} color="rgba(255,255,255,0.9)" />
               </View>
             </TouchableOpacity>
-          ) : (
-            <View style={styles.comingUpCard}>
-              <View style={styles.comingUpLabelRow}>
-                <Ionicons name="calendar-outline" size={16} color="#ffffff" />
-                <Text style={styles.comingUpLabel}>COMING UP</Text>
-              </View>
-              <Text style={styles.comingUpTitle}>No upcoming events</Text>
-            </View>
           )}
         </View>
 
@@ -206,7 +206,7 @@ export default function HomeScreen() {
         {/* ── 4. Featured Section ────────────────────────────────────────── */}
         <View style={styles.featuredSection}>
           <SectionHeader
-            title="Trending Now"
+            title="Featured"
             onSeeAll={() => router.push('/(tabs)/discover')}
           />
           {allAnnouncements.length > 0 ? (

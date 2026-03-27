@@ -1,24 +1,26 @@
-import { useCallback, useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   View,
-  FlatList,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '@components/layout';
 import { Text, Button } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+import { fontFamily } from '@theme/typography';
 import { useAuthStore } from '@store/auth.store';
 import { USER_ROLES } from '@constants/index';
 import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncement';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
 import { ANNOUNCEMENT_TYPE_OPTIONS } from '@features/announcements/schemas/announcement.schema';
 import { ANNOUNCEMENT_TYPE_LABELS } from '@app-types/announcement';
-import type { Announcement, AnnouncementType } from '@app-types/announcement';
+import type { AnnouncementType } from '@app-types/announcement';
 
 const ALL_FILTER = 'all' as const;
 type FilterValue = typeof ALL_FILTER | AnnouncementType;
@@ -31,104 +33,135 @@ const FILTERS: { value: FilterValue; label: string }[] = [
   })),
 ];
 
-function CardItem({ item }: Readonly<{ item: Announcement }>) {
-  return <AnnouncementCard announcement={item} />;
-}
-
-function CardSeparator() {
-  return <View style={styles.separator} />;
-}
-
 export default function DiscoverScreen() {
   const router = useRouter();
   const isPro = useAuthStore((s) => s.user?.role === USER_ROLES.PROFESSIONAL);
   const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const { data, isLoading, isError, refetch } = useListAnnouncements(
-    activeFilter === ALL_FILTER ? undefined : activeFilter,
-  );
+  const { data: allAnnouncements = [], isLoading, isError, refetch } = useListAnnouncements(undefined);
 
   const handleRetry = useCallback(async () => {
     await refetch();
   }, [refetch]);
 
-  function renderFeed() {
-    if (isLoading) {
-      return (
-        <View style={styles.centered}>
-          <ActivityIndicator color={colors.burgundy.mid} />
-        </View>
-      );
-    }
+  // Trending: first 3 unfiltered
+  const trendingItems = allAnnouncements.slice(0, 3);
 
-    if (isError) {
-      return (
-        <View style={styles.centered}>
-          <Text variant="body" style={styles.mutedText}>
-            Could not load announcements.
-          </Text>
-          <Button title="Retry" variant="outline" onPress={handleRetry} style={styles.retryBtn} />
-        </View>
-      );
-    }
-
-    return (
-      <FlatList
-        data={data ?? []}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <CardItem item={item} />}
-        contentContainerStyle={styles.list}
-        ItemSeparatorComponent={CardSeparator}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.centered}>
-            <Text variant="body" style={styles.mutedText}>
-              Nothing here yet — check back soon!
-            </Text>
-          </View>
-        }
-      />
+  // Browse: filtered by type + search
+  const browseItems = allAnnouncements
+    .filter((a) => activeFilter === ALL_FILTER || a.type === activeFilter)
+    .filter(
+      (a) =>
+        searchQuery.trim() === '' ||
+        a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        a.professionalName.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }
+
+  const browseTitle =
+    activeFilter === ALL_FILTER
+      ? 'Browse All'
+      : (FILTERS.find((f) => f.value === activeFilter)?.label ?? 'Browse All');
 
   return (
     <Screen noHorizontalPadding>
+      {/* ── Header (fixed, outside ScrollView) ────────────────────────────── */}
       <View style={styles.header}>
-        <Text variant="heading2" style={styles.title}>Discover</Text>
-        <Text variant="bodySm" style={styles.subtitle}>
-          What's happening in the community
-        </Text>
+        <Text style={styles.title}>Discover</Text>
+        <Text style={styles.subtitle}>Explore what's happening in Montreal</Text>
       </View>
 
-      {/* Type filter chips */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filters}
-        style={styles.filtersScroll}
-      >
-        {FILTERS.map((f) => {
-          const isActive = activeFilter === f.value;
-          return (
-            <TouchableOpacity
-              key={f.value}
-              style={[styles.chip, isActive && styles.chipActive]}
-              onPress={() => setActiveFilter(f.value)}
-              activeOpacity={0.75}
-            >
-              <Text
-                variant="caption"
-                style={[styles.chipLabel, isActive && styles.chipLabelActive]}
-                numberOfLines={1}
-              >
-                {f.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        {/* ── Search Row ──────────────────────────────────────────────────── */}
+        <View style={styles.searchRow}>
+          <View style={styles.searchInputWrapper}>
+            <Ionicons name="search-outline" size={18} color={colors.warm.muted} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search events, brands, offers..."
+              placeholderTextColor={colors.warm.muted}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+          <TouchableOpacity style={styles.filterBtn} activeOpacity={0.8}>
+            <Ionicons name="options-outline" size={18} color="#ffffff" />
+          </TouchableOpacity>
+        </View>
 
-      {renderFeed()}
+        {/* ── Filter Chips ────────────────────────────────────────────────── */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chips}
+          style={styles.chipsScroll}
+        >
+          {FILTERS.map((f) => {
+            const isActive = activeFilter === f.value;
+            return (
+              <TouchableOpacity
+                key={f.value}
+                style={[styles.chip, isActive && styles.chipActive]}
+                onPress={() => setActiveFilter(f.value)}
+                activeOpacity={0.75}
+              >
+                <Text style={[styles.chipLabel, isActive && styles.chipLabelActive]}>
+                  {f.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        {/* ── Trending Now ────────────────────────────────────────────────── */}
+        {trendingItems.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Trending Now</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.trendingContent}
+            >
+              {trendingItems.map((item) => (
+                <View key={item.id} style={styles.trendingCard}>
+                  <AnnouncementCard announcement={item} variant="featured" />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* ── Browse All ──────────────────────────────────────────────────── */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{browseTitle}</Text>
+
+          {isLoading && (
+            <View style={styles.centered}>
+              <ActivityIndicator color={colors.burgundy.mid} />
+            </View>
+          )}
+
+          {isError && (
+            <View style={styles.centered}>
+              <Text style={styles.mutedText}>Could not load announcements.</Text>
+              <Button title="Retry" variant="outline" onPress={handleRetry} style={styles.retryBtn} />
+            </View>
+          )}
+
+          {!isLoading && !isError && browseItems.length === 0 && (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyTitle}>No results found</Text>
+              <Text style={styles.emptySubtitle}>Try adjusting your search or filters</Text>
+            </View>
+          )}
+
+          {!isLoading && !isError && browseItems.map((item, index) => (
+            <View key={item.id} style={index > 0 ? styles.cardGap : undefined}>
+              <AnnouncementCard announcement={item} />
+            </View>
+          ))}
+        </View>
+      </ScrollView>
 
       {isPro && (
         <TouchableOpacity
@@ -145,39 +178,87 @@ export default function DiscoverScreen() {
 
 const styles = StyleSheet.create({
   header: {
-    paddingHorizontal: spacing[4],
-    paddingTop: spacing[4],
+    paddingHorizontal: spacing[5],
+    paddingTop: spacing[3],
     paddingBottom: spacing[3],
-    gap: spacing[1],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.warm.border,
+    backgroundColor: colors.warm.bg,
+    gap: 2,
   },
   title: {
+    fontFamily: fontFamily.serifBold,
+    fontSize: 22,
     color: colors.warm.title,
   },
   subtitle: {
+    fontFamily: fontFamily.sansRegular,
+    fontSize: 13,
     color: colors.warm.muted,
   },
-  filtersScroll: {
-    height: 40,
-    marginBottom: spacing[3],
+  scrollContent: {
+    paddingBottom: spacing[8],
   },
-  filters: {
+
+  // Search
+  searchRow: {
+    flexDirection: 'row',
+    gap: spacing[3],
+    paddingHorizontal: spacing[5],
+    marginTop: spacing[4],
+  },
+  searchInputWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    backgroundColor: colors.warm.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.warm.border,
+    paddingHorizontal: spacing[3],
+    height: 44,
+  },
+  searchInput: {
+    flex: 1,
+    fontFamily: fontFamily.sansRegular,
+    fontSize: 14,
+    color: colors.warm.title,
+  },
+  filterBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#2F0A0A',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Chips
+  chipsScroll: {
+    marginTop: spacing[4],
+    marginBottom: spacing[1],
+  },
+  chips: {
     flexDirection: 'row',
     gap: spacing[2],
-    paddingHorizontal: spacing[4],
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[1],
   },
   chip: {
     flexShrink: 0,
     paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2],
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(160, 122, 95, 0.14)',
-    backgroundColor: '#ffffff',
+    borderColor: colors.warm.border,
+    backgroundColor: colors.warm.surface,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: colors.warm.shadow,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
     elevation: 2,
   },
   chipActive: {
@@ -186,26 +267,48 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
   },
   chipLabel: {
-    color: '#1a1212',
-    fontWeight: '500',
+    fontFamily: fontFamily.sansMedium,
+    fontSize: 14,
+    color: colors.warm.title,
   },
   chipLabelActive: {
     color: '#ffffff',
-    fontWeight: '600',
+    fontFamily: fontFamily.sansSemiBold,
   },
-  list: {
-    paddingHorizontal: spacing[4],
-    paddingBottom: spacing[28],
+
+  // Sections
+  section: {
+    marginTop: spacing[6],
   },
-  separator: {
-    height: spacing[4],
+  sectionTitle: {
+    fontFamily: fontFamily.serifSemiBold,
+    fontSize: 20,
+    color: colors.warm.title,
+    paddingHorizontal: spacing[5],
+    marginBottom: spacing[3],
   },
+
+  // Trending
+  trendingContent: {
+    flexDirection: 'row',
+    gap: spacing[3],
+    paddingHorizontal: spacing[5],
+  },
+  trendingCard: {
+    width: 260,
+  },
+
+  // Browse list
+  cardGap: {
+    marginTop: spacing[3],
+  },
+
+  // States
   centered: {
-    flex: 1,
-    justifyContent: 'center',
+    paddingVertical: spacing[8],
     alignItems: 'center',
-    paddingHorizontal: spacing[6],
     gap: spacing[4],
+    paddingHorizontal: spacing[5],
   },
   mutedText: {
     color: colors.warm.muted,
@@ -214,9 +317,28 @@ const styles = StyleSheet.create({
   retryBtn: {
     minWidth: 120,
   },
+  emptyState: {
+    paddingVertical: spacing[12],
+    alignItems: 'center',
+    paddingHorizontal: spacing[5],
+    gap: spacing[2],
+  },
+  emptyTitle: {
+    fontFamily: fontFamily.sansSemiBold,
+    fontSize: 15,
+    color: colors.warm.body,
+  },
+  emptySubtitle: {
+    fontFamily: fontFamily.sansRegular,
+    fontSize: 13,
+    color: colors.warm.muted,
+    textAlign: 'center',
+  },
+
+  // FAB
   fab: {
     position: 'absolute',
-    bottom: 106,
+    bottom: spacing[6],
     right: spacing[5],
     width: 56,
     height: 56,
@@ -224,8 +346,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.burgundy.mid,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
