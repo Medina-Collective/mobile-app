@@ -473,12 +473,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
   },
   featuredCardWrapper: {
-    minWidth: 280,
-    maxWidth: 280,
+    width: 280,
+    height: 440,
   },
   offersCardWrapper: {
-    minWidth: 260,
-    maxWidth: 260,
+    width: 260,
+    height: 440,
   },
 
   // Feed list (vertical)

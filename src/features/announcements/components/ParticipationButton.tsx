@@ -45,7 +45,7 @@ export function ParticipationButton({
     buttonContent = (
       <View style={styles.row}>
         <Ionicons name="add" size={15} color="#ffffff" />
-        <Text variant="label" style={styles.label} numberOfLines={1}>Confirm Participation</Text>
+        <Text variant="label" style={styles.label} numberOfLines={1}>Participate</Text>
       </View>
     );
   }

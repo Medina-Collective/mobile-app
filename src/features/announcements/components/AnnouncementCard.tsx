@@ -520,6 +520,7 @@ const defaultStyles = StyleSheet.create({
 
 const featuredStyles = StyleSheet.create({
   card: {
+    flex: 1,
     backgroundColor: '#ffffff',
     borderRadius: 20,
     overflow: 'hidden',
@@ -539,6 +540,7 @@ const featuredStyles = StyleSheet.create({
     backgroundColor: colors.warm.elevated,
   },
   body: {
+    flex: 1,
     padding: spacing[4],
     gap: spacing[3],
   },
