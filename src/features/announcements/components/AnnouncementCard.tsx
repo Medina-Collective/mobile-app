@@ -88,14 +88,14 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
         {/* Left group: avatar + name + badge */}
         <View style={defaultStyles.topLeft}>
           {/* Avatar */}
-          {announcement.professionalLogoUrl !== undefined ? (
+          {announcement.professionalLogoUrl === undefined ? (
+            <View style={defaultStyles.avatarFallback} />
+          ) : (
             <Image
               source={{ uri: announcement.professionalLogoUrl }}
               style={defaultStyles.avatar}
               contentFit="cover"
             />
-          ) : (
-            <View style={defaultStyles.avatarFallback} />
           )}
 
           {/* Name + badge column */}
@@ -221,14 +221,14 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
       onPress={() => router.push(`/announcements/${announcement.id}`)}
     >
       {/* Cover image at top */}
-      {announcement.coverImageUrl !== undefined ? (
+      {announcement.coverImageUrl === undefined ? (
+        <View style={featuredStyles.coverPlaceholder} />
+      ) : (
         <Image
           source={{ uri: announcement.coverImageUrl }}
           style={featuredStyles.coverImage}
           contentFit="cover"
         />
-      ) : (
-        <View style={featuredStyles.coverPlaceholder} />
       )}
 
       <View style={featuredStyles.body}>
@@ -244,14 +244,14 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
 
         {/* Brand row */}
         <View style={featuredStyles.brandRow}>
-          {announcement.professionalLogoUrl !== undefined ? (
+          {announcement.professionalLogoUrl === undefined ? (
+            <View style={featuredStyles.avatarFallback} />
+          ) : (
             <Image
               source={{ uri: announcement.professionalLogoUrl }}
               style={featuredStyles.avatar}
               contentFit="cover"
             />
-          ) : (
-            <View style={featuredStyles.avatarFallback} />
           )}
           {announcement.professionalName.length > 0 && (
             <Text style={featuredStyles.brandName} numberOfLines={1}>
@@ -276,7 +276,7 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
             <Ionicons
               name="calendar-outline"
               size={12}
-              color={dateLabel !== undefined ? colors.warm.body : 'transparent'}
+              color={dateLabel === undefined ? 'transparent' : colors.warm.body}
             />
             <Text style={featuredStyles.metaText} numberOfLines={1}>
               {[dateLabel, timeLabel].filter(Boolean).join('  ') || '\u00A0'}
@@ -286,7 +286,7 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
             <Ionicons
               name="location-outline"
               size={12}
-              color={announcement.location !== undefined ? colors.warm.body : 'transparent'}
+              color={announcement.location === undefined ? 'transparent' : colors.warm.body}
             />
             <Text style={featuredStyles.metaText} numberOfLines={1}>
               {announcement.location ?? '\u00A0'}
@@ -332,14 +332,14 @@ function CompactCard({ announcement }: Readonly<{ announcement: Announcement }>)
       onPress={() => router.push(`/announcements/${announcement.id}`)}
     >
       {/* Left: image / placeholder */}
-      {announcement.coverImageUrl !== undefined ? (
+      {announcement.coverImageUrl === undefined ? (
+        <View style={compactStyles.imagePlaceholder} />
+      ) : (
         <Image
           source={{ uri: announcement.coverImageUrl }}
           style={compactStyles.image}
           contentFit="cover"
         />
-      ) : (
-        <View style={compactStyles.imagePlaceholder} />
       )}
 
       {/* Center: content */}
@@ -434,7 +434,7 @@ const defaultStyles = StyleSheet.create({
   },
   badge: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     paddingVertical: 1,
     borderRadius: 20,
   },
@@ -544,7 +544,7 @@ const featuredStyles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   badge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     paddingVertical: 1,
     borderRadius: 20,
   },
