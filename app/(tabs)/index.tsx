@@ -474,11 +474,9 @@ const styles = StyleSheet.create({
   },
   featuredCardWrapper: {
     width: 280,
-    height: 440,
   },
   offersCardWrapper: {
     width: 260,
-    height: 440,
   },
 
   // Feed list (vertical)

@@ -19,7 +19,7 @@ export function SaveButton({ announcementId }: Readonly<SaveButtonProps>) {
       activeOpacity={0.7}
     >
       <Ionicons
-        name={isSaved ? 'bookmark' : 'bookmark-outline'}
+        name={isSaved ? 'heart' : 'heart-outline'}
         size={18}
         color={isSaved ? colors.burgundy.mid : colors.warm.muted}
       />

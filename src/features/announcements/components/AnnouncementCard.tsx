@@ -265,38 +265,34 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
           {announcement.title}
         </Text>
 
-        {/* Description */}
-        {announcement.description !== undefined && (
-          <Text style={featuredStyles.description} numberOfLines={2}>
-            {announcement.description}
-          </Text>
-        )}
+        {/* Description — always rendered to keep uniform card height */}
+        <Text style={featuredStyles.description} numberOfLines={2}>
+          {announcement.description ?? '\u00A0'}
+        </Text>
 
-        {/* Meta row */}
-        {(dateLabel !== undefined || announcement.location !== undefined) && (
-          <View style={featuredStyles.metaRow}>
-            {dateLabel !== undefined && (
-              <View style={featuredStyles.metaItem}>
-                <Ionicons name="calendar-outline" size={12} color={colors.warm.body} />
-                <Text style={featuredStyles.metaText}>{dateLabel}</Text>
-              </View>
-            )}
-            {timeLabel !== undefined && (
-              <View style={featuredStyles.metaItem}>
-                <Ionicons name="time-outline" size={12} color={colors.warm.body} />
-                <Text style={featuredStyles.metaText}>{timeLabel}</Text>
-              </View>
-            )}
-            {announcement.location !== undefined && (
-              <View style={featuredStyles.metaItem}>
-                <Ionicons name="location-outline" size={12} color={colors.warm.body} />
-                <Text style={featuredStyles.metaText} numberOfLines={1}>
-                  {announcement.location}
-                </Text>
-              </View>
-            )}
+        {/* Meta — always 2 rows (date/time + location) for uniform height */}
+        <View style={featuredStyles.metaColumn}>
+          <View style={featuredStyles.metaItem}>
+            <Ionicons
+              name="calendar-outline"
+              size={12}
+              color={dateLabel !== undefined ? colors.warm.body : 'transparent'}
+            />
+            <Text style={featuredStyles.metaText} numberOfLines={1}>
+              {[dateLabel, timeLabel].filter(Boolean).join('  ') || '\u00A0'}
+            </Text>
           </View>
-        )}
+          <View style={featuredStyles.metaItem}>
+            <Ionicons
+              name="location-outline"
+              size={12}
+              color={announcement.location !== undefined ? colors.warm.body : 'transparent'}
+            />
+            <Text style={featuredStyles.metaText} numberOfLines={1}>
+              {announcement.location ?? '\u00A0'}
+            </Text>
+          </View>
+        </View>
 
         {/* Full-width CTA */}
         {announcement.participationEnabled ? (
@@ -439,7 +435,7 @@ const defaultStyles = StyleSheet.create({
   badge: {
     alignSelf: 'flex-start',
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 1,
     borderRadius: 20,
   },
   badgeText: {
@@ -520,7 +516,6 @@ const defaultStyles = StyleSheet.create({
 
 const featuredStyles = StyleSheet.create({
   card: {
-    flex: 1,
     backgroundColor: '#ffffff',
     borderRadius: 20,
     overflow: 'hidden',
@@ -540,7 +535,6 @@ const featuredStyles = StyleSheet.create({
     backgroundColor: colors.warm.elevated,
   },
   body: {
-    flex: 1,
     padding: spacing[4],
     gap: spacing[3],
   },
@@ -551,7 +545,7 @@ const featuredStyles = StyleSheet.create({
   },
   badge: {
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 1,
     borderRadius: 20,
   },
   badgeText: {
@@ -595,11 +589,8 @@ const featuredStyles = StyleSheet.create({
     color: colors.warm.muted,
     lineHeight: 19,
   },
-  metaRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing[2],
-    alignItems: 'center',
+  metaColumn: {
+    gap: spacing[1],
   },
   metaItem: {
     flexDirection: 'row',
