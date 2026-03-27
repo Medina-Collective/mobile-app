@@ -424,22 +424,14 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[2],
-    borderRadius: 20,
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: colors.warm.border,
     backgroundColor: colors.warm.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.warm.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
   },
   chipActive: {
     backgroundColor: '#2F0A0A',
     borderColor: '#2F0A0A',
-    shadowOpacity: 0,
   },
   chipLabel: {
     fontFamily: fontFamily.sansMedium,
@@ -447,8 +439,9 @@ const styles = StyleSheet.create({
     color: colors.warm.title,
   },
   chipLabelActive: {
+    fontFamily: fontFamily.sansMedium,
+    fontSize: 14,
     color: '#ffffff',
-    fontFamily: fontFamily.sansSemiBold,
   },
 
   // Section spacing
