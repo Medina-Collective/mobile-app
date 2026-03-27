@@ -65,7 +65,7 @@ const sectionHeaderStyles = StyleSheet.create({
   },
   title: {
     fontFamily: fontFamily.serifSemiBold,
-    fontSize: 17,
+    fontSize: 20,
     color: colors.warm.title,
   },
   subtitle: {
@@ -206,8 +206,7 @@ export default function HomeScreen() {
         {/* ── 4. Featured Section ────────────────────────────────────────── */}
         <View style={styles.featuredSection}>
           <SectionHeader
-            title="Featured"
-            subtitle="Curated for you"
+            title="Trending Now"
             onSeeAll={() => router.push('/(tabs)/discover')}
           />
           {allAnnouncements.length > 0 ? (
