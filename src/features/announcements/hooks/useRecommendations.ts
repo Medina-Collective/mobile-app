@@ -63,7 +63,7 @@ function diversitySort(items: Announcement[]): Announcement[] {
       const bucket = buckets.get(type)!;
       const cursor = cursors.get(type)!;
       if (cursor < bucket.length) {
-        result.push(bucket[cursor]);
+        result.push(bucket[cursor]!);
         cursors.set(type, cursor + 1);
         added = true;
       }

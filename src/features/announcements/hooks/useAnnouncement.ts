@@ -59,7 +59,8 @@ export function useListAnnouncements(typeFilter?: AnnouncementType | undefined) 
         .order('created_at', { ascending: false });
 
       if (typeFilter !== undefined) {
-        query = query.eq('type', typeFilter);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        query = query.eq('type', typeFilter as any);
       }
 
       // Non-pro users only see public announcements
@@ -210,7 +211,8 @@ export function useCreateAnnouncement() {
         .from('announcements')
         .insert({
           professional_id: professional.id,
-          type: formData.type,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          type: formData.type as any,
           title: formData.title,
           description: formData.description ?? null,
           cover_image_url: coverImageUrl,

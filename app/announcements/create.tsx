@@ -431,8 +431,8 @@ export default function CreateAnnouncementScreen() {
             />
           </View>
 
-          {/* ── Participation ─────────────────────────────────────────────────── */}
-          <View style={styles.section}>
+          {/* ── Participation — hidden for limited_offer (they get a link button instead) */}
+          {announcementType !== 'limited_offer' && <View style={styles.section}>
             <SectionHeader
               title="Participation"
               subtitle="Let members confirm they're coming. They'll see a button on your post."
@@ -475,7 +475,7 @@ export default function CreateAnnouncementScreen() {
                 )}
               />
             )}
-          </View>
+          </View>}
 
           {/* ── Submit ────────────────────────────────────────────────────────── */}
           <Button

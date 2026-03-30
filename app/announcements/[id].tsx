@@ -102,7 +102,7 @@ export default function AnnouncementDetailScreen() {
               </View>
             )}
             <View style={styles.badgeSpacer} />
-            <SaveButton announcementId={announcement.id} />
+            <SaveButton announcementId={announcement.id} announcementType={announcement.type} />
           </View>
 
           {/* Professional — tappable, navigates to their profile */}
@@ -179,6 +179,7 @@ export default function AnnouncementDetailScreen() {
               </Text>
               <ParticipationButton
                 announcementId={announcement.id}
+                announcementType={announcement.type}
                 participantCount={announcement.participantCount}
                 maxCapacity={announcement.maxCapacity}
               />

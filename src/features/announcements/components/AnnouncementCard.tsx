@@ -190,7 +190,7 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
       {/* Buttons row */}
       <View style={defaultStyles.buttonsRow}>
         {/* Primary CTA */}
-        {announcement.participationEnabled ? (
+        {announcement.participationEnabled && announcement.type !== 'limited_offer' ? (
           <View style={defaultStyles.ctaWrapper}>
             <ParticipationButton
               announcementId={announcement.id}
@@ -349,7 +349,7 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
         </View>
 
         {/* CTA — pinned to bottom */}
-        {announcement.participationEnabled ? (
+        {announcement.participationEnabled && announcement.type !== 'limited_offer' ? (
           <ParticipationButton
             announcementId={announcement.id}
             announcementType={announcement.type}
@@ -421,7 +421,7 @@ function CompactCard({ announcement }: Readonly<{ announcement: Announcement }>)
       </View>
 
       {/* Right: bookmark */}
-      <SaveButton announcementId={announcement.id} iconType="bookmark" />
+      <SaveButton announcementId={announcement.id} announcementType={announcement.type} iconType="bookmark" />
     </TouchableOpacity>
   );
 }
