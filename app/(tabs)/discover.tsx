@@ -11,12 +11,14 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Screen } from '@components/layout';
 import { Text, Button } from '@components/ui';
+import { SectionHeader } from '@components/SectionHeader';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { fontFamily } from '@theme/typography';
 import { useAuthStore } from '@store/auth.store';
 import { USER_ROLES } from '@constants/index';
 import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncement';
+import { useTrendingAnnouncements } from '@features/announcements/hooks/useRecommendations';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
 import { ANNOUNCEMENT_TYPE_OPTIONS } from '@features/announcements/schemas/announcement.schema';
 import { ANNOUNCEMENT_TYPE_LABELS } from '@app-types/announcement';
@@ -45,8 +47,8 @@ export default function DiscoverScreen() {
     await refetch();
   }, [refetch]);
 
-  // Trending: first 3 unfiltered
-  const trendingItems = allAnnouncements.slice(0, 3);
+  // Trending: top 3 by open count, falls back to recency
+  const trendingItems = useTrendingAnnouncements(allAnnouncements, 3);
 
   // Browse: filtered by type + search
   const browseItems = allAnnouncements
@@ -116,7 +118,7 @@ export default function DiscoverScreen() {
         {/* ── Trending Now ────────────────────────────────────────────────── */}
         {trendingItems.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Trending Now</Text>
+            <SectionHeader title="Trending Now" onSeeAll={() => router.push('/(tabs)/discover')} />
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -133,7 +135,7 @@ export default function DiscoverScreen() {
 
         {/* ── Browse All ──────────────────────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{browseTitle}</Text>
+          <SectionHeader title={browseTitle} />
 
           {isLoading && (
             <View style={styles.centered}>
@@ -155,11 +157,13 @@ export default function DiscoverScreen() {
             </View>
           )}
 
-          {!isLoading && !isError && browseItems.map((item, index) => (
-            <View key={item.id} style={index > 0 ? styles.cardGap : undefined}>
-              <AnnouncementCard announcement={item} />
-            </View>
-          ))}
+          <View style={styles.browseList}>
+            {!isLoading && !isError && browseItems.map((item, index) => (
+              <View key={item.id} style={index > 0 ? styles.cardGap : undefined}>
+                <AnnouncementCard announcement={item} />
+              </View>
+            ))}
+          </View>
         </View>
       </ScrollView>
 
@@ -273,14 +277,6 @@ const styles = StyleSheet.create({
   section: {
     marginTop: spacing[6],
   },
-  sectionTitle: {
-    fontFamily: fontFamily.serifSemiBold,
-    fontSize: 20,
-    color: colors.warm.title,
-    paddingHorizontal: spacing[5],
-    marginBottom: spacing[3],
-  },
-
   // Trending
   trendingContent: {
     flexDirection: 'row',
@@ -292,6 +288,9 @@ const styles = StyleSheet.create({
   },
 
   // Browse list
+  browseList: {
+    paddingHorizontal: spacing[5],
+  },
   cardGap: {
     marginTop: spacing[3],
   },

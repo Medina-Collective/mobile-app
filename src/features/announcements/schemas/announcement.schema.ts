@@ -37,6 +37,12 @@ export const ANNOUNCEMENT_TYPE_OPTIONS = [
     icon: 'pricetag-outline',
   },
   {
+    value: 'update' as const,
+    label: 'Update',
+    description: 'Share news or an announcement with the community',
+    icon: 'megaphone-outline',
+  },
+  {
     value: 'other' as const,
     label: 'Other',
     description: 'Any other type of announcement',
@@ -48,7 +54,7 @@ export const ANNOUNCEMENT_TYPE_OPTIONS = [
 
 export const announcementSchema = z
   .object({
-    type: z.enum(['activity_event', 'bazaar', 'brand_popup', 'halaqa', 'limited_offer', 'other']),
+    type: z.enum(['activity_event', 'bazaar', 'brand_popup', 'halaqa', 'limited_offer', 'update', 'other']),
     title: z
       .string()
       .min(2, 'Title must be at least 2 characters')
@@ -60,6 +66,12 @@ export const announcementSchema = z
     // The actual date range of the event/offer (both optional — not all announcements have a date)
     eventStart: z.date().optional(),
     eventEnd: z.date().optional(),
+
+    // A deadline date — mutually exclusive with eventStart/eventEnd
+    deadline: z.date().optional(),
+
+    // External link — used for "View Offer" / "Learn More" buttons
+    externalUrl: z.string().optional(),
 
     // When the post appears on the feed (required, max 30 days apart)
     visibilityStart: z.date(),
@@ -89,6 +101,10 @@ export const announcementSchema = z
   .refine((d) => !d.eventStart || !d.eventEnd || d.eventEnd >= d.eventStart, {
     message: 'Event end date must be on or after the start date',
     path: ['eventEnd'],
+  })
+  .refine((d) => !(d.eventStart !== undefined && d.deadline !== undefined), {
+    message: 'Choose either an event date or a deadline — not both',
+    path: ['deadline'],
   });
 
 export type AnnouncementFormData = z.infer<typeof announcementSchema>;

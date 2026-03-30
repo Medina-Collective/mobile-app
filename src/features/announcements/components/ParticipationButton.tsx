@@ -4,10 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+import { useRecommendationsStore } from '@store/recommendations.store';
 import { useParticipation } from '../hooks/useParticipation';
+import type { AnnouncementType } from '@app-types/announcement';
 
 interface ParticipationButtonProps {
   announcementId: string;
+  announcementType: AnnouncementType;
   participantCount: number;
   maxCapacity?: number | undefined;
   /** Compact variant used inside feed cards */
@@ -16,11 +19,13 @@ interface ParticipationButtonProps {
 
 export function ParticipationButton({
   announcementId,
+  announcementType,
   participantCount,
   maxCapacity,
   compact = false,
 }: Readonly<ParticipationButtonProps>) {
   const { isParticipating, toggle, isToggling } = useParticipation(announcementId);
+  const recordSignal = useRecommendationsStore((s) => s.recordSignal);
 
   const isFull = maxCapacity !== undefined && participantCount >= maxCapacity && !isParticipating;
 
@@ -59,7 +64,10 @@ export function ParticipationButton({
           isFull && styles.buttonFull,
           compact && styles.buttonCompact,
         ]}
-        onPress={toggle}
+        onPress={() => {
+          if (!isParticipating) recordSignal(announcementType, 'participate');
+          toggle();
+        }}
         disabled={isToggling || isFull}
         activeOpacity={0.75}
       >
@@ -68,7 +76,7 @@ export function ParticipationButton({
 
       <Text variant="caption" style={styles.count}>
         {participantCount} going
-        {maxCapacity !== undefined ? ` · ${maxCapacity - participantCount} spots left` : ''}
+        {maxCapacity === undefined ? '' : ` · ${maxCapacity - participantCount} spots left`}
       </Text>
     </View>
   );

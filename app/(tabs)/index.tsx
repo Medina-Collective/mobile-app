@@ -10,11 +10,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { Screen } from '@components/layout';
 import { Text } from '@components/ui';
+import { SectionHeader } from '@components/SectionHeader';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { fontFamily } from '@theme/typography';
 import { useAuth } from '@features/auth';
 import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncement';
+import { useRankedAnnouncements } from '@features/announcements/hooks/useRecommendations';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
 import type { AnnouncementType } from '@app-types/announcement';
 
@@ -28,65 +30,6 @@ const HOME_FILTERS: { label: string; type: AnnouncementType | undefined }[] = [
   { label: 'Activities', type: 'bazaar' as AnnouncementType },
 ];
 
-// ── SectionHeader ─────────────────────────────────────────────────────────────
-
-function SectionHeader({
-  title,
-  subtitle,
-  onSeeAll,
-}: Readonly<{ title: string; subtitle?: string; onSeeAll?: () => void }>) {
-  return (
-    <View style={sectionHeaderStyles.row}>
-      <View>
-        <Text style={sectionHeaderStyles.title}>{title}</Text>
-        {subtitle !== undefined && (
-          <Text style={sectionHeaderStyles.subtitle}>{subtitle}</Text>
-        )}
-      </View>
-      {onSeeAll !== undefined && (
-        <TouchableOpacity onPress={onSeeAll} activeOpacity={0.75}>
-          <View style={sectionHeaderStyles.seeAllRow}>
-            <Text style={sectionHeaderStyles.seeAll}>See all</Text>
-            <Ionicons name="chevron-forward" size={12} color={colors.burgundy.mid} />
-          </View>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-}
-
-const sectionHeaderStyles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing[5],
-    marginBottom: spacing[3],
-  },
-  title: {
-    fontFamily: fontFamily.serifSemiBold,
-    fontSize: 20,
-    color: colors.warm.title,
-  },
-  subtitle: {
-    fontFamily: fontFamily.sansRegular,
-    fontSize: 12,
-    color: colors.warm.muted,
-    marginTop: 2,
-  },
-  seeAllRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-    marginTop: 2,
-  },
-  seeAll: {
-    fontFamily: fontFamily.sansMedium,
-    fontSize: 13,
-    color: colors.burgundy.mid,
-  },
-});
-
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function HomeScreen() {
@@ -99,6 +42,7 @@ export default function HomeScreen() {
     HOME_FILTERS[activeFilterIndex]?.type;
 
   const { data: allAnnouncements = [] } = useListAnnouncements(activeFilterType);
+  const featuredAnnouncements = useRankedAnnouncements(allAnnouncements);
 
   // "Coming Up" card — first announcement with a future eventStart, else first item
   const now = new Date();
@@ -207,15 +151,16 @@ export default function HomeScreen() {
         <View style={styles.featuredSection}>
           <SectionHeader
             title="Featured"
+            subtitle="Curated for you"
             onSeeAll={() => router.push('/(tabs)/discover')}
           />
-          {allAnnouncements.length > 0 ? (
+          {featuredAnnouncements.length > 0 ? (
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.featuredScrollContent}
             >
-              {allAnnouncements.map((item) => (
+              {featuredAnnouncements.map((item) => (
                 <View key={item.id} style={styles.featuredCardWrapper}>
                   <AnnouncementCard announcement={item} variant="featured" />
                 </View>

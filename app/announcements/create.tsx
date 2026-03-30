@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   View,
   ScrollView,
@@ -17,6 +17,7 @@ import { Screen } from '@components/layout';
 import { Text, Input, Button, BackButton } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+import { fontFamily } from '@theme/typography';
 import { useAuthStore } from '@store/auth.store';
 import { USER_ROLES } from '@constants/index';
 import { announcementSchema, MAX_VISIBILITY_DAYS } from '@features/announcements/schemas/announcement.schema';
@@ -79,6 +80,21 @@ export default function CreateAnnouncementScreen() {
   const coverImageUri = watch('coverImageUri');
   const participationEnabled = watch('participationEnabled');
   const visibilityStart = watch('visibilityStart');
+  const announcementType = watch('type');
+
+  type DateMode = 'none' | 'event' | 'deadline';
+  const [dateMode, setDateMode] = useState<DateMode>('none');
+
+  const handleDateModeChange = useCallback((mode: DateMode) => {
+    setDateMode(mode);
+    if (mode !== 'event') {
+      setValue('eventStart', undefined);
+      setValue('eventEnd', undefined);
+    }
+    if (mode !== 'deadline') {
+      setValue('deadline', undefined);
+    }
+  }, [setValue]);
 
   const pickImage = useCallback(async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -229,40 +245,101 @@ export default function CreateAnnouncementScreen() {
             />
           </View>
 
-          {/* ── Event Dates ───────────────────────────────────────────────────── */}
+          {/* ── Date / Deadline ───────────────────────────────────────────────── */}
           <View style={styles.section}>
             <SectionHeader
-              title="Event Dates"
-              subtitle="When does this actually happen? Leave blank if there's no fixed date — like an ongoing offer."
+              title="Date"
+              subtitle="Pick a type, or leave empty for timeless announcements."
             />
-            <Controller
-              control={control}
-              name="eventStart"
-              render={({ field: { value, onChange } }) => (
-                <DatePicker
-                  label="Event Start"
-                  value={value}
-                  onChange={onChange}
-                  error={errors.eventStart?.message}
-                  placeholder="No start date"
+            <View style={styles.dateModeRow}>
+              {(['none', 'event', 'deadline'] as const).map((mode) => (
+                <TouchableOpacity
+                  key={mode}
+                  style={[styles.dateModeOption, dateMode === mode && styles.dateModeOptionActive]}
+                  onPress={() => handleDateModeChange(mode)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.dateModeLabel, dateMode === mode && styles.dateModeLabelActive]}>
+                    {mode === 'none' ? 'None' : mode === 'event' ? 'Event Date' : 'Deadline'}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {dateMode === 'event' && (
+              <>
+                <Controller
+                  control={control}
+                  name="eventStart"
+                  render={({ field: { value, onChange } }) => (
+                    <DatePicker
+                      label="Event Start"
+                      value={value}
+                      onChange={onChange}
+                      error={errors.eventStart?.message}
+                      placeholder="No start date"
+                    />
+                  )}
                 />
-              )}
-            />
-            <Controller
-              control={control}
-              name="eventEnd"
-              render={({ field: { value, onChange } }) => (
-                <DatePicker
-                  label="Event End"
-                  value={value}
-                  onChange={onChange}
-                  minimumDate={watch('eventStart')}
-                  error={errors.eventEnd?.message}
-                  placeholder="No end date"
+                <Controller
+                  control={control}
+                  name="eventEnd"
+                  render={({ field: { value, onChange } }) => (
+                    <DatePicker
+                      label="Event End"
+                      value={value}
+                      onChange={onChange}
+                      minimumDate={watch('eventStart')}
+                      error={errors.eventEnd?.message}
+                      placeholder="No end date"
+                    />
+                  )}
                 />
-              )}
-            />
+              </>
+            )}
+
+            {dateMode === 'deadline' && (
+              <Controller
+                control={control}
+                name="deadline"
+                render={({ field: { value, onChange } }) => (
+                  <DatePicker
+                    label="Deadline"
+                    value={value}
+                    onChange={onChange}
+                    error={errors.deadline?.message}
+                    placeholder="Pick a deadline date"
+                  />
+                )}
+              />
+            )}
           </View>
+
+          {/* ── Link ──────────────────────────────────────────────────────────── */}
+          {(announcementType === 'limited_offer' || announcementType === 'update') && (
+            <View style={styles.section}>
+              <SectionHeader
+                title="Link"
+                subtitle={announcementType === 'limited_offer' ? 'Where should the "View Offer" button send people?' : 'Where should the "Learn More" button send people?'}
+              />
+              <Controller
+                control={control}
+                name="externalUrl"
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <Input
+                    label="URL"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={errors.externalUrl?.message}
+                    placeholder="https://..."
+                    keyboardType="url"
+                    autoCapitalize="none"
+                  />
+                )}
+              />
+            </View>
+          )}
 
           {/* ── Visibility Window ─────────────────────────────────────────────── */}
           <View style={styles.section}>
@@ -479,6 +556,32 @@ const styles = StyleSheet.create({
   },
   removeImageText: {
     color: colors.error[500],
+  },
+  dateModeRow: {
+    flexDirection: 'row',
+    gap: spacing[2],
+    marginBottom: spacing[4],
+  },
+  dateModeOption: {
+    flex: 1,
+    paddingVertical: spacing[2],
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.warm.border,
+    backgroundColor: colors.warm.surface,
+    alignItems: 'center',
+  },
+  dateModeOptionActive: {
+    backgroundColor: '#2F0A0A',
+    borderColor: '#2F0A0A',
+  },
+  dateModeLabel: {
+    fontFamily: fontFamily.sansMedium,
+    fontSize: 13,
+    color: colors.warm.title,
+  },
+  dateModeLabelActive: {
+    color: '#ffffff',
   },
   audienceRow: {
     flexDirection: 'row',

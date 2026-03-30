@@ -72,8 +72,8 @@ export const colors = {
     surface: '#ffffff',
     /** Elevated inner surface */
     elevated: '#fff9f5',
-    /** Border for cards on light bg */
-    border: 'rgba(160, 122, 95, 0.14)',
+    /** Border for cards on light bg — matches web --border: hsl(33 15% 88%) */
+    border: '#e5e1dc',
     /** Stronger border for focused states */
     borderFocus: 'rgba(40, 2, 10, 0.35)',
     /** Page-level titles — very dark */

@@ -4,6 +4,7 @@ export type AnnouncementType =
   | 'brand_popup'
   | 'halaqa'
   | 'limited_offer'
+  | 'update'
   | 'other';
 
 export type AnnouncementStatus = 'draft' | 'published' | 'archived';
@@ -39,6 +40,10 @@ export interface Announcement {
   participantCount: number;
   /** Whether the currently authenticated user has confirmed participation */
   hasParticipated: boolean;
+  /** External URL for offers/updates — opens in browser instead of detail page */
+  externalUrl?: string | undefined;
+  /** ISO string — a registration or application deadline (mutually exclusive with eventStart/eventEnd) */
+  deadline?: string | undefined;
   status: AnnouncementStatus;
   createdAt: string;
 }
@@ -51,6 +56,7 @@ export const ANNOUNCEMENT_TYPE_LABELS: Record<AnnouncementType, string> = {
   brand_popup: 'Brand Pop-Up',
   halaqa: 'Halaqa',
   limited_offer: 'Limited Offer',
+  update: 'Update',
   other: 'Announcement',
 };
 
@@ -61,6 +67,7 @@ export const ANNOUNCEMENT_TYPE_ICONS: Record<AnnouncementType, string> = {
   brand_popup: 'storefront-outline',
   halaqa: 'book-outline',
   limited_offer: 'pricetag-outline',
+  update: 'megaphone-outline',
   other: 'notifications-outline',
 };
 
@@ -71,5 +78,6 @@ export const ANNOUNCEMENT_TYPE_COLORS: Record<AnnouncementType, { bg: string; te
   brand_popup: { bg: 'rgba(150, 100, 240, 0.15)', text: '#c4a8f0' },
   halaqa: { bg: 'rgba(80, 200, 100, 0.13)', text: '#88c890' },
   limited_offer: { bg: 'rgba(240, 150, 50, 0.13)', text: '#e8a855' },
+  update: { bg: 'rgba(100, 149, 237, 0.13)', text: '#6495ed' },
   other: { bg: 'rgba(150, 160, 180, 0.13)', text: '#a8b0c0' },
 };
