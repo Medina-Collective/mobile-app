@@ -100,8 +100,8 @@ export function DatePicker({
           mode="date"
           display="default"
           onChange={handleAndroidChange}
-          minimumDate={minimumDate}
-          maximumDate={maximumDate}
+          {...(minimumDate !== undefined && { minimumDate })}
+          {...(maximumDate !== undefined && { maximumDate })}
         />
       )}
 
@@ -123,8 +123,8 @@ export function DatePicker({
                 mode="date"
                 display="spinner"
                 onChange={handleIOSStagingChange}
-                minimumDate={minimumDate}
-                maximumDate={maximumDate}
+                {...(minimumDate !== undefined && { minimumDate })}
+                {...(maximumDate !== undefined && { maximumDate })}
                 style={styles.iosPicker}
               />
               <View style={styles.modalActions}>

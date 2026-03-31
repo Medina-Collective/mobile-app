@@ -93,7 +93,7 @@ describe('useListAnnouncements', () => {
     const { result } = renderHook(() => useListAnnouncements(), { wrapper: createWrapper() });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toHaveLength(1);
-    expect(result.current.data![0].title).toBe('Test Event');
+    expect(result.current.data![0]!.title).toBe('Test Event');
   });
 
   it('applies typeFilter when provided', async () => {
@@ -162,7 +162,7 @@ describe('useListAnnouncements', () => {
 
     const { result } = renderHook(() => useListAnnouncements(), { wrapper: createWrapper() });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data![0].hasParticipated).toBe(true);
+    expect(result.current.data![0]!.hasParticipated).toBe(true);
   });
 
   it('throws when supabase returns error', async () => {

@@ -78,7 +78,7 @@ export function useFollowedAnnouncements() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        return data.map((r) => rowToAnnouncement(r, false, r.professionals as ProfessionalSnippet));
+        return data.map((r) => rowToAnnouncement(r, false, r.professionals as unknown as ProfessionalSnippet));
       }
 
       const ids = data.map((r) => r.id);
@@ -90,7 +90,7 @@ export function useFollowedAnnouncements() {
 
       const participatedSet = new Set(participated?.map((p) => p.announcement_id) ?? []);
       return data.map((r) =>
-        rowToAnnouncement(r, participatedSet.has(r.id), r.professionals as ProfessionalSnippet),
+        rowToAnnouncement(r, participatedSet.has(r.id), r.professionals as unknown as ProfessionalSnippet),
       );
     },
   });

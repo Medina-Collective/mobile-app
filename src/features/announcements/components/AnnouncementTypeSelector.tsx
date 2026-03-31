@@ -12,7 +12,7 @@ type IoniconName = ComponentProps<typeof Ionicons>['name'];
 interface AnnouncementTypeSelectorProps {
   value: AnnouncementType | undefined;
   onChange: (type: AnnouncementType) => void;
-  error?: string;
+  error?: string | undefined;
 }
 
 export function AnnouncementTypeSelector({

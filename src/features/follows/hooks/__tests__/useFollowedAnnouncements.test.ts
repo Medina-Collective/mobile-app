@@ -97,7 +97,7 @@ describe('useFollowedAnnouncements', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toHaveLength(1);
-    expect(result.current.data![0].title).toBe('Test Event');
+    expect(result.current.data![0]!.title).toBe('Test Event');
   });
 
   it('filters pro-only announcements for non-pro users (adds audience=public filter)', async () => {
@@ -166,7 +166,7 @@ describe('useFollowedAnnouncements', () => {
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data![0].hasParticipated).toBe(true);
+    expect(result.current.data![0]!.hasParticipated).toBe(true);
   });
 
   it('handles the case where no user is returned by getUser (hasParticipated=false)', async () => {
@@ -181,7 +181,7 @@ describe('useFollowedAnnouncements', () => {
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data![0].hasParticipated).toBe(false);
+    expect(result.current.data![0]!.hasParticipated).toBe(false);
   });
 
   it('throws when Supabase returns an error', async () => {

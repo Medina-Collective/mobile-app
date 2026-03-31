@@ -29,8 +29,6 @@ const baseAnnouncement = (overrides: Partial<Announcement>): Announcement => ({
   participantCount: 0,
   maxCapacity: undefined,
   hasParticipated: false,
-  isSaved: false,
-  openCount: 0,
   status: 'published',
   createdAt: new Date().toISOString(),
   ...overrides,

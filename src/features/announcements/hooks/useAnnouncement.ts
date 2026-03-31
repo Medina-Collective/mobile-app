@@ -77,7 +77,7 @@ export function useListAnnouncements(typeFilter?: AnnouncementType | undefined) 
       } = await supabase.auth.getUser();
 
       if (!user || data.length === 0) {
-        return data.map((r) => rowToAnnouncement(r, false, r.professionals as ProfessionalSnippet));
+        return data.map((r) => rowToAnnouncement(r, false, r.professionals as unknown as ProfessionalSnippet));
       }
 
       const ids = data.map((r) => r.id);
@@ -89,7 +89,7 @@ export function useListAnnouncements(typeFilter?: AnnouncementType | undefined) 
 
       const participatedSet = new Set(participated?.map((p) => p.announcement_id) ?? []);
       return data.map((r) =>
-        rowToAnnouncement(r, participatedSet.has(r.id), r.professionals as ProfessionalSnippet),
+        rowToAnnouncement(r, participatedSet.has(r.id), r.professionals as unknown as ProfessionalSnippet),
       );
     },
   });
@@ -123,7 +123,7 @@ export function useGetAnnouncement(id: string) {
         hasParticipated = p !== null;
       }
 
-      return rowToAnnouncement(data, hasParticipated, data.professionals as ProfessionalSnippet);
+      return rowToAnnouncement(data, hasParticipated, data.professionals as unknown as ProfessionalSnippet);
     },
   });
 }

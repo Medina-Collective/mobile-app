@@ -216,7 +216,7 @@ describe('ParticipationButton', () => {
     // fireEvent.press on a disabled button should not trigger toggle
     const toggle = (useParticipation as jest.Mock).mock.results[
       (useParticipation as jest.Mock).mock.results.length - 1
-    ].value.toggle as jest.Mock;
+    ]!.value.toggle as jest.Mock;
     fireEvent.press(fullText);
     expect(toggle).not.toHaveBeenCalled();
   });

@@ -38,8 +38,6 @@ function makeAnnouncement(overrides: Partial<Announcement> = {}): Announcement {
     participantCount: 5,
     maxCapacity: undefined,
     hasParticipated: false,
-    isSaved: false,
-    openCount: 0,
     status: 'published',
     createdAt: '2026-01-01T00:00:00Z',
     ...overrides,
