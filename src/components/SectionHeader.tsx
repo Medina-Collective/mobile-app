@@ -16,9 +16,7 @@ export function SectionHeader({ title, subtitle, onSeeAll }: Readonly<SectionHea
     <View style={styles.row}>
       <View>
         <Text style={styles.title}>{title}</Text>
-        {subtitle !== undefined && (
-          <Text style={styles.subtitle}>{subtitle}</Text>
-        )}
+        {subtitle !== undefined && <Text style={styles.subtitle}>{subtitle}</Text>}
       </View>
       {onSeeAll !== undefined && (
         <TouchableOpacity onPress={onSeeAll} activeOpacity={0.75}>

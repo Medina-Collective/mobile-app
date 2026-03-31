@@ -40,7 +40,10 @@ export function AnnouncementTypeSelector({
               <Text style={[styles.label, isSelected && styles.labelSelected]} numberOfLines={1}>
                 {option.label}
               </Text>
-              <Text style={[styles.description, isSelected && styles.descriptionSelected]} numberOfLines={2}>
+              <Text
+                style={[styles.description, isSelected && styles.descriptionSelected]}
+                numberOfLines={2}
+              >
                 {option.description}
               </Text>
             </TouchableOpacity>

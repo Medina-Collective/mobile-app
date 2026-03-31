@@ -90,7 +90,7 @@ export default function SignInScreen() {
             onPress={() => void handleSubmit(onSubmit)()}
             loading={isLoading}
             style={styles.cta}
-            textColor='#ffffff'
+            textColor="#ffffff"
           />
         </View>
 

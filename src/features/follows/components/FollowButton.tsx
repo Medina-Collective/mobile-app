@@ -11,10 +11,7 @@ interface FollowButtonProps {
   variant?: 'pill' | 'icon';
 }
 
-export function FollowButton({
-  professionalId,
-  variant = 'pill',
-}: Readonly<FollowButtonProps>) {
+export function FollowButton({ professionalId, variant = 'pill' }: Readonly<FollowButtonProps>) {
   const { isFollowing, toggle, isToggling } = useFollow(professionalId);
 
   if (variant === 'icon') {

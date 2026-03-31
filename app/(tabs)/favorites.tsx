@@ -1,5 +1,12 @@
 import { useState, useCallback } from 'react';
-import { View, FlatList, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  FlatList,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { Screen } from '@components/layout';
 import { Text, Button } from '@components/ui';
 import { colors } from '@theme/colors';
@@ -14,13 +21,14 @@ import type { Announcement } from '@app-types/announcement';
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
 const TABS = ['All Saved', 'Events', 'Offers', 'Updates'] as const;
-type Tab = typeof TABS[number];
+type Tab = (typeof TABS)[number];
 
 function filterByTab(items: Announcement[], tab: Tab): Announcement[] {
   if (tab === 'All Saved') return items;
-  if (tab === 'Events') return items.filter((a) =>
-    ['activity_event', 'halaqa', 'bazaar', 'brand_popup'].includes(a.type),
-  );
+  if (tab === 'Events')
+    return items.filter((a) =>
+      ['activity_event', 'halaqa', 'bazaar', 'brand_popup'].includes(a.type),
+    );
   if (tab === 'Offers') return items.filter((a) => a.type === 'limited_offer');
   return items.filter((a) => a.type === 'update' || a.type === 'other');
 }
@@ -113,9 +121,7 @@ export default function FavoritesScreen() {
               onPress={() => setActiveTab(tab)}
               activeOpacity={0.75}
             >
-              <Text style={[styles.chipLabel, isActive && styles.chipLabelActive]}>
-                {tab}
-              </Text>
+              <Text style={[styles.chipLabel, isActive && styles.chipLabelActive]}>{tab}</Text>
             </TouchableOpacity>
           );
         })}

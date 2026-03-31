@@ -43,7 +43,14 @@ export function Button({
           size="small"
         />
       ) : (
-        <Text variant="label" style={[styles.label, variant !== 'solid' && styles.labelAlt, textColor !== undefined && { color: textColor }]}>
+        <Text
+          variant="label"
+          style={[
+            styles.label,
+            variant !== 'solid' && styles.labelAlt,
+            textColor !== undefined && { color: textColor },
+          ]}
+        >
           {title}
         </Text>
       )}

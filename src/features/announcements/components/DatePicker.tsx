@@ -45,14 +45,11 @@ export function DatePicker({
     [onChange],
   );
 
-  const handleIOSStagingChange = useCallback(
-    (_event: DateTimePickerEvent, selected?: Date) => {
-      if (selected !== undefined) {
-        setStagingDate(selected);
-      }
-    },
-    [],
-  );
+  const handleIOSStagingChange = useCallback((_event: DateTimePickerEvent, selected?: Date) => {
+    if (selected !== undefined) {
+      setStagingDate(selected);
+    }
+  }, []);
 
   const handleIOSConfirm = useCallback(() => {
     onChange(stagingDate);
@@ -137,7 +134,12 @@ export function DatePicker({
                   onPress={() => setShowPicker(false)}
                   style={styles.cancelBtn}
                 />
-                <Button title="Confirm" variant="solid" onPress={handleIOSConfirm} style={styles.confirmBtn} />
+                <Button
+                  title="Confirm"
+                  variant="solid"
+                  onPress={handleIOSConfirm}
+                  style={styles.confirmBtn}
+                />
               </View>
             </View>
           </View>
@@ -174,7 +176,7 @@ const styles = StyleSheet.create({
   placeholder: {
     color: '#7b625b',
   },
-errorText: {
+  errorText: {
     marginTop: spacing[1],
     color: colors.error[500],
   },

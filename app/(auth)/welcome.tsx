@@ -8,7 +8,6 @@ const MC_BEIGE = '#CEC1AE';
 
 const welcomeImage = require('@assets/images/welcome-page-design.png') as number;
 
-
 export default function WelcomeScreen() {
   const router = useRouter();
 
@@ -24,7 +23,7 @@ export default function WelcomeScreen() {
             title="Join the community"
             onPress={() => router.push('/(auth)/sign-up')}
             style={styles.joinButton}
-            textColor='#2F0A0A'
+            textColor="#2F0A0A"
           />
           <Button
             title="Sign in"

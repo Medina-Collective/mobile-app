@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import {
-  View,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
@@ -38,8 +33,7 @@ export default function HomeScreen() {
   const firstName = user?.displayName?.split(' ')[0] ?? 'there';
 
   const [activeFilterIndex, setActiveFilterIndex] = useState(0);
-  const activeFilterType: AnnouncementType | undefined =
-    HOME_FILTERS[activeFilterIndex]?.type;
+  const activeFilterType: AnnouncementType | undefined = HOME_FILTERS[activeFilterIndex]?.type;
 
   const { data: allAnnouncements = [] } = useListAnnouncements(activeFilterType);
   const featuredAnnouncements = useRankedAnnouncements(allAnnouncements);
@@ -47,17 +41,14 @@ export default function HomeScreen() {
   // "Coming Up" card — first announcement with a future eventStart, else first item
   const now = new Date();
   const upcomingAnnouncement =
-    allAnnouncements.find(
-      (a) => a.eventStart !== undefined && new Date(a.eventStart) > now,
-    ) ?? allAnnouncements[0];
+    allAnnouncements.find((a) => a.eventStart !== undefined && new Date(a.eventStart) > now) ??
+    allAnnouncements[0];
 
   // "Your Feed" — filtered announcements, up to 4
   const feedItems = allAnnouncements.slice(0, 4);
 
   // Upcoming events list (max 2, compact)
-  const upcomingEvents = allAnnouncements
-    .filter((a) => a.eventStart !== undefined)
-    .slice(0, 2);
+  const upcomingEvents = allAnnouncements.filter((a) => a.eventStart !== undefined).slice(0, 2);
 
   // Limited offers (featured, fixed width 260px)
   const limitedOffers = allAnnouncements.filter((a) => a.type === 'limited_offer');
@@ -76,10 +67,7 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* ── 2. Coming Up Card ──────────────────────────────────────────── */}
         <View style={styles.comingUpWrapper}>
           {upcomingAnnouncement === undefined ? (
@@ -182,17 +170,12 @@ export default function HomeScreen() {
           />
           {feedItems.length === 0 ? (
             <View style={styles.emptyRow}>
-              <Text style={styles.emptyText}>
-                No announcements yet — check back soon!
-              </Text>
+              <Text style={styles.emptyText}>No announcements yet — check back soon!</Text>
             </View>
           ) : (
             <View style={[styles.feedList, styles.feedListPadded]}>
               {feedItems.map((item, index) => (
-                <View
-                  key={item.id}
-                  style={index > 0 ? styles.feedItemGap : undefined}
-                >
+                <View key={item.id} style={index > 0 ? styles.feedItemGap : undefined}>
                   <AnnouncementCard announcement={item} />
                 </View>
               ))}
@@ -209,10 +192,7 @@ export default function HomeScreen() {
             />
             <View style={[styles.feedList, styles.feedListPadded]}>
               {upcomingEvents.map((item, index) => (
-                <View
-                  key={item.id}
-                  style={index > 0 ? styles.feedItemGap : undefined}
-                >
+                <View key={item.id} style={index > 0 ? styles.feedItemGap : undefined}>
                   <AnnouncementCard announcement={item} variant="compact" />
                 </View>
               ))}

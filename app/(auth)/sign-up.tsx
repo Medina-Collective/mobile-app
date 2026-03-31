@@ -109,7 +109,7 @@ export default function SignUpScreen() {
             name="displayName"
             render={({ field: { onChange, value } }) => (
               <Input
-                  variant="light"
+                variant="light"
                 label="Full name"
                 placeholder="Your name"
                 value={value}
@@ -125,7 +125,7 @@ export default function SignUpScreen() {
             name="email"
             render={({ field: { onChange, value } }) => (
               <Input
-                  variant="light"
+                variant="light"
                 label="Email"
                 placeholder="you@example.com"
                 value={value}
@@ -142,7 +142,7 @@ export default function SignUpScreen() {
             name="password"
             render={({ field: { onChange, value } }) => (
               <Input
-                  variant="light"
+                variant="light"
                 label="Password"
                 placeholder="Min. 8 characters"
                 value={value}
@@ -158,7 +158,7 @@ export default function SignUpScreen() {
             name="confirmPassword"
             render={({ field: { onChange, value } }) => (
               <Input
-                  variant="light"
+                variant="light"
                 label="Confirm password"
                 placeholder="Repeat your password"
                 value={value}
@@ -181,7 +181,7 @@ export default function SignUpScreen() {
             onPress={() => void handleSubmit(onSubmit)()}
             loading={isLoading}
             style={styles.cta}
-            textColor='#ffffff'
+            textColor="#ffffff"
           />
 
           <TouchableOpacity onPress={() => router.push('/(auth)/sign-in')} style={styles.footer}>
@@ -218,7 +218,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   roleCardSelected: { borderColor: '#2F0A0A', backgroundColor: 'rgba(40, 2, 10, 0.04)' },
-  roleLabel: { fontSize: 13, fontWeight: '600', color: 'rgba(26, 18, 18, 0.55)', letterSpacing: 0.3 },
+  roleLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'rgba(26, 18, 18, 0.55)',
+    letterSpacing: 0.3,
+  },
   roleLabelSelected: { color: '#1a1212' },
   roleDesc: { fontSize: 11, color: 'rgba(26, 18, 18, 0.45)', lineHeight: 15, opacity: 0.7 },
   roleDescSelected: { color: 'rgba(26, 18, 18, 0.55)', opacity: 1 },

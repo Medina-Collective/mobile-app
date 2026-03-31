@@ -19,9 +19,7 @@ export const useSavedStore = create<SavedState>()(
         set((state) => {
           const already = state.savedIds.includes(id);
           return {
-            savedIds: already
-              ? state.savedIds.filter((x) => x !== id)
-              : [...state.savedIds, id],
+            savedIds: already ? state.savedIds.filter((x) => x !== id) : [...state.savedIds, id],
           };
         });
       },

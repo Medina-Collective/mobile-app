@@ -41,7 +41,12 @@ export default function DiscoverScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: allAnnouncements = [], isLoading, isError, refetch } = useListAnnouncements(undefined);
+  const {
+    data: allAnnouncements = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useListAnnouncements(undefined);
 
   const handleRetry = useCallback(async () => {
     await refetch();
@@ -146,7 +151,12 @@ export default function DiscoverScreen() {
           {isError && (
             <View style={styles.centered}>
               <Text style={styles.mutedText}>Could not load announcements.</Text>
-              <Button title="Retry" variant="outline" onPress={handleRetry} style={styles.retryBtn} />
+              <Button
+                title="Retry"
+                variant="outline"
+                onPress={handleRetry}
+                style={styles.retryBtn}
+              />
             </View>
           )}
 
@@ -158,11 +168,13 @@ export default function DiscoverScreen() {
           )}
 
           <View style={styles.browseList}>
-            {!isLoading && !isError && browseItems.map((item, index) => (
-              <View key={item.id} style={index > 0 ? styles.cardGap : undefined}>
-                <AnnouncementCard announcement={item} />
-              </View>
-            ))}
+            {!isLoading &&
+              !isError &&
+              browseItems.map((item, index) => (
+                <View key={item.id} style={index > 0 ? styles.cardGap : undefined}>
+                  <AnnouncementCard announcement={item} />
+                </View>
+              ))}
           </View>
         </View>
       </ScrollView>

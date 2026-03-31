@@ -36,21 +36,27 @@ export function ParticipationButton({
     buttonContent = (
       <View style={styles.row}>
         <Ionicons name="lock-closed" size={13} color={colors.neutral[500]} />
-        <Text variant="label" style={styles.labelFull} numberOfLines={1}>Full</Text>
+        <Text variant="label" style={styles.labelFull} numberOfLines={1}>
+          Full
+        </Text>
       </View>
     );
   } else if (isParticipating) {
     buttonContent = (
       <View style={styles.row}>
         <Ionicons name="checkmark" size={15} color="#CEC1AE" />
-        <Text variant="label" style={[styles.label, styles.labelActive]} numberOfLines={1}>Going</Text>
+        <Text variant="label" style={[styles.label, styles.labelActive]} numberOfLines={1}>
+          Going
+        </Text>
       </View>
     );
   } else {
     buttonContent = (
       <View style={styles.row}>
         <Ionicons name="add" size={15} color="#ffffff" />
-        <Text variant="label" style={styles.label} numberOfLines={1}>Participate</Text>
+        <Text variant="label" style={styles.label} numberOfLines={1}>
+          Participate
+        </Text>
       </View>
     );
   }

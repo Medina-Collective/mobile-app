@@ -24,9 +24,7 @@ export function Screen({
   noTopInset = false,
   variant = 'light',
 }: Readonly<ScreenProps>) {
-  const edges = noTopInset
-    ? (['left', 'right'] as const)
-    : (['top', 'left', 'right'] as const);
+  const edges = noTopInset ? (['left', 'right'] as const) : (['top', 'left', 'right'] as const);
 
   return (
     <SafeAreaView

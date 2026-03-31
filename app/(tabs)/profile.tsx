@@ -119,8 +119,12 @@ function FollowedProRow({ professional }: Readonly<{ professional: Professional 
         </Text>
       </View>
       <View style={styles.followedInfo}>
-        <Text style={styles.followedName} numberOfLines={1}>{professional.businessName}</Text>
-        <Text style={styles.followedMeta} numberOfLines={1}>{professional.category}</Text>
+        <Text style={styles.followedName} numberOfLines={1}>
+          {professional.businessName}
+        </Text>
+        <Text style={styles.followedMeta} numberOfLines={1}>
+          {professional.category}
+        </Text>
       </View>
       <Ionicons name="chevron-forward" size={16} color={colors.warm.muted} />
     </TouchableOpacity>
@@ -272,7 +276,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(68, 0, 7, 0.15)',
   },
-  roleText: { fontSize: 11, fontWeight: '600', color: colors.burgundy.mid, textTransform: 'capitalize' },
+  roleText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.burgundy.mid,
+    textTransform: 'capitalize',
+  },
   menuRow: {
     flexDirection: 'row',
     alignItems: 'center',

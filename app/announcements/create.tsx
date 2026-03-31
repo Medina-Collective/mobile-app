@@ -1,12 +1,5 @@
 import { useCallback, useState } from 'react';
-import {
-  View,
-  ScrollView,
-  Switch,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import { View, ScrollView, Switch, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,7 +13,10 @@ import { spacing } from '@theme/spacing';
 import { fontFamily } from '@theme/typography';
 import { useAuthStore } from '@store/auth.store';
 import { USER_ROLES } from '@constants/index';
-import { announcementSchema, MAX_VISIBILITY_DAYS } from '@features/announcements/schemas/announcement.schema';
+import {
+  announcementSchema,
+  MAX_VISIBILITY_DAYS,
+} from '@features/announcements/schemas/announcement.schema';
 import { useCreateAnnouncement } from '@features/announcements/hooks/useAnnouncement';
 import { AnnouncementTypeSelector } from '@features/announcements/components/AnnouncementTypeSelector';
 import { DatePicker } from '@features/announcements/components/DatePicker';
@@ -85,16 +81,19 @@ export default function CreateAnnouncementScreen() {
   type DateMode = 'none' | 'event' | 'deadline';
   const [dateMode, setDateMode] = useState<DateMode>('none');
 
-  const handleDateModeChange = useCallback((mode: DateMode) => {
-    setDateMode(mode);
-    if (mode !== 'event') {
-      setValue('eventStart', undefined);
-      setValue('eventEnd', undefined);
-    }
-    if (mode !== 'deadline') {
-      setValue('deadline', undefined);
-    }
-  }, [setValue]);
+  const handleDateModeChange = useCallback(
+    (mode: DateMode) => {
+      setDateMode(mode);
+      if (mode !== 'event') {
+        setValue('eventStart', undefined);
+        setValue('eventEnd', undefined);
+      }
+      if (mode !== 'deadline') {
+        setValue('deadline', undefined);
+      }
+    },
+    [setValue],
+  );
 
   const pickImage = useCallback(async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -204,7 +203,10 @@ export default function CreateAnnouncementScreen() {
 
           {/* ── Cover Image ───────────────────────────────────────────────────── */}
           <View style={styles.section}>
-            <SectionHeader title="Cover Image" subtitle="Optional — a photo makes your post stand out." />
+            <SectionHeader
+              title="Cover Image"
+              subtitle="Optional — a photo makes your post stand out."
+            />
             <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.8}>
               {coverImageUri === undefined ? (
                 <View style={styles.imagePlaceholder}>
@@ -214,11 +216,18 @@ export default function CreateAnnouncementScreen() {
                   </Text>
                 </View>
               ) : (
-                <Image source={{ uri: coverImageUri }} style={styles.imagePreview} contentFit="cover" />
+                <Image
+                  source={{ uri: coverImageUri }}
+                  style={styles.imagePreview}
+                  contentFit="cover"
+                />
               )}
             </TouchableOpacity>
             {coverImageUri !== undefined && (
-              <TouchableOpacity onPress={() => setValue('coverImageUri', undefined)} style={styles.removeImage}>
+              <TouchableOpacity
+                onPress={() => setValue('coverImageUri', undefined)}
+                style={styles.removeImage}
+              >
                 <Text variant="caption" style={styles.removeImageText}>
                   Remove photo
                 </Text>
@@ -259,7 +268,9 @@ export default function CreateAnnouncementScreen() {
                   onPress={() => handleDateModeChange(mode)}
                   activeOpacity={0.8}
                 >
-                  <Text style={[styles.dateModeLabel, dateMode === mode && styles.dateModeLabelActive]}>
+                  <Text
+                    style={[styles.dateModeLabel, dateMode === mode && styles.dateModeLabelActive]}
+                  >
                     {mode === 'none' ? 'None' : mode === 'event' ? 'Event Date' : 'Deadline'}
                   </Text>
                 </TouchableOpacity>
@@ -320,7 +331,11 @@ export default function CreateAnnouncementScreen() {
             <View style={styles.section}>
               <SectionHeader
                 title="Link"
-                subtitle={announcementType === 'limited_offer' ? 'Where should the "View Offer" button send people?' : 'Where should the "Learn More" button send people?'}
+                subtitle={
+                  announcementType === 'limited_offer'
+                    ? 'Where should the "View Offer" button send people?'
+                    : 'Where should the "Learn More" button send people?'
+                }
               />
               <Controller
                 control={control}
@@ -390,7 +405,10 @@ export default function CreateAnnouncementScreen() {
               render={({ field: { value, onChange } }) => (
                 <View style={styles.audienceRow}>
                   <TouchableOpacity
-                    style={[styles.audienceOption, value === 'public' && styles.audienceOptionActive]}
+                    style={[
+                      styles.audienceOption,
+                      value === 'public' && styles.audienceOptionActive,
+                    ]}
                     onPress={() => onChange('public')}
                     activeOpacity={0.8}
                   >
@@ -400,7 +418,13 @@ export default function CreateAnnouncementScreen() {
                       color={value === 'public' ? colors.burgundy.mid : colors.warm.muted}
                       style={styles.audienceIcon}
                     />
-                    <Text variant="label" style={[styles.audienceLabel, value === 'public' && styles.audienceLabelActive]}>
+                    <Text
+                      variant="label"
+                      style={[
+                        styles.audienceLabel,
+                        value === 'public' && styles.audienceLabelActive,
+                      ]}
+                    >
                       Everyone
                     </Text>
                     <Text variant="caption" style={styles.audienceHint}>
@@ -409,7 +433,10 @@ export default function CreateAnnouncementScreen() {
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    style={[styles.audienceOption, value === 'pro_only' && styles.audienceOptionActive]}
+                    style={[
+                      styles.audienceOption,
+                      value === 'pro_only' && styles.audienceOptionActive,
+                    ]}
                     onPress={() => onChange('pro_only')}
                     activeOpacity={0.8}
                   >
@@ -419,7 +446,13 @@ export default function CreateAnnouncementScreen() {
                       color={value === 'pro_only' ? colors.burgundy.mid : colors.warm.muted}
                       style={styles.audienceIcon}
                     />
-                    <Text variant="label" style={[styles.audienceLabel, value === 'pro_only' && styles.audienceLabelActive]}>
+                    <Text
+                      variant="label"
+                      style={[
+                        styles.audienceLabel,
+                        value === 'pro_only' && styles.audienceLabelActive,
+                      ]}
+                    >
                       PROs only
                     </Text>
                     <Text variant="caption" style={styles.audienceHint}>
@@ -432,50 +465,54 @@ export default function CreateAnnouncementScreen() {
           </View>
 
           {/* ── Participation — hidden for limited_offer (they get a link button instead) */}
-          {announcementType !== 'limited_offer' && <View style={styles.section}>
-            <SectionHeader
-              title="Participation"
-              subtitle="Let members confirm they're coming. They'll see a button on your post."
-            />
-            <View style={styles.toggleRow}>
-              <View style={styles.toggleInfo}>
-                <Text style={styles.toggleLabel}>Enable participation button</Text>
-                <Text style={styles.toggleHint}>
-                  Members can tap "Confirm Participation" on your post
-                </Text>
+          {announcementType !== 'limited_offer' && (
+            <View style={styles.section}>
+              <SectionHeader
+                title="Participation"
+                subtitle="Let members confirm they're coming. They'll see a button on your post."
+              />
+              <View style={styles.toggleRow}>
+                <View style={styles.toggleInfo}>
+                  <Text style={styles.toggleLabel}>Enable participation button</Text>
+                  <Text style={styles.toggleHint}>
+                    Members can tap "Confirm Participation" on your post
+                  </Text>
+                </View>
+                <Controller
+                  control={control}
+                  name="participationEnabled"
+                  render={({ field: { value, onChange } }) => (
+                    <Switch
+                      value={value}
+                      onValueChange={onChange}
+                      trackColor={{ false: colors.warm.border, true: colors.burgundy.mid }}
+                      thumbColor={colors.warm.elevated}
+                    />
+                  )}
+                />
               </View>
-              <Controller
-                control={control}
-                name="participationEnabled"
-                render={({ field: { value, onChange } }) => (
-                  <Switch
-                    value={value}
-                    onValueChange={onChange}
-                    trackColor={{ false: colors.warm.border, true: colors.burgundy.mid }}
-                    thumbColor={colors.warm.elevated}
-                  />
-                )}
-              />
-            </View>
 
-            {participationEnabled && (
-              <Controller
-                control={control}
-                name="maxCapacity"
-                render={({ field: { value, onChange, onBlur } }) => (
-                  <Input
-                    label="Max Capacity (optional)"
-                    value={value === undefined ? '' : String(value)}
-                    onChangeText={(t) => onChange(t.length > 0 ? Number.parseInt(t, 10) : undefined)}
-                    onBlur={onBlur}
-                    error={errors.maxCapacity?.message}
-                    keyboardType="number-pad"
-                    placeholder="Leave blank for unlimited"
-                  />
-                )}
-              />
-            )}
-          </View>}
+              {participationEnabled && (
+                <Controller
+                  control={control}
+                  name="maxCapacity"
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <Input
+                      label="Max Capacity (optional)"
+                      value={value === undefined ? '' : String(value)}
+                      onChangeText={(t) =>
+                        onChange(t.length > 0 ? Number.parseInt(t, 10) : undefined)
+                      }
+                      onBlur={onBlur}
+                      error={errors.maxCapacity?.message}
+                      keyboardType="number-pad"
+                      placeholder="Leave blank for unlimited"
+                    />
+                  )}
+                />
+              )}
+            </View>
+          )}
 
           {/* ── Submit ────────────────────────────────────────────────────────── */}
           <Button
@@ -492,9 +529,7 @@ export default function CreateAnnouncementScreen() {
   return (
     <Screen>
       <View style={styles.centered}>
-        <Text style={styles.gatedText}>
-          Only professional accounts can create announcements.
-        </Text>
+        <Text style={styles.gatedText}>Only professional accounts can create announcements.</Text>
         <Button title="Go Back" variant="outline" onPress={() => router.back()} />
       </View>
     </Screen>

@@ -23,10 +23,10 @@ function makeTabIcon(tab: TabConfig) {
 }
 
 const TABS: TabConfig[] = [
-  { name: 'index',     title: 'Home',      activeIcon: 'home',    inactiveIcon: 'home-outline' },
-  { name: 'discover',  title: 'Discover',  activeIcon: 'compass', inactiveIcon: 'compass-outline' },
-  { name: 'favorites', title: 'Favorites', activeIcon: 'heart',   inactiveIcon: 'heart-outline' },
-  { name: 'profile',   title: 'Profile',   activeIcon: 'person',  inactiveIcon: 'person-outline' },
+  { name: 'index', title: 'Home', activeIcon: 'home', inactiveIcon: 'home-outline' },
+  { name: 'discover', title: 'Discover', activeIcon: 'compass', inactiveIcon: 'compass-outline' },
+  { name: 'favorites', title: 'Favorites', activeIcon: 'heart', inactiveIcon: 'heart-outline' },
+  { name: 'profile', title: 'Profile', activeIcon: 'person', inactiveIcon: 'person-outline' },
 ];
 
 export default function TabsLayout() {

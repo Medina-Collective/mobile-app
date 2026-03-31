@@ -54,7 +54,15 @@ export const ANNOUNCEMENT_TYPE_OPTIONS = [
 
 export const announcementSchema = z
   .object({
-    type: z.enum(['activity_event', 'bazaar', 'brand_popup', 'halaqa', 'limited_offer', 'update', 'other']),
+    type: z.enum([
+      'activity_event',
+      'bazaar',
+      'brand_popup',
+      'halaqa',
+      'limited_offer',
+      'update',
+      'other',
+    ]),
     title: z
       .string()
       .min(2, 'Title must be at least 2 characters')

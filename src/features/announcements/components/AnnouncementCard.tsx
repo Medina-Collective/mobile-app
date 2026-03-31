@@ -21,9 +21,12 @@ interface AnnouncementCardProps {
 
 // ── Type config ────────────────────────────────────────────────────────────────
 
-function getTypeConfig(
-  type: AnnouncementType,
-): { label: string; cta: string; badgeBg: string; badgeText: string } {
+function getTypeConfig(type: AnnouncementType): {
+  label: string;
+  cta: string;
+  badgeBg: string;
+  badgeText: string;
+} {
   if (type === 'activity_event' || type === 'halaqa' || type === 'bazaar') {
     return { label: 'Event', cta: 'Participate', badgeBg: '#2F0A0A', badgeText: '#ffffff' };
   }
@@ -96,7 +99,10 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
     <TouchableOpacity
       style={defaultStyles.card}
       activeOpacity={0.88}
-      onPress={() => { recordOpen(announcement.id); router.push(`/announcements/${announcement.id}`); }}
+      onPress={() => {
+        recordOpen(announcement.id);
+        router.push(`/announcements/${announcement.id}`);
+      }}
     >
       {/* Top row: avatar + brand column + save button */}
       <View style={defaultStyles.topRow}>
@@ -120,9 +126,7 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
                 {announcement.professionalName}
               </Text>
             )}
-            <View
-              style={[defaultStyles.badge, { backgroundColor: typeConfig.badgeBg }]}
-            >
+            <View style={[defaultStyles.badge, { backgroundColor: typeConfig.badgeBg }]}>
               <Text style={[defaultStyles.badgeText, { color: typeConfig.badgeText }]}>
                 {typeConfig.label.toUpperCase()}
               </Text>
@@ -131,7 +135,11 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
         </View>
 
         {/* Save button (bookmark icon) */}
-        <SaveButton announcementId={announcement.id} announcementType={announcement.type} iconType="bookmark" />
+        <SaveButton
+          announcementId={announcement.id}
+          announcementType={announcement.type}
+          iconType="bookmark"
+        />
       </View>
 
       {/* Cover image */}
@@ -156,7 +164,9 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
       )}
 
       {/* Meta row */}
-      {(dateLabel !== undefined || deadlineLabel !== undefined || announcement.location !== undefined) && (
+      {(dateLabel !== undefined ||
+        deadlineLabel !== undefined ||
+        announcement.location !== undefined) && (
         <View style={defaultStyles.metaRow}>
           {dateLabel !== undefined && (
             <View style={defaultStyles.metaItem}>
@@ -250,7 +260,10 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
     <TouchableOpacity
       style={featuredStyles.card}
       activeOpacity={0.88}
-      onPress={() => { recordOpen(announcement.id); router.push(`/announcements/${announcement.id}`); }}
+      onPress={() => {
+        recordOpen(announcement.id);
+        router.push(`/announcements/${announcement.id}`);
+      }}
     >
       {/* Cover image at top */}
       {announcement.coverImageUrl === undefined ? (
@@ -389,7 +402,10 @@ function CompactCard({ announcement }: Readonly<{ announcement: Announcement }>)
     <TouchableOpacity
       style={compactStyles.card}
       activeOpacity={0.88}
-      onPress={() => { recordOpen(announcement.id); router.push(`/announcements/${announcement.id}`); }}
+      onPress={() => {
+        recordOpen(announcement.id);
+        router.push(`/announcements/${announcement.id}`);
+      }}
     >
       {/* Left: image / placeholder */}
       {announcement.coverImageUrl === undefined ? (
@@ -421,7 +437,11 @@ function CompactCard({ announcement }: Readonly<{ announcement: Announcement }>)
       </View>
 
       {/* Right: bookmark */}
-      <SaveButton announcementId={announcement.id} announcementType={announcement.type} iconType="bookmark" />
+      <SaveButton
+        announcementId={announcement.id}
+        announcementType={announcement.type}
+        iconType="bookmark"
+      />
     </TouchableOpacity>
   );
 }

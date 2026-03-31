@@ -200,7 +200,13 @@ export type Database = {
       profile_status: 'draft' | 'pending_review' | 'approved' | 'changes_requested' | 'rejected';
       price_range: '$' | '$$' | '$$$';
       service_type_value: 'at_home' | 'has_studio' | 'online' | 'travels_to_client';
-      announcement_type: 'activity_event' | 'bazaar' | 'brand_popup' | 'halaqa' | 'limited_offer' | 'other';
+      announcement_type:
+        | 'activity_event'
+        | 'bazaar'
+        | 'brand_popup'
+        | 'halaqa'
+        | 'limited_offer'
+        | 'other';
       announcement_status: 'draft' | 'published' | 'archived';
     };
     CompositeTypes: {
