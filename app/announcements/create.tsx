@@ -267,12 +267,18 @@ export default function CreateAnnouncementScreen() {
                 return (
                   <TouchableOpacity
                     key={mode}
-                    style={[styles.dateModeOption, dateMode === mode && styles.dateModeOptionActive]}
+                    style={[
+                      styles.dateModeOption,
+                      dateMode === mode && styles.dateModeOptionActive,
+                    ]}
                     onPress={() => handleDateModeChange(mode)}
                     activeOpacity={0.8}
                   >
                     <Text
-                      style={[styles.dateModeLabel, dateMode === mode && styles.dateModeLabelActive]}
+                      style={[
+                        styles.dateModeLabel,
+                        dateMode === mode && styles.dateModeLabelActive,
+                      ]}
                     >
                       {modeLabel}
                     </Text>
