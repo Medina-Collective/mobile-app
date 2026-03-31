@@ -42,12 +42,7 @@ export default function DiscoverScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const {
-    data: allAnnouncements = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useListAnnouncements(undefined);
+  const { data: allAnnouncements = [], isLoading, isError, refetch } = useListAnnouncements();
 
   const handleRetry = useCallback(async () => {
     await refetch();

@@ -57,12 +57,13 @@ export default function AnnouncementDetailScreen() {
   const typeColor = ANNOUNCEMENT_TYPE_COLORS[announcement.type];
   const typeIcon = ANNOUNCEMENT_TYPE_ICONS[announcement.type] as IoniconName;
 
-  const eventDateLabel =
-    announcement.eventStart === undefined
-      ? undefined
-      : announcement.eventEnd !== undefined
-        ? formatDateRange(announcement.eventStart, announcement.eventEnd)
-        : format(new Date(announcement.eventStart), 'MMMM d, yyyy');
+  let eventDateLabel: string | undefined;
+  if (announcement.eventStart !== undefined) {
+    eventDateLabel =
+      announcement.eventEnd === undefined
+        ? format(new Date(announcement.eventStart), 'MMMM d, yyyy')
+        : formatDateRange(announcement.eventStart, announcement.eventEnd);
+  }
 
   const visibilityStartLabel = format(new Date(announcement.visibilityStart), 'MMM d, yyyy');
   const visibilityEndLabel = format(new Date(announcement.visibilityEnd), 'MMM d, yyyy');

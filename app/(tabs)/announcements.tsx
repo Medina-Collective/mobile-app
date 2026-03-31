@@ -18,7 +18,47 @@ import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncem
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
 import { ANNOUNCEMENT_TYPE_OPTIONS } from '@features/announcements/schemas/announcement.schema';
 import { ANNOUNCEMENT_TYPE_LABELS } from '@app-types/announcement';
-import type { AnnouncementType } from '@app-types/announcement';
+import type { Announcement, AnnouncementType } from '@app-types/announcement';
+
+function AnnouncementSeparator() {
+  return <View style={styles.separator} />;
+}
+
+interface FeedContentProps {
+  isError: boolean;
+  data: Announcement[] | undefined;
+  onRetry: () => void;
+}
+
+function FeedContent({ isError, data, onRetry }: Readonly<FeedContentProps>) {
+  if (isError) {
+    return (
+      <View style={styles.centered}>
+        <Text variant="body" style={styles.emptyText}>
+          Could not load announcements.
+        </Text>
+        <Button title="Retry" variant="outline" onPress={onRetry} style={styles.retryBtn} />
+      </View>
+    );
+  }
+  return (
+    <FlatList
+      data={data ?? []}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <AnnouncementCard announcement={item} />}
+      contentContainerStyle={styles.list}
+      ItemSeparatorComponent={AnnouncementSeparator}
+      ListEmptyComponent={
+        <View style={styles.centered}>
+          <Text variant="body" style={styles.emptyText}>
+            No announcements right now.{'\n'}Check back soon!
+          </Text>
+        </View>
+      }
+      showsVerticalScrollIndicator={false}
+    />
+  );
+}
 
 const ALL_FILTER = 'all' as const;
 type FilterValue = typeof ALL_FILTER | AnnouncementType;
@@ -90,29 +130,8 @@ export default function AnnouncementsScreen() {
         <View style={styles.centered}>
           <ActivityIndicator color={colors.burgundy.mid} />
         </View>
-      ) : isError ? (
-        <View style={styles.centered}>
-          <Text variant="body" style={styles.emptyText}>
-            Could not load announcements.
-          </Text>
-          <Button title="Retry" variant="outline" onPress={handleRetry} style={styles.retryBtn} />
-        </View>
       ) : (
-        <FlatList
-          data={data ?? []}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <AnnouncementCard announcement={item} />}
-          contentContainerStyle={styles.list}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          ListEmptyComponent={
-            <View style={styles.centered}>
-              <Text variant="body" style={styles.emptyText}>
-                No announcements right now.{'\n'}Check back soon!
-              </Text>
-            </View>
-          }
-          showsVerticalScrollIndicator={false}
-        />
+        <FeedContent isError={isError} data={data} onRetry={handleRetry} />
       )}
 
       {/* PRO floating action button */}
