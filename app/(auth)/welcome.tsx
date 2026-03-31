@@ -4,10 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@components/ui';
 import { spacing } from '@theme/spacing';
 
-const welcomeImage = require('@assets/images/welcome-page-design.png') as number;
+const MC_BEIGE = '#CEC1AE';
 
-/** Soft beige matching the MC monogram in the Canva design */
-const MC_BEIGE = '#cdc1ad';
+const welcomeImage = require('@assets/images/welcome-page-design.png') as number;
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -24,12 +23,14 @@ export default function WelcomeScreen() {
             title="Join the community"
             onPress={() => router.push('/(auth)/sign-up')}
             style={styles.joinButton}
+            textColor="#2F0A0A"
           />
           <Button
             title="Sign in"
             variant="ghost"
             onPress={() => router.push('/(auth)/sign-in')}
             style={styles.button}
+            textColor={MC_BEIGE}
           />
         </View>
       </SafeAreaView>

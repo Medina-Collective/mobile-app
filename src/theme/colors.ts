@@ -1,24 +1,24 @@
 /**
- * Medina Collective Design System — Color Tokens
+ * Medina Collective Design System — Color Tokens (Dark Theme)
  *
  * Palette sourced directly from the brand identity:
- *   Deep Burgundy  #330b14  — page background
- *   Dark Merlot    #541623  — cards, surfaces
- *   Beige          #ffd3c0  — primary text & warm highlights
- *   Light Crimson  #ff6f97  — accent, active states, decorative
- *   Cranberry Red  #8c1e29  — mid-tones, borders, secondary surfaces
+ *   Dark Background  #2F0A0A  — page background
+ *   Dark Merlot      #541623  — cards, surfaces
+ *   Beige            #ffd3c0  — primary text & warm highlights
+ *   Light Crimson    #ff6f97  — accent, active states, decorative
+ *   Warm Sand        #CEC1AE  — primary accent / secondary
  */
 export const colors = {
   // ── Brand palette ──────────────────────────────────────────────────────────
   burgundy: {
     /** Page background — the deepest tone */
-    deep: '#330b14',
+    deep: '#2F0A0A',
     /** Card / surface background */
     surface: '#541623',
     /** Elevated surface, hover states */
     raised: '#6a2030',
-    /** Mid-tone — borders, dividers */
-    mid: '#8c1e29',
+    /** Mid-tone — primary CTA / accent color */
+    mid: '#2F0A0A',
     /** Muted text / decorative */
     muted: '#b05060',
     /** Subtle tint over background */
@@ -61,6 +61,33 @@ export const colors = {
     1000: '#000000',
   },
 
+  /**
+   * Warm palette — light theme. Off-white cream background, white card surfaces,
+   * dark text (#1a1212) on light backgrounds.
+   */
+  warm: {
+    /** Page background — warm off-white cream */
+    bg: '#faf6f0',
+    /** Card / surface — pure white */
+    surface: '#ffffff',
+    /** Elevated inner surface */
+    elevated: '#fff9f5',
+    /** Border for cards on light bg — matches web --border: hsl(33 15% 88%) */
+    border: '#e5e1dc',
+    /** Stronger border for focused states */
+    borderFocus: 'rgba(40, 2, 10, 0.35)',
+    /** Page-level titles — very dark */
+    title: '#1a1212',
+    /** Page-level body text */
+    body: 'rgba(26, 18, 18, 0.75)',
+    /** Page-level muted text */
+    muted: 'rgba(26, 18, 18, 0.45)',
+    /** Faint dividers */
+    divider: 'rgba(160, 122, 95, 0.10)',
+    /** Shadow tint for cards */
+    shadow: '#7b625b',
+  },
+
   success: { 50: '#f0fdf4', 500: '#22c55e', 700: '#15803d' },
   warning: { 50: '#fffbeb', 500: '#f59e0b', 700: '#b45309' },
   error: { 50: '#fef2f2', 500: '#ef4444', 700: '#b91c1c' },
@@ -85,7 +112,7 @@ export const colors = {
     800: '#3d0f1a',
     700: '#541623',
     600: '#6a2030',
-    500: '#8c1e29',
+    500: '#440007',
     400: '#b05060',
     300: '#c47a88',
     200: '#daa8b4',

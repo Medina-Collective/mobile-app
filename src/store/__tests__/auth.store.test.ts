@@ -137,6 +137,12 @@ describe('role mapping', () => {
       data: { user: proUser, session: { ...mockSession, user: proUser } },
       error: null,
     });
+    // Override the supabase.from mock so the professionals lookup returns a row
+    (supabase.from as jest.Mock).mockReturnValue({
+      select: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      maybeSingle: jest.fn().mockResolvedValue({ data: { id: 'pro-1' }, error: null }),
+    });
     await useAuthStore.getState().signIn('pro@example.com', 'password');
     expect(useAuthStore.getState().user?.role).toBe('professional');
   });
@@ -149,5 +155,25 @@ describe('role mapping', () => {
     });
     await useAuthStore.getState().signIn('test@example.com', 'password');
     expect(useAuthStore.getState().user?.displayName).toBe('test');
+  });
+});
+
+describe('refreshUser', () => {
+  it('updates user state when a valid session exists', async () => {
+    (mockAuth.getSession as jest.Mock).mockResolvedValue({
+      data: { session: mockSession },
+    });
+    await useAuthStore.getState().refreshUser();
+    const state = useAuthStore.getState();
+    expect(state.user?.email).toBe('test@example.com');
+    expect(state.user?.displayName).toBe('Test User');
+  });
+
+  it('does not change state when there is no session', async () => {
+    (mockAuth.getSession as jest.Mock).mockResolvedValue({
+      data: { session: null },
+    });
+    await useAuthStore.getState().refreshUser();
+    expect(useAuthStore.getState().user).toBeNull();
   });
 });

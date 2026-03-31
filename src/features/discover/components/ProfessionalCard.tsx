@@ -7,6 +7,7 @@ import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { fontSize } from '@theme/typography';
 import { PROFILE_TYPE_LABELS } from '@app-types/professional';
+import { FollowButton } from '@features/follows/components/FollowButton';
 import type { Professional } from '@app-types/professional';
 
 interface ProfessionalCardProps {
@@ -47,7 +48,7 @@ export function ProfessionalCard({ professional }: Readonly<ProfessionalCardProp
             : ''}
         </Text>
         <View style={styles.meta}>
-          <Ionicons name="location-outline" size={11} color={colors.burgundy.muted} />
+          <Ionicons name="location-outline" size={11} color={colors.warm.muted} />
           <Text style={styles.metaText}>{professional.basedIn}</Text>
           {professional.priceRange !== undefined && (
             <>
@@ -63,7 +64,7 @@ export function ProfessionalCard({ professional }: Readonly<ProfessionalCardProp
         <Text style={styles.badgeText}>{PROFILE_TYPE_LABELS[professional.profileType]}</Text>
       </View>
 
-      <Ionicons name="chevron-forward" size={16} color={colors.burgundy.muted} />
+      <FollowButton professionalId={professional.id} variant="icon" />
     </TouchableOpacity>
   );
 }
@@ -75,18 +76,23 @@ const styles = StyleSheet.create({
     gap: spacing[3],
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[4],
-    backgroundColor: colors.burgundy.surface,
-    borderRadius: 12,
+    backgroundColor: colors.warm.surface,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.burgundy.raised,
+    borderColor: colors.warm.border,
+    shadowColor: colors.warm.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 3,
   },
   avatar: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.burgundy.raised,
+    backgroundColor: 'rgba(40, 2, 10, 0.08)',
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: 'rgba(40, 2, 10, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     flexShrink: 0,
@@ -94,7 +100,7 @@ const styles = StyleSheet.create({
   avatarInitials: {
     fontSize: fontSize.sm,
     fontWeight: '700',
-    color: '#cdc1ad',
+    color: colors.warm.title,
     letterSpacing: 0.5,
   },
   info: {
@@ -104,11 +110,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: fontSize.sm,
     fontWeight: '600',
-    color: '#cdc1ad',
+    color: colors.warm.title,
   },
   category: {
     fontSize: fontSize.xs,
-    color: colors.burgundy.muted,
+    color: colors.warm.body,
   },
   meta: {
     flexDirection: 'row',
@@ -118,24 +124,24 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: fontSize.xs,
-    color: colors.burgundy.muted,
+    color: colors.warm.muted,
   },
   metaDot: {
     fontSize: fontSize.xs,
-    color: colors.burgundy.mid,
+    color: colors.warm.muted,
   },
   badge: {
     paddingVertical: 3,
     paddingHorizontal: spacing[2],
     borderRadius: 20,
-    backgroundColor: colors.burgundy.raised,
+    backgroundColor: 'rgba(40, 2, 10, 0.07)',
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: 'rgba(40, 2, 10, 0.15)',
     flexShrink: 0,
   },
   badgeText: {
     fontSize: 10,
-    color: '#cdc1ad',
+    color: '#2F0A0A',
     fontWeight: '600',
     letterSpacing: 0.2,
   },

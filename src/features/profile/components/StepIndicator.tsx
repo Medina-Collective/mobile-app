@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   barActive: {
-    backgroundColor: '#cdc1ad',
+    backgroundColor: '#CEC1AE',
   },
   barInactive: {
     backgroundColor: colors.burgundy.raised,

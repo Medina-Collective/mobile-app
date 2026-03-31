@@ -29,7 +29,7 @@ export function ProfessionalList({
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#cdc1ad" />
+        <ActivityIndicator size="large" color="#CEC1AE" />
       </View>
     );
   }

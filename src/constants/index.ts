@@ -16,8 +16,10 @@ export const STORAGE_KEYS = {
  * Always use these constants to ensure consistent cache invalidation.
  */
 export const QUERY_KEYS = {
-  events: ['events'] as const,
-  event: (id: string) => ['events', id] as const,
+  announcements: ['announcements'] as const,
+  announcement: (id: string) => ['announcements', id] as const,
+  myAnnouncements: ['announcements', 'mine'] as const,
+  announcementParticipants: (id: string) => ['announcements', id, 'participants'] as const,
   profile: ['profile'] as const,
   favorites: ['favorites'] as const,
   discover: ['discover'] as const,

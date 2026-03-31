@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   initials: {
     fontSize: fontSize.xl,
     fontWeight: '700',
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     letterSpacing: 1,
   },
   badge: {
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#cdc1ad',
+    backgroundColor: '#CEC1AE',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,

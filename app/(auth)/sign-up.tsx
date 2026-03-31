@@ -109,6 +109,7 @@ export default function SignUpScreen() {
             name="displayName"
             render={({ field: { onChange, value } }) => (
               <Input
+                variant="light"
                 label="Full name"
                 placeholder="Your name"
                 value={value}
@@ -124,6 +125,7 @@ export default function SignUpScreen() {
             name="email"
             render={({ field: { onChange, value } }) => (
               <Input
+                variant="light"
                 label="Email"
                 placeholder="you@example.com"
                 value={value}
@@ -140,6 +142,7 @@ export default function SignUpScreen() {
             name="password"
             render={({ field: { onChange, value } }) => (
               <Input
+                variant="light"
                 label="Password"
                 placeholder="Min. 8 characters"
                 value={value}
@@ -155,6 +158,7 @@ export default function SignUpScreen() {
             name="confirmPassword"
             render={({ field: { onChange, value } }) => (
               <Input
+                variant="light"
                 label="Confirm password"
                 placeholder="Repeat your password"
                 value={value}
@@ -177,6 +181,7 @@ export default function SignUpScreen() {
             onPress={() => void handleSubmit(onSubmit)()}
             loading={isLoading}
             style={styles.cta}
+            textColor="#ffffff"
           />
 
           <TouchableOpacity onPress={() => router.push('/(auth)/sign-in')} style={styles.footer}>
@@ -194,33 +199,38 @@ export default function SignUpScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#28030a' },
+  safe: { flex: 1, backgroundColor: '#faf6f0' },
   flex: { flex: 1 },
   scroll: { paddingHorizontal: spacing[8], paddingTop: spacing[8], paddingBottom: spacing[10] },
   header: { marginBottom: spacing[10], gap: spacing[3] },
-  heading: { color: '#cdc1ad' },
-  subtitle: { color: '#7b625b' },
+  heading: { color: '#1a1212' },
+  subtitle: { color: 'rgba(26, 18, 18, 0.45)' },
 
   roleSection: { marginBottom: spacing[10], gap: spacing[4] },
   roleRow: { flexDirection: 'row', gap: spacing[3] },
   roleCard: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#7b625b',
+    borderColor: 'rgba(160, 122, 95, 0.30)',
     borderRadius: 8,
     padding: spacing[4],
     gap: spacing[1],
     backgroundColor: 'transparent',
   },
-  roleCardSelected: { borderColor: '#cdc1ad', backgroundColor: 'transparent' },
-  roleLabel: { fontSize: 13, fontWeight: '600', color: '#7b625b', letterSpacing: 0.3 },
-  roleLabelSelected: { color: '#cdc1ad' },
-  roleDesc: { fontSize: 11, color: '#7b625b', lineHeight: 15, opacity: 0.7 },
-  roleDescSelected: { color: '#cdc1ad', opacity: 1 },
+  roleCardSelected: { borderColor: '#2F0A0A', backgroundColor: 'rgba(40, 2, 10, 0.04)' },
+  roleLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'rgba(26, 18, 18, 0.55)',
+    letterSpacing: 0.3,
+  },
+  roleLabelSelected: { color: '#1a1212' },
+  roleDesc: { fontSize: 11, color: 'rgba(26, 18, 18, 0.45)', lineHeight: 15, opacity: 0.7 },
+  roleDescSelected: { color: 'rgba(26, 18, 18, 0.55)', opacity: 1 },
 
   serverError: { color: '#e57373', textAlign: 'center', marginTop: spacing[2] },
-  cta: { width: '100%', marginTop: spacing[4], backgroundColor: '#cdc1ad' },
+  cta: { width: '100%', marginTop: spacing[4], backgroundColor: '#2F0A0A' },
   footer: { marginTop: spacing[8], alignItems: 'center' },
-  footerText: { color: '#7b625b' },
-  footerLink: { color: '#cdc1ad', fontWeight: '600' },
+  footerText: { color: 'rgba(26, 18, 18, 0.45)' },
+  footerLink: { color: '#2F0A0A', fontWeight: '600' },
 });

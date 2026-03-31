@@ -113,7 +113,7 @@ export default function AdminProfessionalDetailScreen() {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={styles.centered}>
-          <ActivityIndicator color="#cdc1ad" size="large" />
+          <ActivityIndicator color="#CEC1AE" size="large" />
         </View>
       </SafeAreaView>
     );
@@ -126,7 +126,7 @@ export default function AdminProfessionalDetailScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={22} color="#cdc1ad" />
+          <Ionicons name="arrow-back" size={22} color="#CEC1AE" />
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
           Review Profile
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexShrink: 0,
   },
-  headerTitle: { flex: 1, fontSize: 17, fontWeight: '700', color: '#cdc1ad' },
+  headerTitle: { flex: 1, fontSize: 17, fontWeight: '700', color: '#CEC1AE' },
   statusPill: {
     paddingHorizontal: spacing[3],
     paddingVertical: 4,
@@ -283,8 +283,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing[2],
   },
-  heroAvatarText: { fontSize: 28, fontWeight: '700', color: '#cdc1ad' },
-  heroName: { fontSize: 20, fontWeight: '700', color: '#cdc1ad' },
+  heroAvatarText: { fontSize: 28, fontWeight: '700', color: '#CEC1AE' },
+  heroName: { fontSize: 20, fontWeight: '700', color: '#CEC1AE' },
   heroType: { fontSize: 13, color: '#9b8070' },
   section: {
     marginHorizontal: spacing[4],
@@ -316,10 +316,10 @@ const styles = StyleSheet.create({
     gap: spacing[4],
   },
   infoLabel: { fontSize: 13, color: '#7b625b', flexShrink: 0 },
-  infoValue: { fontSize: 13, color: '#cdc1ad', textAlign: 'right', flex: 1 },
+  infoValue: { fontSize: 13, color: '#CEC1AE', textAlign: 'right', flex: 1 },
   description: {
     fontSize: 14,
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     lineHeight: 22,
     padding: spacing[4],
   },

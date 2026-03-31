@@ -23,7 +23,7 @@ export default function ThankYouScreen() {
 
       <View style={styles.container}>
         <View style={styles.iconWrap}>
-          <Ionicons name="checkmark-circle-outline" size={64} color="#cdc1ad" />
+          <Ionicons name="checkmark-circle-outline" size={64} color="#CEC1AE" />
         </View>
 
         <Text variant="heading2" style={styles.heading}>
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[8],
   },
   heading: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     textAlign: 'center',
     marginBottom: spacing[6],
   },

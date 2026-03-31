@@ -24,7 +24,7 @@ export default function EditProfessionalProfileScreen() {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#cdc1ad" />
+          <ActivityIndicator size="large" color="#CEC1AE" />
         </View>
       </SafeAreaView>
     );

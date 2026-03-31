@@ -12,19 +12,37 @@ interface AuthState {
   signUp: (email: string, password: string, displayName: string) => Promise<void>;
   signOut: () => Promise<void>;
   hydrateFromStorage: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
-function mapSupabaseUser(u: {
+/**
+ * Resolve the user's role by checking:
+ * 1. app_metadata for 'admin' (set server-side, takes priority)
+ * 2. professionals table for an approved profile (auto-detected, no manual setup needed)
+ * 3. falls back to USER
+ */
+async function resolveRole(userId: string, appMetadataRole: string | undefined): Promise<UserRole> {
+  if (appMetadataRole === 'admin') return USER_ROLES.ADMIN;
+
+  const { data } = await supabase
+    .from('professionals')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('status', 'approved')
+    .maybeSingle();
+
+  return data === null ? USER_ROLES.USER : USER_ROLES.PROFESSIONAL;
+}
+
+async function buildUser(u: {
   id: string;
   email?: string | null;
   user_metadata?: Record<string, unknown>;
   app_metadata?: Record<string, unknown>;
   created_at: string;
-}): User {
+}): Promise<User> {
   const appRole = u.app_metadata?.['role'] as string | undefined;
-  let role: UserRole = USER_ROLES.USER;
-  if (appRole === 'admin') role = USER_ROLES.ADMIN;
-  else if (appRole === 'professional') role = USER_ROLES.PROFESSIONAL;
+  const role = await resolveRole(u.id, appRole);
   return {
     id: u.id,
     email: u.email ?? '',
@@ -47,7 +65,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       set({
-        user: mapSupabaseUser(data.user),
+        user: await buildUser(data.user),
         token: data.session.access_token,
         isAuthenticated: true,
       });
@@ -67,7 +85,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (error) throw error;
       if (data.session && data.user) {
         set({
-          user: mapSupabaseUser(data.user),
+          user: await buildUser(data.user),
           token: data.session.access_token,
           isAuthenticated: true,
         });
@@ -88,10 +106,19 @@ export const useAuthStore = create<AuthState>((set) => ({
     } = await supabase.auth.getSession();
     if (session) {
       set({
-        user: mapSupabaseUser(session.user),
+        user: await buildUser(session.user),
         token: session.access_token,
         isAuthenticated: true,
       });
+    }
+  },
+
+  refreshUser: async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) {
+      set({ user: await buildUser(session.user) });
     }
   },
 }));

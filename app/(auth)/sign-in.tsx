@@ -50,6 +50,7 @@ export default function SignInScreen() {
               name="email"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  variant="light"
                   label="Email"
                   placeholder="you@example.com"
                   value={value}
@@ -66,6 +67,7 @@ export default function SignInScreen() {
               name="password"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  variant="light"
                   label="Password"
                   placeholder="••••••••"
                   value={value}
@@ -88,6 +90,7 @@ export default function SignInScreen() {
             onPress={() => void handleSubmit(onSubmit)()}
             loading={isLoading}
             style={styles.cta}
+            textColor="#ffffff"
           />
         </View>
 
@@ -105,16 +108,16 @@ export default function SignInScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#28030a' },
+  safe: { flex: 1, backgroundColor: '#faf6f0' },
   flex: { flex: 1 },
   content: { flex: 1, paddingHorizontal: spacing[8], paddingTop: spacing[10] },
   header: { marginBottom: spacing[12], gap: spacing[3] },
-  heading: { color: '#cdc1ad' },
-  subtitle: { color: '#7b625b' },
+  heading: { color: '#1a1212' },
+  subtitle: { color: 'rgba(26, 18, 18, 0.45)' },
   forgotLink: { alignSelf: 'flex-end', marginTop: -spacing[2] },
-  forgotText: { color: '#7b625b' },
-  cta: { marginTop: spacing[10], width: '100%', backgroundColor: '#cdc1ad' },
+  forgotText: { color: 'rgba(26, 18, 18, 0.45)' },
+  cta: { marginTop: spacing[10], width: '100%', backgroundColor: '#2F0A0A' },
   footer: { paddingBottom: spacing[6], alignItems: 'center' },
-  footerText: { color: '#7b625b' },
-  footerLink: { color: '#cdc1ad', fontWeight: '600' },
+  footerText: { color: 'rgba(26, 18, 18, 0.45)' },
+  footerLink: { color: '#2F0A0A', fontWeight: '600' },
 });

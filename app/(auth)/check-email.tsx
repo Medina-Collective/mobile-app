@@ -67,7 +67,7 @@ export default function CheckEmailScreen() {
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
         <View style={styles.iconWrap}>
-          <Ionicons name="mail-outline" size={56} color="#cdc1ad" />
+          <Ionicons name="mail-outline" size={56} color="#CEC1AE" />
         </View>
 
         <Text variant="heading2" style={styles.heading}>
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[8],
   },
   heading: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     textAlign: 'center',
     marginBottom: spacing[4],
   },
@@ -136,12 +136,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing[10],
   },
   email: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     fontWeight: '600',
   },
   cta: {
     width: '100%',
-    backgroundColor: '#cdc1ad',
+    backgroundColor: '#CEC1AE',
     marginBottom: spacing[4],
   },
   resendBtn: {

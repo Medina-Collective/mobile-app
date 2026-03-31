@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
   itemSelected: {
     backgroundColor: colors.burgundy.raised,
-    borderColor: '#cdc1ad',
+    borderColor: '#CEC1AE',
   },
   dot: {
     width: 8,
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.burgundy.mid,
   },
   dotSelected: {
-    backgroundColor: '#cdc1ad',
+    backgroundColor: '#CEC1AE',
   },
   itemLabel: {
     fontSize: 14,
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     color: colors.burgundy.muted,
   },
   itemLabelSelected: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     fontWeight: '600',
   },
 });

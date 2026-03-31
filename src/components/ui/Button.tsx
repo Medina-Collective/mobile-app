@@ -16,6 +16,7 @@ interface ButtonProps extends Omit<TouchableOpacityProps, 'style'> {
   variant?: ButtonVariant | undefined;
   loading?: boolean | undefined;
   style?: ViewStyle | undefined;
+  textColor?: string | undefined;
 }
 
 export function Button({
@@ -23,6 +24,7 @@ export function Button({
   variant = 'solid',
   loading = false,
   style,
+  textColor,
   disabled,
   ...props
 }: Readonly<ButtonProps>) {
@@ -37,11 +39,18 @@ export function Button({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'solid' ? colors.burgundy.deep : colors.beige[200]}
+          color={variant === 'solid' ? '#ffffff' : colors.burgundy.mid}
           size="small"
         />
       ) : (
-        <Text variant="label" style={[styles.label, variant !== 'solid' && styles.labelAlt]}>
+        <Text
+          variant="label"
+          style={[
+            styles.label,
+            variant !== 'solid' && styles.labelAlt,
+            textColor !== undefined && { color: textColor },
+          ]}
+        >
           {title}
         </Text>
       )}
@@ -58,15 +67,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing[6],
   },
-  /** Warm beige fill — the primary welcoming CTA */
+  /** Deep dark burgundy fill — the primary CTA */
   solid: {
-    backgroundColor: colors.beige[200],
+    backgroundColor: '#2F0A0A',
   },
-  /** Subtle merlot border — secondary action */
+  /** Outline border — secondary action */
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: '#2F0A0A',
   },
   ghost: {
     backgroundColor: 'transparent',
@@ -75,13 +84,13 @@ const styles = StyleSheet.create({
     opacity: 0.4,
   },
   label: {
-    color: colors.burgundy.deep,
+    color: '#ffffff',
     letterSpacing: 0.5,
     fontSize: 14,
     fontWeight: '700',
   },
   labelAlt: {
-    color: '#7b625b',
+    color: colors.warm.body,
     fontWeight: '400',
   },
 });

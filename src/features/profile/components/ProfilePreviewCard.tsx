@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   initials: {
     fontSize: fontSize.lg,
     fontWeight: '700',
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     letterSpacing: 1,
   },
   headerText: {
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     gap: spacing[1],
   },
   businessName: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
   },
   profileTypeBadge: {
     color: colors.burgundy.muted,
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     color: '#7b625b',
   },
   editLink: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     fontWeight: '600',
     letterSpacing: 0,
   },
@@ -275,11 +275,11 @@ const styles = StyleSheet.create({
     borderColor: colors.burgundy.mid,
   },
   pillAccent: {
-    borderColor: '#cdc1ad',
+    borderColor: '#CEC1AE',
   },
   pillText: {
     fontSize: 12,
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     fontWeight: '500',
   },
   pillTextAccent: {
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   description: {
-    color: '#cdc1ad',
+    color: '#CEC1AE',
     lineHeight: 20,
     opacity: 0.85,
   },
