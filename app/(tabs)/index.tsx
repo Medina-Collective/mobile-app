@@ -13,6 +13,7 @@ import { useAuth } from '@features/auth';
 import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncement';
 import { useRankedAnnouncements } from '@features/announcements/hooks/useRecommendations';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
+import { filterChipStyles } from '@components/ui/filterChipStyles';
 import type { AnnouncementType } from '@app-types/announcement';
 
 // ── Filter config ─────────────────────────────────────────────────────────────
@@ -123,11 +124,13 @@ export default function HomeScreen() {
             return (
               <TouchableOpacity
                 key={filter.label}
-                style={[styles.chip, isActive && styles.chipActive]}
+                style={[filterChipStyles.chip, isActive && filterChipStyles.chipActive]}
                 onPress={() => setActiveFilterIndex(index)}
                 activeOpacity={0.75}
               >
-                <Text style={[styles.chipLabel, isActive && styles.chipLabelActive]}>
+                <Text
+                  style={[filterChipStyles.chipLabel, isActive && filterChipStyles.chipLabelActive]}
+                >
                   {filter.label}
                 </Text>
               </TouchableOpacity>
@@ -344,29 +347,6 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[1],
-  },
-  chip: {
-    flexShrink: 0,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2],
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: colors.warm.border,
-    backgroundColor: colors.warm.surface,
-  },
-  chipActive: {
-    backgroundColor: '#2F0A0A',
-    borderColor: '#2F0A0A',
-  },
-  chipLabel: {
-    fontFamily: fontFamily.sansMedium,
-    fontSize: 14,
-    color: colors.warm.title,
-  },
-  chipLabelActive: {
-    fontFamily: fontFamily.sansMedium,
-    fontSize: 14,
-    color: '#ffffff',
   },
 
   // Section spacing

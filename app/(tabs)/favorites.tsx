@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSavedStore } from '@store/saved.store';
 import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncement';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
+import { filterChipStyles } from '@components/ui/filterChipStyles';
 import type { Announcement } from '@app-types/announcement';
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
@@ -117,11 +118,15 @@ export default function FavoritesScreen() {
           return (
             <TouchableOpacity
               key={tab}
-              style={[styles.chip, isActive && styles.chipActive]}
+              style={[filterChipStyles.chip, isActive && filterChipStyles.chipActive]}
               onPress={() => setActiveTab(tab)}
               activeOpacity={0.75}
             >
-              <Text style={[styles.chipLabel, isActive && styles.chipLabelActive]}>{tab}</Text>
+              <Text
+                style={[filterChipStyles.chipLabel, isActive && filterChipStyles.chipLabelActive]}
+              >
+                {tab}
+              </Text>
             </TouchableOpacity>
           );
         })}
@@ -164,30 +169,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[1],
   },
-  chip: {
-    flexShrink: 0,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2],
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: colors.warm.border,
-    backgroundColor: colors.warm.surface,
-  },
-  chipActive: {
-    backgroundColor: '#2F0A0A',
-    borderColor: '#2F0A0A',
-  },
-  chipLabel: {
-    fontFamily: fontFamily.sansMedium,
-    fontSize: 14,
-    color: colors.warm.title,
-  },
-  chipLabelActive: {
-    fontFamily: fontFamily.sansMedium,
-    fontSize: 14,
-    color: '#ffffff',
-  },
-
   // List
   list: {
     paddingHorizontal: spacing[5],

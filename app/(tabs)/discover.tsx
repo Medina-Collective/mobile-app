@@ -22,6 +22,7 @@ import { useTrendingAnnouncements } from '@features/announcements/hooks/useRecom
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
 import { ANNOUNCEMENT_TYPE_OPTIONS } from '@features/announcements/schemas/announcement.schema';
 import { ANNOUNCEMENT_TYPE_LABELS } from '@app-types/announcement';
+import { filterChipStyles } from '@components/ui/filterChipStyles';
 import type { AnnouncementType } from '@app-types/announcement';
 
 const ALL_FILTER = 'all' as const;
@@ -108,11 +109,13 @@ export default function DiscoverScreen() {
             return (
               <TouchableOpacity
                 key={f.value}
-                style={[styles.chip, isActive && styles.chipActive]}
+                style={[filterChipStyles.chip, isActive && filterChipStyles.chipActive]}
                 onPress={() => setActiveFilter(f.value)}
                 activeOpacity={0.75}
               >
-                <Text style={[styles.chipLabel, isActive && styles.chipLabelActive]}>
+                <Text
+                  style={[filterChipStyles.chipLabel, isActive && filterChipStyles.chipLabelActive]}
+                >
                   {f.label}
                 </Text>
               </TouchableOpacity>
@@ -260,29 +263,6 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[1],
-  },
-  chip: {
-    flexShrink: 0,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2],
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: colors.warm.border,
-    backgroundColor: colors.warm.surface,
-  },
-  chipActive: {
-    backgroundColor: '#2F0A0A',
-    borderColor: '#2F0A0A',
-  },
-  chipLabel: {
-    fontFamily: fontFamily.sansMedium,
-    fontSize: 14,
-    color: colors.warm.title,
-  },
-  chipLabelActive: {
-    fontFamily: fontFamily.sansMedium,
-    fontSize: 14,
-    color: '#ffffff',
   },
 
   // Sections

@@ -2,41 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@services/supabase.client';
 import { useAuthStore } from '@store/auth.store';
 import { USER_ROLES, QUERY_KEYS } from '@constants/index';
-import type { Announcement, AnnouncementType, AnnouncementAudience } from '@app-types/announcement';
-import type { Database } from '@app-types/supabase';
+import { rowToAnnouncement, fetchParticipatedSet } from '../utils/announcement.utils';
+import type { ProfessionalSnippet } from '../utils/announcement.utils';
+import type { Announcement, AnnouncementType } from '@app-types/announcement';
 import type { AnnouncementFormData } from '../schemas/announcement.schema';
-
-type AnnouncementRow = Database['public']['Tables']['announcements']['Row'];
-type ProfessionalSnippet = { business_name: string; logo_uri: string | null } | null;
-
-function rowToAnnouncement(
-  row: AnnouncementRow,
-  hasParticipated = false,
-  professional: ProfessionalSnippet = null,
-): Announcement {
-  return {
-    id: row.id,
-    professionalId: row.professional_id,
-    professionalName: professional?.business_name ?? '',
-    professionalLogoUrl: professional?.logo_uri ?? undefined,
-    type: row.type as AnnouncementType,
-    title: row.title,
-    description: row.description ?? undefined,
-    coverImageUrl: row.cover_image_url ?? undefined,
-    location: row.location ?? undefined,
-    eventStart: row.event_start ?? undefined,
-    eventEnd: row.event_end ?? undefined,
-    visibilityStart: row.visibility_start,
-    visibilityEnd: row.visibility_end,
-    audience: (row.audience ?? 'public') as AnnouncementAudience,
-    participationEnabled: row.participation_enabled,
-    maxCapacity: row.max_capacity ?? undefined,
-    participantCount: row.participant_count,
-    hasParticipated,
-    status: row.status,
-    createdAt: row.created_at,
-  };
-}
 
 // ── List (active feed) ────────────────────────────────────────────────────────
 
@@ -71,25 +40,9 @@ export function useListAnnouncements(typeFilter?: AnnouncementType | undefined) 
       const { data, error } = await query;
       if (error) throw error;
 
-      // Fetch current user's participation in one batch query
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      if (data.length === 0) return [];
 
-      if (!user || data.length === 0) {
-        return data.map((r) =>
-          rowToAnnouncement(r, false, r.professionals as unknown as ProfessionalSnippet),
-        );
-      }
-
-      const ids = data.map((r) => r.id);
-      const { data: participated } = await supabase
-        .from('announcement_participants')
-        .select('announcement_id')
-        .eq('user_id', user.id)
-        .in('announcement_id', ids);
-
-      const participatedSet = new Set(participated?.map((p) => p.announcement_id) ?? []);
+      const participatedSet = await fetchParticipatedSet(data.map((r) => r.id));
       return data.map((r) =>
         rowToAnnouncement(
           r,

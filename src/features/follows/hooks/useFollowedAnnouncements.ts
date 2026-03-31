@@ -3,40 +3,12 @@ import { supabase } from '@services/supabase.client';
 import { useFollowsStore } from '@store/follows.store';
 import { useAuthStore } from '@store/auth.store';
 import { USER_ROLES } from '@constants/index';
-import type { Announcement, AnnouncementType, AnnouncementAudience } from '@app-types/announcement';
-import type { Database } from '@app-types/supabase';
-
-type AnnouncementRow = Database['public']['Tables']['announcements']['Row'];
-type ProfessionalSnippet = { business_name: string; logo_uri: string | null } | null;
-
-function rowToAnnouncement(
-  row: AnnouncementRow,
-  hasParticipated = false,
-  professional: ProfessionalSnippet = null,
-): Announcement {
-  return {
-    id: row.id,
-    professionalId: row.professional_id,
-    professionalName: professional?.business_name ?? '',
-    professionalLogoUrl: professional?.logo_uri ?? undefined,
-    type: row.type as AnnouncementType,
-    title: row.title,
-    description: row.description ?? undefined,
-    coverImageUrl: row.cover_image_url ?? undefined,
-    location: row.location ?? undefined,
-    eventStart: row.event_start ?? undefined,
-    eventEnd: row.event_end ?? undefined,
-    visibilityStart: row.visibility_start,
-    visibilityEnd: row.visibility_end,
-    audience: (row.audience ?? 'public') as AnnouncementAudience,
-    participationEnabled: row.participation_enabled,
-    maxCapacity: row.max_capacity ?? undefined,
-    participantCount: row.participant_count,
-    hasParticipated,
-    status: row.status,
-    createdAt: row.created_at,
-  };
-}
+import {
+  rowToAnnouncement,
+  fetchParticipatedSet,
+} from '@features/announcements/utils/announcement.utils';
+import type { ProfessionalSnippet } from '@features/announcements/utils/announcement.utils';
+import type { Announcement } from '@app-types/announcement';
 
 /**
  * Returns active announcements from the professional accounts the current user follows.
@@ -72,25 +44,7 @@ export function useFollowedAnnouncements() {
       if (error) throw error;
       if (data.length === 0) return [];
 
-      // Batch-fetch participation status
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        return data.map((r) =>
-          rowToAnnouncement(r, false, r.professionals as unknown as ProfessionalSnippet),
-        );
-      }
-
-      const ids = data.map((r) => r.id);
-      const { data: participated } = await supabase
-        .from('announcement_participants')
-        .select('announcement_id')
-        .eq('user_id', user.id)
-        .in('announcement_id', ids);
-
-      const participatedSet = new Set(participated?.map((p) => p.announcement_id) ?? []);
+      const participatedSet = await fetchParticipatedSet(data.map((r) => r.id));
       return data.map((r) =>
         rowToAnnouncement(
           r,

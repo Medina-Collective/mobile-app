@@ -48,21 +48,18 @@ export const ANNOUNCEMENT_TYPE_OPTIONS = [
     description: 'Any other type of announcement',
     icon: 'notifications-outline',
   },
+] as const;
+
+const ANNOUNCEMENT_TYPE_VALUES = ANNOUNCEMENT_TYPE_OPTIONS.map((o) => o.value) as [
+  (typeof ANNOUNCEMENT_TYPE_OPTIONS)[number]['value'],
+  ...(typeof ANNOUNCEMENT_TYPE_OPTIONS)[number]['value'][],
 ];
 
 // ── Zod schema ────────────────────────────────────────────────────────────────
 
 export const announcementSchema = z
   .object({
-    type: z.enum([
-      'activity_event',
-      'bazaar',
-      'brand_popup',
-      'halaqa',
-      'limited_offer',
-      'update',
-      'other',
-    ]),
+    type: z.enum(ANNOUNCEMENT_TYPE_VALUES),
     title: z
       .string()
       .min(2, 'Title must be at least 2 characters')
