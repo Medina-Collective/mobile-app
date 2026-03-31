@@ -80,10 +80,7 @@ function diversitySort(items: Announcement[]): Announcement[] {
  * opened them. Falls back to recency for items with equal (or no) opens so
  * the section is never empty on first launch.
  */
-export function useTrendingAnnouncements(
-  announcements: Announcement[],
-  limit = 3,
-): Announcement[] {
+export function useTrendingAnnouncements(announcements: Announcement[], limit = 3): Announcement[] {
   const openCounts = useRecommendationsStore((s) => s.openCounts);
 
   return useMemo(() => {

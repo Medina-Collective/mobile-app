@@ -233,8 +233,8 @@ export function useCreateAnnouncement() {
       return rowToAnnouncement(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.announcements });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.myAnnouncements });
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.announcements });
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.myAnnouncements });
     },
   });
 }

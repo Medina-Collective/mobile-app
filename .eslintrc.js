@@ -15,7 +15,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'react-native', 'prettier'],
   rules: {
     'prettier/prettier': 'error',
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     '@typescript-eslint/consistent-type-imports': 'error',
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-explicit-any': 'error',

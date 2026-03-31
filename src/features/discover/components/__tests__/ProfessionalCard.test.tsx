@@ -1,6 +1,14 @@
 import { render, fireEvent } from '@testing-library/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProfessionalCard } from '../ProfessionalCard';
 import type { Professional } from '@app-types/professional';
+
+function renderWithQuery(ui: React.ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+}
 
 const mockPush = jest.fn();
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }) }));
@@ -25,7 +33,7 @@ describe('ProfessionalCard', () => {
   beforeEach(() => mockPush.mockClear());
 
   it('renders business name, category, location and type badge', () => {
-    const { getByText } = render(<ProfessionalCard professional={base} />);
+    const { getByText } = renderWithQuery(<ProfessionalCard professional={base} />);
     expect(getByText('Henna by Fatima')).toBeTruthy();
     expect(getByText('Beauty · Henna, Makeup')).toBeTruthy();
     expect(getByText('Montreal')).toBeTruthy();
@@ -33,36 +41,38 @@ describe('ProfessionalCard', () => {
   });
 
   it('renders avatar initials from the first two words', () => {
-    const { getByText } = render(<ProfessionalCard professional={base} />);
+    const { getByText } = renderWithQuery(<ProfessionalCard professional={base} />);
     expect(getByText('HB')).toBeTruthy(); // "Henna by Fatima" → H + B
   });
 
   it('shows "?" when business name is empty', () => {
-    const { getByText } = render(<ProfessionalCard professional={{ ...base, businessName: '' }} />);
+    const { getByText } = renderWithQuery(
+      <ProfessionalCard professional={{ ...base, businessName: '' }} />,
+    );
     expect(getByText('?')).toBeTruthy();
   });
 
   it('shows price range when provided', () => {
-    const { getByText } = render(<ProfessionalCard professional={base} />);
+    const { getByText } = renderWithQuery(<ProfessionalCard professional={base} />);
     expect(getByText('$$')).toBeTruthy();
   });
 
   it('hides price range when undefined', () => {
-    const { queryByText } = render(
+    const { queryByText } = renderWithQuery(
       <ProfessionalCard professional={{ ...base, priceRange: undefined }} />,
     );
     expect(queryByText('$$')).toBeNull();
   });
 
   it('shows only category when there are no subcategories', () => {
-    const { getByText } = render(
+    const { getByText } = renderWithQuery(
       <ProfessionalCard professional={{ ...base, subcategories: [] }} />,
     );
     expect(getByText('Beauty')).toBeTruthy();
   });
 
   it('navigates to the profile screen on press', () => {
-    const { getByText } = render(<ProfessionalCard professional={base} />);
+    const { getByText } = renderWithQuery(<ProfessionalCard professional={base} />);
     fireEvent.press(getByText('Henna by Fatima'));
     expect(mockPush).toHaveBeenCalledWith('/professional/1');
   });

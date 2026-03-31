@@ -71,4 +71,9 @@ module.exports = {
   },
 
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+
+  // Prevent open TanStack Query / async handles from blocking worker teardown
+  forceExit: true,
+  // Limit parallelism to reduce worker contention with async-heavy tests
+  maxWorkers: 4,
 };

@@ -23,11 +23,15 @@ export function useParticipation(announcementId: string) {
   // useQuery({ enabled: false, queryFn: throw }) would corrupt the shared cache
   // entry used by useGetAnnouncement, causing the detail page to show an error.
   // The QueryCache subscription API is the correct low-level approach here.
-  const [detailData, setDetailData] = useState<Announcement | undefined>(
-    () => queryClient.getQueryData<Announcement>(detailKey),
+  const [detailData, setDetailData] = useState<Announcement | undefined>(() =>
+    queryClient.getQueryData<Announcement>(detailKey),
   );
   useEffect(() => {
-    // Sync on mount in case the cache was populated between render and effect
+    // Sync on mount in case the cache was populated between render and effect.
+    // setState inside useEffect is intentional here — we're syncing from the
+    // TanStack Query cache, not from a network response, so the risk of
+    // cascading renders is bounded and this is the correct pattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDetailData(queryClient.getQueryData<Announcement>(detailKey));
     return queryClient.getQueryCache().subscribe(() => {
       setDetailData(queryClient.getQueryData<Announcement>(detailKey));
@@ -38,7 +42,9 @@ export function useParticipation(announcementId: string) {
   // (i.e. user hasn't visited the detail page — fixes "Full" instead of "Going" in feed).
   let isParticipating = detailData?.hasParticipated ?? false;
   if (detailData === undefined) {
-    const lists = queryClient.getQueriesData<Announcement[]>({ queryKey: QUERY_KEYS.announcements });
+    const lists = queryClient.getQueriesData<Announcement[]>({
+      queryKey: QUERY_KEYS.announcements,
+    });
     for (const [, list] of lists) {
       if (!Array.isArray(list)) continue;
       const found = list.find((a) => a.id === announcementId);
