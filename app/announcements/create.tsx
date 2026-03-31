@@ -130,9 +130,9 @@ export default function CreateAnnouncementScreen() {
   // Guard: PRO only — after all hooks
   if (user?.role === USER_ROLES.PROFESSIONAL) {
     const maxVisibilityEnd =
-      visibilityStart !== undefined
-        ? new Date(visibilityStart.getTime() + MAX_VISIBILITY_DAYS * 24 * 60 * 60 * 1000)
-        : undefined;
+      visibilityStart === undefined
+        ? undefined
+        : new Date(visibilityStart.getTime() + MAX_VISIBILITY_DAYS * 24 * 60 * 60 * 1000);
 
     return (
       <Screen>
@@ -261,20 +261,24 @@ export default function CreateAnnouncementScreen() {
               subtitle="Pick a type, or leave empty for timeless announcements."
             />
             <View style={styles.dateModeRow}>
-              {(['none', 'event', 'deadline'] as const).map((mode) => (
-                <TouchableOpacity
-                  key={mode}
-                  style={[styles.dateModeOption, dateMode === mode && styles.dateModeOptionActive]}
-                  onPress={() => handleDateModeChange(mode)}
-                  activeOpacity={0.8}
-                >
-                  <Text
-                    style={[styles.dateModeLabel, dateMode === mode && styles.dateModeLabelActive]}
+              {(['none', 'event', 'deadline'] as const).map((mode) => {
+                const eventOrDeadlineLabel = mode === 'event' ? 'Event Date' : 'Deadline';
+                const modeLabel = mode === 'none' ? 'None' : eventOrDeadlineLabel;
+                return (
+                  <TouchableOpacity
+                    key={mode}
+                    style={[styles.dateModeOption, dateMode === mode && styles.dateModeOptionActive]}
+                    onPress={() => handleDateModeChange(mode)}
+                    activeOpacity={0.8}
                   >
-                    {mode === 'none' ? 'None' : mode === 'event' ? 'Event Date' : 'Deadline'}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      style={[styles.dateModeLabel, dateMode === mode && styles.dateModeLabelActive]}
+                    >
+                      {modeLabel}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
 
             {dateMode === 'event' && (

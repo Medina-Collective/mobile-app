@@ -31,7 +31,7 @@ async function resolveRole(userId: string, appMetadataRole: string | undefined):
     .eq('status', 'approved')
     .maybeSingle();
 
-  return data !== null ? USER_ROLES.PROFESSIONAL : USER_ROLES.USER;
+  return data === null ? USER_ROLES.USER : USER_ROLES.PROFESSIONAL;
 }
 
 async function buildUser(u: {

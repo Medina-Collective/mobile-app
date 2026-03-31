@@ -32,7 +32,7 @@ export function DatePicker({
   // iOS: use a staging date so the user can cancel without committing
   const [stagingDate, setStagingDate] = useState<Date>(value ?? new Date());
 
-  const displayValue = value !== undefined ? format(value, 'MMM d, yyyy') : undefined;
+  const displayValue = value === undefined ? undefined : format(value, 'MMM d, yyyy');
   const hasError = error !== undefined && error.length > 0;
 
   const handleAndroidChange = useCallback(

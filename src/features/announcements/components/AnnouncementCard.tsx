@@ -215,9 +215,9 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
             style={defaultStyles.ctaButton}
             activeOpacity={0.8}
             onPress={() =>
-              announcement.externalUrl !== undefined
-                ? Linking.openURL(announcement.externalUrl)
-                : router.push(`/announcements/${announcement.id}`)
+              announcement.externalUrl === undefined
+                ? router.push(`/announcements/${announcement.id}`)
+                : Linking.openURL(announcement.externalUrl)
             }
           >
             <Text style={defaultStyles.ctaButtonText}>{ctaLabel}</Text>
