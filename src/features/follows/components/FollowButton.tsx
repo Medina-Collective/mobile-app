@@ -15,6 +15,8 @@ export function FollowButton({ professionalId, variant = 'pill' }: Readonly<Foll
   const { isFollowing, toggle, isToggling } = useFollow(professionalId);
 
   if (variant === 'icon') {
+    const iconName = isFollowing ? 'person-remove-outline' : 'person-add-outline';
+    const iconColor = isFollowing ? colors.burgundy.muted : '#CEC1AE';
     return (
       <TouchableOpacity
         onPress={(e) => {
@@ -29,11 +31,7 @@ export function FollowButton({ professionalId, variant = 'pill' }: Readonly<Foll
         {isToggling ? (
           <ActivityIndicator size="small" color={colors.burgundy.muted} />
         ) : (
-          <Ionicons
-            name={isFollowing ? 'person-remove-outline' : 'person-add-outline'}
-            size={18}
-            color={isFollowing ? colors.burgundy.muted : '#CEC1AE'}
-          />
+          <Ionicons name={iconName} size={18} color={iconColor} />
         )}
       </TouchableOpacity>
     );
