@@ -238,10 +238,15 @@ export default function EditAnnouncementScreen() {
 
   // ── Derived ─────────────────────────────────────────────────────────────────
 
-  const maxVisibilityEnd =
+  const eventEnd = watch('eventEnd');
+  const maxByWindow =
     visibilityStart === undefined
       ? undefined
       : new Date(visibilityStart.getTime() + MAX_VISIBILITY_DAYS * 24 * 60 * 60 * 1000);
+  const maxVisibilityEnd =
+    eventEnd !== undefined && maxByWindow !== undefined
+      ? new Date(Math.min(eventEnd.getTime(), maxByWindow.getTime()))
+      : (eventEnd ?? maxByWindow);
 
   const isLive = new Date() >= new Date(announcement.visibilityStart);
 
@@ -409,6 +414,7 @@ export default function EditAnnouncementScreen() {
                     onChange={onChange}
                     error={errors.eventStart?.message}
                     placeholder="No start date"
+                    spinner
                   />
                 )}
               />
@@ -422,6 +428,7 @@ export default function EditAnnouncementScreen() {
                     onChange={onChange}
                     minimumDate={watch('eventStart')}
                     error={errors.eventEnd?.message}
+                    spinner
                     placeholder="No end date"
                   />
                 )}

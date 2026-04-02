@@ -129,10 +129,15 @@ export default function CreateAnnouncementScreen() {
 
   // Guard: PRO only — after all hooks
   if (user?.role === USER_ROLES.PROFESSIONAL) {
-    const maxVisibilityEnd =
+    const eventEnd = watch('eventEnd');
+    const maxByWindow =
       visibilityStart === undefined
         ? undefined
         : new Date(visibilityStart.getTime() + MAX_VISIBILITY_DAYS * 24 * 60 * 60 * 1000);
+    const maxVisibilityEnd =
+      eventEnd !== undefined && maxByWindow !== undefined
+        ? new Date(Math.min(eventEnd.getTime(), maxByWindow.getTime()))
+        : (eventEnd ?? maxByWindow);
 
     return (
       <Screen>
@@ -299,6 +304,7 @@ export default function CreateAnnouncementScreen() {
                       onChange={onChange}
                       error={errors.eventStart?.message}
                       placeholder="No start date"
+                      spinner
                     />
                   )}
                 />
@@ -313,6 +319,7 @@ export default function CreateAnnouncementScreen() {
                       minimumDate={watch('eventStart')}
                       error={errors.eventEnd?.message}
                       placeholder="No end date"
+                      spinner
                     />
                   )}
                 />

@@ -27,10 +27,18 @@ function AnnouncementSeparator() {
 interface FeedContentProps {
   isError: boolean;
   data: Announcement[] | undefined;
+  refreshing: boolean;
+  onRefresh: () => void;
   onRetry: () => void;
 }
 
-function FeedContent({ isError, data, onRetry }: Readonly<FeedContentProps>) {
+function FeedContent({
+  isError,
+  data,
+  refreshing,
+  onRefresh,
+  onRetry,
+}: Readonly<FeedContentProps>) {
   if (isError) {
     return (
       <View style={styles.centered}>
@@ -56,6 +64,8 @@ function FeedContent({ isError, data, onRetry }: Readonly<FeedContentProps>) {
         </View>
       }
       showsVerticalScrollIndicator={false}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
     />
   );
 }
@@ -78,12 +88,16 @@ export default function AnnouncementsScreen() {
 
   const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
 
-  const { data, isLoading, isError, refetch } = useListAnnouncements(
+  const { data, isLoading, isError, isRefetching, refetch } = useListAnnouncements(
     activeFilter === ALL_FILTER ? undefined : activeFilter,
   );
 
   const handleRetry = useCallback(async () => {
     await refetch();
+  }, [refetch]);
+
+  const handleRefresh = useCallback(() => {
+    refetch().catch(() => null);
   }, [refetch]);
 
   return (
@@ -131,7 +145,13 @@ export default function AnnouncementsScreen() {
           <ActivityIndicator color={colors.burgundy.mid} />
         </View>
       ) : (
-        <FeedContent isError={isError} data={data} onRetry={handleRetry} />
+        <FeedContent
+          isError={isError}
+          data={data}
+          refreshing={isRefetching}
+          onRefresh={handleRefresh}
+          onRetry={handleRetry}
+        />
       )}
 
       {/* PRO floating action button */}

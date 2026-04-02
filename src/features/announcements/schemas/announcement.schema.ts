@@ -110,6 +110,13 @@ export const announcementSchema = z
   .refine((d) => !(d.eventStart !== undefined && d.deadline !== undefined), {
     message: 'Choose either an event date or a deadline — not both',
     path: ['deadline'],
-  });
+  })
+  .refine(
+    (d) => d.eventEnd === undefined || d.visibilityEnd <= d.eventEnd,
+    {
+      message: 'Hide after date must be on or before the event end date',
+      path: ['visibilityEnd'],
+    },
+  );
 
 export type AnnouncementFormData = z.infer<typeof announcementSchema>;

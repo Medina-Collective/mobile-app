@@ -17,6 +17,7 @@ interface DatePickerProps {
   helperText?: string | undefined;
   placeholder?: string | undefined;
   disabled?: boolean | undefined;
+  spinner?: boolean | undefined;
 }
 
 export function DatePicker({
@@ -29,6 +30,7 @@ export function DatePicker({
   helperText,
   placeholder = 'Select a date',
   disabled = false,
+  spinner = false,
 }: Readonly<DatePickerProps>) {
   const [showPicker, setShowPicker] = useState(false);
   // iOS: use a staging date so the user can cancel without committing
@@ -109,7 +111,7 @@ export function DatePicker({
         <DateTimePicker
           value={value ?? new Date()}
           mode="date"
-          display="default"
+          display={spinner ? 'spinner' : 'default'}
           onChange={handleAndroidChange}
           {...(minimumDate !== undefined && { minimumDate })}
           {...(maximumDate !== undefined && { maximumDate })}
