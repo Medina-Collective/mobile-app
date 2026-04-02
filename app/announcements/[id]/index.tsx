@@ -101,7 +101,11 @@ export default function AnnouncementDetailScreen() {
         : formatDateRange(announcement.eventStart, announcement.eventEnd);
   }
 
-  const daysUntilExpiry = differenceInDays(new Date(announcement.visibilityEnd), new Date());
+  const endDate = new Date(announcement.visibilityEnd);
+  const endLocalDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+  const today = new Date();
+  const todayLocalDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const daysUntilExpiry = differenceInDays(endLocalDay, todayLocalDay);
   let expiryLabel = `Expires in ${daysUntilExpiry} days`;
   if (daysUntilExpiry < 0) expiryLabel = 'Expired';
   else if (daysUntilExpiry === 0) expiryLabel = 'Expires today';

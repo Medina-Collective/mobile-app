@@ -1,4 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+// Normalize to start/end of the local calendar day so UTC storage
+// never bleeds into a different calendar day in the user's timezone.
+function startOfLocalDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+}
+function endOfLocalDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
+}
 import { supabase } from '@services/supabase.client';
 import { useAuthStore } from '@store/auth.store';
 import { USER_ROLES, QUERY_KEYS } from '@constants/index';
@@ -224,8 +233,8 @@ export function useCreateAnnouncement() {
           location: formData.location ?? null,
           event_start: formData.eventStart?.toISOString() ?? null,
           event_end: formData.eventEnd?.toISOString() ?? null,
-          visibility_start: formData.visibilityStart.toISOString(),
-          visibility_end: formData.visibilityEnd.toISOString(),
+          visibility_start: startOfLocalDay(formData.visibilityStart).toISOString(),
+          visibility_end: endOfLocalDay(formData.visibilityEnd).toISOString(),
           audience: formData.audience,
           participation_enabled: formData.participationEnabled,
           max_capacity: formData.maxCapacity ?? null,
@@ -304,8 +313,8 @@ export function useUpdateAnnouncement() {
           location: formData.location ?? null,
           event_start: formData.eventStart?.toISOString() ?? null,
           event_end: formData.eventEnd?.toISOString() ?? null,
-          visibility_start: formData.visibilityStart.toISOString(),
-          visibility_end: formData.visibilityEnd.toISOString(),
+          visibility_start: startOfLocalDay(formData.visibilityStart).toISOString(),
+          visibility_end: endOfLocalDay(formData.visibilityEnd).toISOString(),
           audience: formData.audience,
           participation_enabled: formData.participationEnabled,
           max_capacity: formData.maxCapacity ?? null,
