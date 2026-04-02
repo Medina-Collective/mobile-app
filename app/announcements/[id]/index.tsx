@@ -1,4 +1,4 @@
-import { View, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { format, isSameDay } from 'date-fns';
 import { Image } from 'expo-image';
@@ -13,7 +13,11 @@ import {
   ANNOUNCEMENT_TYPE_ICONS,
   ANNOUNCEMENT_TYPE_COLORS,
 } from '@app-types/announcement';
-import { useGetAnnouncement } from '@features/announcements/hooks/useAnnouncement';
+import {
+  useGetAnnouncement,
+  useDeleteAnnouncement,
+  useCurrentProfessionalId,
+} from '@features/announcements/hooks/useAnnouncement';
 import { ParticipationButton } from '@features/announcements/components/ParticipationButton';
 import { SaveButton } from '@features/announcements/components/SaveButton';
 
@@ -31,6 +35,38 @@ export default function AnnouncementDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { data: announcement, isLoading, isError } = useGetAnnouncement(id);
+  const { data: currentProfessionalId } = useCurrentProfessionalId();
+  const { mutate: deleteAnnouncement, isPending: isDeleting } = useDeleteAnnouncement();
+
+  const isOwner =
+    currentProfessionalId !== undefined &&
+    currentProfessionalId !== null &&
+    announcement !== undefined &&
+    currentProfessionalId === announcement.professionalId;
+
+  const handleDelete = () => {
+    Alert.alert(
+      'Delete Announcement',
+      'This will permanently remove the announcement from the feed. This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            deleteAnnouncement(id, {
+              onSuccess: () => {
+                router.replace('/(tabs)/announcements');
+              },
+              onError: (err) => {
+                Alert.alert('Could not delete', err.message);
+              },
+            });
+          },
+        },
+      ],
+    );
+  };
 
   if (isLoading) {
     return (
@@ -85,6 +121,30 @@ export default function AnnouncementDetailScreen() {
           <View style={styles.backButtonOverlay}>
             <BackButton />
           </View>
+          {/* Owner actions — top right */}
+          {isOwner && (
+            <View style={styles.ownerActionsOverlay}>
+              <TouchableOpacity
+                style={styles.ownerActionBtn}
+                onPress={() => router.push(`/announcements/${id}/edit`)}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="pencil-outline" size={18} color={colors.warm.title} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.ownerActionBtn, isDeleting && styles.ownerActionBtnDisabled]}
+                onPress={handleDelete}
+                activeOpacity={0.8}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <ActivityIndicator size="small" color={colors.error[500]} />
+                ) : (
+                  <Ionicons name="trash-outline" size={18} color={colors.error[500]} />
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         <View style={styles.body}>
@@ -218,6 +278,29 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: spacing[12],
     left: spacing[4],
+  },
+  ownerActionsOverlay: {
+    position: 'absolute',
+    top: spacing[12],
+    right: spacing[4],
+    flexDirection: 'row',
+    gap: spacing[2],
+  },
+  ownerActionBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 252, 249, 0.90)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  ownerActionBtnDisabled: {
+    opacity: 0.5,
   },
   body: {
     padding: spacing[5],
