@@ -243,6 +243,8 @@ export default function EditAnnouncementScreen() {
       ? undefined
       : new Date(visibilityStart.getTime() + MAX_VISIBILITY_DAYS * 24 * 60 * 60 * 1000);
 
+  const isLive = new Date() >= new Date(announcement.visibilityStart);
+
   const displayImageUri = coverImageUri ?? existingCoverUrl;
 
   return (
@@ -489,7 +491,12 @@ export default function EditAnnouncementScreen() {
                 value={value}
                 onChange={onChange}
                 error={errors.visibilityStart?.message}
-                helperText="The day your announcement goes live on the feed"
+                helperText={
+                  isLive
+                    ? 'Your post is live — start date cannot be changed'
+                    : 'The day your announcement goes live on the feed'
+                }
+                disabled={isLive}
               />
             )}
           />

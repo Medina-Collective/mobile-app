@@ -1,6 +1,6 @@
 import { View, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, differenceInDays } from 'date-fns';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
@@ -101,8 +101,10 @@ export default function AnnouncementDetailScreen() {
         : formatDateRange(announcement.eventStart, announcement.eventEnd);
   }
 
-  const visibilityStartLabel = format(new Date(announcement.visibilityStart), 'MMM d, yyyy');
-  const visibilityEndLabel = format(new Date(announcement.visibilityEnd), 'MMM d, yyyy');
+  const daysUntilExpiry = differenceInDays(new Date(announcement.visibilityEnd), new Date());
+  let expiryLabel = `Expires in ${daysUntilExpiry} days`;
+  if (daysUntilExpiry <= 0) expiryLabel = 'Expired';
+  else if (daysUntilExpiry === 1) expiryLabel = 'Expires tomorrow';
 
   return (
     <Screen noHorizontalPadding noTopInset>
@@ -210,19 +212,12 @@ export default function AnnouncementDetailScreen() {
                 </View>
               </View>
             )}
-
-            <View style={styles.metaRow}>
-              <Ionicons name="time-outline" size={18} color={colors.warm.muted} />
-              <View>
-                <Text style={styles.metaText}>
-                  {visibilityStartLabel} → {visibilityEndLabel}
-                </Text>
-                <Text style={styles.metaHint}>
-                  This post is visible on the feed until {visibilityEndLabel}
-                </Text>
-              </View>
-            </View>
           </View>
+
+          {/* Expiry notice — owner only */}
+          {isOwner && (
+            <Text style={styles.expiryNotice}>{expiryLabel}</Text>
+          )}
 
           {/* Description */}
           {announcement.description !== undefined && (
@@ -433,5 +428,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: 'rgba(40, 2, 10, 0.80)',
     lineHeight: 19,
+  },
+  expiryNotice: {
+    fontSize: 12,
+    color: colors.warm.muted,
+    textAlign: 'center',
   },
 });

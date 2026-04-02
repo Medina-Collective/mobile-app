@@ -16,6 +16,7 @@ interface DatePickerProps {
   error?: string | undefined;
   helperText?: string | undefined;
   placeholder?: string | undefined;
+  disabled?: boolean | undefined;
 }
 
 export function DatePicker({
@@ -27,6 +28,7 @@ export function DatePicker({
   error,
   helperText,
   placeholder = 'Select a date',
+  disabled = false,
 }: Readonly<DatePickerProps>) {
   const [showPicker, setShowPicker] = useState(false);
   // iOS: use a staging date so the user can cancel without committing
@@ -68,17 +70,26 @@ export function DatePicker({
       </Text>
 
       <TouchableOpacity
-        style={[styles.button, hasError && styles.buttonError]}
+        style={[styles.button, hasError && styles.buttonError, disabled && styles.buttonDisabled]}
         onPress={handleOpen}
-        activeOpacity={0.7}
+        activeOpacity={disabled ? 1 : 0.7}
+        disabled={disabled}
       >
         <Text
           variant="body"
-          style={[styles.valueText, displayValue === undefined && styles.placeholder]}
+          style={[
+            styles.valueText,
+            displayValue === undefined && styles.placeholder,
+            disabled && styles.valueTextDisabled,
+          ]}
         >
           {displayValue ?? placeholder}
         </Text>
-        <Ionicons name="calendar-outline" size={18} color={colors.warm.muted} />
+        <Ionicons
+          name={disabled ? 'lock-closed-outline' : 'calendar-outline'}
+          size={18}
+          color={disabled ? colors.warm.border : colors.warm.muted}
+        />
       </TouchableOpacity>
 
       {hasError && (
@@ -169,9 +180,15 @@ const styles = StyleSheet.create({
   buttonError: {
     borderBottomColor: colors.error[500],
   },
+  buttonDisabled: {
+    opacity: 0.5,
+  },
   valueText: {
     fontSize: 16,
     color: '#1f2937',
+  },
+  valueTextDisabled: {
+    color: colors.warm.muted,
   },
   placeholder: {
     color: '#7b625b',
