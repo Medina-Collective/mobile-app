@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   TextInput,
+  RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -42,10 +43,14 @@ export default function DiscoverScreen() {
   const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: allAnnouncements = [], isLoading, isError, refetch } = useListAnnouncements();
+  const { data: allAnnouncements = [], isLoading, isError, isRefetching, refetch } = useListAnnouncements();
 
   const handleRetry = useCallback(async () => {
     await refetch();
+  }, [refetch]);
+
+  const handleRefresh = useCallback(() => {
+    refetch().catch(() => null);
   }, [refetch]);
 
   // Trending: top 3 by open count, falls back to recency
@@ -74,7 +79,13 @@ export default function DiscoverScreen() {
         <Text style={styles.subtitle}>Explore what's happening in Montreal</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} tintColor={colors.burgundy.mid} />
+        }
+      >
         {/* ── Search Row ──────────────────────────────────────────────────── */}
         <View style={styles.searchRow}>
           <View style={styles.searchInputWrapper}>

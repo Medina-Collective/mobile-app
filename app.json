@@ -39,7 +39,13 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Medina uses your location to suggest nearby places when creating an announcement."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

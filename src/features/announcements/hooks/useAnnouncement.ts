@@ -8,6 +8,25 @@ function startOfLocalDay(date: Date): Date {
 function endOfLocalDay(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999);
 }
+
+/**
+ * Maps the 3 form types to the DB enum values.
+ * event → activity_event, offer → limited_offer, update → other
+ */
+function toDbType(formType: 'event' | 'offer' | 'update'): 'activity_event' | 'limited_offer' | 'other' {
+  if (formType === 'event') return 'activity_event';
+  if (formType === 'offer') return 'limited_offer';
+  return 'other';
+}
+
+/**
+ * Maps DB type back to the 3 form types for the edit screen.
+ */
+export function fromDbType(dbType: string): 'event' | 'offer' | 'update' {
+  if (dbType === 'limited_offer') return 'offer';
+  if (dbType === 'other') return 'update';
+  return 'event'; // activity_event, bazaar, brand_popup, halaqa
+}
 import { supabase } from '@services/supabase.client';
 import { useAuthStore } from '@store/auth.store';
 import { USER_ROLES, QUERY_KEYS } from '@constants/index';
@@ -221,23 +240,33 @@ export function useCreateAnnouncement() {
         coverImageUrl = urlData.publicUrl;
       }
 
+      // Combine event date + time into a single ISO string
+      let eventStart: string | null = null;
+      if (formData.type === 'event' && formData.eventDate !== undefined) {
+        const d = new Date(formData.eventDate);
+        if (formData.eventTime !== undefined) {
+          d.setHours(formData.eventTime.getHours(), formData.eventTime.getMinutes(), 0, 0);
+        }
+        eventStart = d.toISOString();
+      }
+
       const { data, error } = await supabase
         .from('announcements')
         .insert({
           professional_id: professional.id,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          type: formData.type as any,
+          type: toDbType(formData.type) as any,
           title: formData.title,
           description: formData.description ?? null,
           cover_image_url: coverImageUrl,
           location: formData.location ?? null,
-          event_start: formData.eventStart?.toISOString() ?? null,
-          event_end: formData.eventEnd?.toISOString() ?? null,
+          event_start: eventStart,
+          event_end: null,
           visibility_start: startOfLocalDay(formData.visibilityStart).toISOString(),
           visibility_end: endOfLocalDay(formData.visibilityEnd).toISOString(),
-          audience: formData.audience,
-          participation_enabled: formData.participationEnabled,
-          max_capacity: formData.maxCapacity ?? null,
+          audience: 'public',
+          participation_enabled: false,
+          max_capacity: formData.maxParticipants ?? null,
           status: 'published',
         })
         .select()
@@ -302,22 +331,31 @@ export function useUpdateAnnouncement() {
         coverImageUrl = urlData.publicUrl;
       }
 
+      let eventStart: string | null = null;
+      if (formData.type === 'event' && formData.eventDate !== undefined) {
+        const d = new Date(formData.eventDate);
+        if (formData.eventTime !== undefined) {
+          d.setHours(formData.eventTime.getHours(), formData.eventTime.getMinutes(), 0, 0);
+        }
+        eventStart = d.toISOString();
+      }
+
       const { data, error } = await supabase
         .from('announcements')
         .update({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          type: formData.type as any,
+          type: toDbType(formData.type) as any,
           title: formData.title,
           description: formData.description ?? null,
           cover_image_url: coverImageUrl,
           location: formData.location ?? null,
-          event_start: formData.eventStart?.toISOString() ?? null,
-          event_end: formData.eventEnd?.toISOString() ?? null,
+          event_start: eventStart,
+          event_end: null,
           visibility_start: startOfLocalDay(formData.visibilityStart).toISOString(),
           visibility_end: endOfLocalDay(formData.visibilityEnd).toISOString(),
-          audience: formData.audience,
-          participation_enabled: formData.participationEnabled,
-          max_capacity: formData.maxCapacity ?? null,
+          audience: 'public',
+          participation_enabled: false,
+          max_capacity: formData.maxParticipants ?? null,
         })
         .eq('id', id)
         .select('*, professionals(business_name, logo_uri)')
