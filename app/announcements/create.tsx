@@ -8,6 +8,7 @@ import {
   Alert,
   Modal,
   FlatList,
+  type TextStyle,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
@@ -39,7 +40,7 @@ import type { AnnouncementFormData } from '@features/announcements/schemas/annou
 function FieldLabel({ children }: Readonly<{ children: string }>) {
   return <Text style={labelStyle}>{children}</Text>;
 }
-const labelStyle: import('react-native').TextStyle = {
+const labelStyle: TextStyle = {
   fontSize: 10,
   fontWeight: '700',
   letterSpacing: 1.2,
@@ -91,9 +92,7 @@ function CategoryPicker({
         </Text>
         <Ionicons name="chevron-down" size={16} color={colors.warm.muted} />
       </TouchableOpacity>
-      {hasError && (
-        <Text style={cpStyles.errorText}>{error}</Text>
-      )}
+      {hasError && <Text style={cpStyles.errorText}>{error}</Text>}
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <View style={cpStyles.overlay}>
@@ -110,7 +109,10 @@ function CategoryPicker({
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={[cpStyles.option, value === item && cpStyles.optionActive]}
-                  onPress={() => { onChange(item); setOpen(false); }}
+                  onPress={() => {
+                    onChange(item);
+                    setOpen(false);
+                  }}
                   activeOpacity={0.7}
                 >
                   <Text style={[cpStyles.optionText, value === item && cpStyles.optionTextActive]}>
@@ -327,8 +329,15 @@ export default function CreateAnnouncementScreen() {
                       onPress={() => onChange(pt.value)}
                       activeOpacity={0.8}
                     >
-                      <Ionicons name={pt.icon as never} size={22} color={value === pt.value ? colors.burgundy.mid : colors.warm.muted} style={styles.typeIcon} />
-                      <Text style={[styles.typeLabel, value === pt.value && styles.typeLabelActive]}>
+                      <Ionicons
+                        name={pt.icon as never}
+                        size={22}
+                        color={value === pt.value ? colors.burgundy.mid : colors.warm.muted}
+                        style={styles.typeIcon}
+                      />
+                      <Text
+                        style={[styles.typeLabel, value === pt.value && styles.typeLabelActive]}
+                      >
                         {pt.label}
                       </Text>
                       <Text style={styles.typeDesc}>{pt.description}</Text>
@@ -347,7 +356,11 @@ export default function CreateAnnouncementScreen() {
             <FieldLabel>Cover Image</FieldLabel>
             {coverImageUri !== undefined ? (
               <View style={styles.imageContainer}>
-                <Image source={{ uri: coverImageUri }} style={styles.imagePreview} contentFit="cover" />
+                <Image
+                  source={{ uri: coverImageUri }}
+                  style={styles.imagePreview}
+                  contentFit="cover"
+                />
                 <TouchableOpacity
                   style={styles.removeImageBtn}
                   onPress={() => setValue('coverImageUri', undefined)}
@@ -413,7 +426,11 @@ export default function CreateAnnouncementScreen() {
               control={control}
               name="category"
               render={({ field: { value, onChange } }) => (
-                <CategoryPicker value={value} onChange={onChange} error={errors.category?.message} />
+                <CategoryPicker
+                  value={value}
+                  onChange={onChange}
+                  error={errors.category?.message}
+                />
               )}
             />
           </View>
@@ -427,7 +444,14 @@ export default function CreateAnnouncementScreen() {
                 control={control}
                 name="eventDate"
                 render={({ field: { value, onChange } }) => (
-                  <DatePicker label="Date" value={value} onChange={onChange} minimumDate={new Date()} error={errors.eventDate?.message} placeholder="Pick a date" />
+                  <DatePicker
+                    label="Date"
+                    value={value}
+                    onChange={onChange}
+                    minimumDate={new Date()}
+                    error={errors.eventDate?.message}
+                    placeholder="Pick a date"
+                  />
                 )}
               />
 
@@ -435,7 +459,12 @@ export default function CreateAnnouncementScreen() {
                 control={control}
                 name="eventTime"
                 render={({ field: { value, onChange } }) => (
-                  <TimePicker label="Time" value={value} onChange={onChange} placeholder="e.g. 7:00 PM" />
+                  <TimePicker
+                    label="Time"
+                    value={value}
+                    onChange={onChange}
+                    placeholder="e.g. 7:00 PM"
+                  />
                 )}
               />
 
@@ -490,7 +519,7 @@ export default function CreateAnnouncementScreen() {
                       onChangeText={onChange}
                       onBlur={onBlur}
                       error={errors.price?.message}
-                      placeholder='e.g. $25'
+                      placeholder="e.g. $25"
                     />
                   )}
                 />
@@ -500,7 +529,17 @@ export default function CreateAnnouncementScreen() {
                 control={control}
                 name="maxParticipants"
                 render={({ field: { value, onChange, onBlur } }) => (
-                  <Input label="Max Participants (optional)" value={value === undefined ? '' : String(value)} onChangeText={(t) => onChange(t.length > 0 ? Number.parseInt(t, 10) : undefined)} onBlur={onBlur} error={errors.maxParticipants?.message} keyboardType="number-pad" placeholder="Leave empty for unlimited" />
+                  <Input
+                    label="Max Participants (optional)"
+                    value={value === undefined ? '' : String(value)}
+                    onChangeText={(t) =>
+                      onChange(t.length > 0 ? Number.parseInt(t, 10) : undefined)
+                    }
+                    onBlur={onBlur}
+                    error={errors.maxParticipants?.message}
+                    keyboardType="number-pad"
+                    placeholder="Leave empty for unlimited"
+                  />
                 )}
               />
 
@@ -508,7 +547,16 @@ export default function CreateAnnouncementScreen() {
                 control={control}
                 name="registrationLink"
                 render={({ field: { value, onChange, onBlur } }) => (
-                  <Input label="Registration Link (optional)" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.registrationLink?.message} placeholder="https://..." keyboardType="url" autoCapitalize="none" />
+                  <Input
+                    label="Registration Link (optional)"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={errors.registrationLink?.message}
+                    placeholder="https://..."
+                    keyboardType="url"
+                    autoCapitalize="none"
+                  />
                 )}
               />
             </View>
@@ -523,7 +571,14 @@ export default function CreateAnnouncementScreen() {
                 control={control}
                 name="discountLabel"
                 render={({ field: { value, onChange, onBlur } }) => (
-                  <Input label="Discount Label" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.discountLabel?.message} placeholder='e.g. "25% OFF", "Buy 1 Get 1"' />
+                  <Input
+                    label="Discount Label"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={errors.discountLabel?.message}
+                    placeholder='e.g. "25% OFF", "Buy 1 Get 1"'
+                  />
                 )}
               />
 
@@ -531,7 +586,14 @@ export default function CreateAnnouncementScreen() {
                 control={control}
                 name="validUntil"
                 render={({ field: { value, onChange } }) => (
-                  <DatePicker label="Valid Until" value={value} onChange={onChange} minimumDate={new Date()} error={errors.validUntil?.message} placeholder="Pick an expiry date" />
+                  <DatePicker
+                    label="Valid Until"
+                    value={value}
+                    onChange={onChange}
+                    minimumDate={new Date()}
+                    error={errors.validUntil?.message}
+                    placeholder="Pick an expiry date"
+                  />
                 )}
               />
 
@@ -539,7 +601,15 @@ export default function CreateAnnouncementScreen() {
                 control={control}
                 name="promoCode"
                 render={({ field: { value, onChange, onBlur } }) => (
-                  <Input label="Promo Code (optional)" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.promoCode?.message} placeholder="e.g. SPRING25" autoCapitalize="characters" />
+                  <Input
+                    label="Promo Code (optional)"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={errors.promoCode?.message}
+                    placeholder="e.g. SPRING25"
+                    autoCapitalize="characters"
+                  />
                 )}
               />
 
@@ -547,7 +617,16 @@ export default function CreateAnnouncementScreen() {
                 control={control}
                 name="shopLink"
                 render={({ field: { value, onChange, onBlur } }) => (
-                  <Input label="Link to Shop (optional)" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.shopLink?.message} placeholder="https://..." keyboardType="url" autoCapitalize="none" />
+                  <Input
+                    label="Link to Shop (optional)"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={errors.shopLink?.message}
+                    placeholder="https://..."
+                    keyboardType="url"
+                    autoCapitalize="none"
+                  />
                 )}
               />
             </View>
@@ -562,7 +641,14 @@ export default function CreateAnnouncementScreen() {
                 control={control}
                 name="deadline"
                 render={({ field: { value, onChange } }) => (
-                  <DatePicker label="Deadline (optional)" value={value} onChange={onChange} minimumDate={new Date()} error={errors.deadline?.message} placeholder="Set a deadline" />
+                  <DatePicker
+                    label="Deadline (optional)"
+                    value={value}
+                    onChange={onChange}
+                    minimumDate={new Date()}
+                    error={errors.deadline?.message}
+                    placeholder="Set a deadline"
+                  />
                 )}
               />
 
@@ -570,7 +656,16 @@ export default function CreateAnnouncementScreen() {
                 control={control}
                 name="externalLink"
                 render={({ field: { value, onChange, onBlur } }) => (
-                  <Input label="External Link (optional)" value={value} onChangeText={onChange} onBlur={onBlur} error={errors.externalLink?.message} placeholder="https://..." keyboardType="url" autoCapitalize="none" />
+                  <Input
+                    label="External Link (optional)"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    error={errors.externalLink?.message}
+                    placeholder="https://..."
+                    keyboardType="url"
+                    autoCapitalize="none"
+                  />
                 )}
               />
             </View>
@@ -579,7 +674,8 @@ export default function CreateAnnouncementScreen() {
           <View style={styles.section}>
             <SectionBar label="Visibility Window" />
             <Text style={styles.visibilityHint}>
-              When should this post appear on the feed? It will be automatically hidden after the end date. Max {MAX_VISIBILITY_DAYS} days.
+              When should this post appear on the feed? It will be automatically hidden after the
+              end date. Max {MAX_VISIBILITY_DAYS} days.
             </Text>
             <Controller
               control={control}
@@ -605,6 +701,7 @@ export default function CreateAnnouncementScreen() {
                   onChange={onChange}
                   minimumDate={visibilityStart ?? new Date()}
                   maximumDate={maxVisibilityEnd}
+                  rangeStart={visibilityStart}
                   error={errors.visibilityEnd?.message}
                   helperText={`Max ${MAX_VISIBILITY_DAYS} days after the start date`}
                 />

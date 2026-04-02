@@ -170,7 +170,7 @@ export default function AnnouncementsScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: colors.neutral[50],
+    backgroundColor: colors.warm.bg,
   },
   header: {
     paddingHorizontal: spacing[4],
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[3],
   },
   subtitle: {
-    color: colors.neutral[500],
+    color: colors.warm.muted,
     marginTop: spacing[1],
   },
   filtersScroll: {
@@ -195,19 +195,19 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[2],
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.neutral[300],
-    backgroundColor: colors.neutral[0],
+    borderColor: colors.warm.border,
+    backgroundColor: colors.warm.surface,
   },
   chipActive: {
-    backgroundColor: colors.burgundy.mid,
-    borderColor: colors.burgundy.mid,
+    backgroundColor: colors.burgundy.deep,
+    borderColor: colors.burgundy.deep,
   },
   chipLabel: {
-    color: colors.neutral[600],
+    color: colors.warm.body,
     fontWeight: '500',
   },
   chipLabelActive: {
-    color: colors.neutral[0],
+    color: '#ffffff',
     fontWeight: '600',
   },
   list: {
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     gap: spacing[4],
   },
   emptyText: {
-    color: colors.neutral[400],
+    color: colors.warm.muted,
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -239,10 +239,10 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.burgundy.mid,
+    backgroundColor: colors.burgundy.deep,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.neutral[900],
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   },
   fabIcon: {
     fontSize: 28,
-    color: colors.neutral[0],
+    color: '#ffffff',
     lineHeight: 32,
   },
 });

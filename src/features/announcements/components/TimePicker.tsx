@@ -120,6 +120,7 @@ export function TimePicker({
                 display="spinner"
                 onChange={handleIOSStagingChange}
                 is24Hour={false}
+                textColor="#1a1212"
                 style={styles.iosPicker}
               />
               <View style={styles.modalActions}>

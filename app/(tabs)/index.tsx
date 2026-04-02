@@ -36,7 +36,11 @@ export default function HomeScreen() {
   const [activeFilterIndex, setActiveFilterIndex] = useState(0);
   const activeFilterType: AnnouncementType | undefined = HOME_FILTERS[activeFilterIndex]?.type;
 
-  const { data: allAnnouncements = [], isRefetching, refetch } = useListAnnouncements(activeFilterType);
+  const {
+    data: allAnnouncements = [],
+    isRefetching,
+    refetch,
+  } = useListAnnouncements(activeFilterType);
   const featuredAnnouncements = useRankedAnnouncements(allAnnouncements);
 
   const handleRefresh = useCallback(() => {
@@ -76,7 +80,11 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} tintColor={colors.burgundy.mid} />
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={handleRefresh}
+            tintColor={colors.burgundy.mid}
+          />
         }
       >
         {/* ── 2. Coming Up Card ──────────────────────────────────────────── */}

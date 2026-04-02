@@ -37,10 +37,16 @@ const FILTERS: { value: FilterValue; label: string }[] = [
 
 export default function DiscoverScreen() {
   const router = useRouter();
-const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
+  const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: allAnnouncements = [], isLoading, isError, isRefetching, refetch } = useListAnnouncements();
+  const {
+    data: allAnnouncements = [],
+    isLoading,
+    isError,
+    isRefetching,
+    refetch,
+  } = useListAnnouncements();
 
   const handleRetry = useCallback(async () => {
     await refetch();
@@ -80,7 +86,11 @@ const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} tintColor={colors.burgundy.mid} />
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={handleRefresh}
+            tintColor={colors.burgundy.mid}
+          />
         }
       >
         {/* ── Search Row ──────────────────────────────────────────────────── */}
@@ -184,7 +194,6 @@ const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
           </View>
         </View>
       </ScrollView>
-
     </Screen>
   );
 }
@@ -312,5 +321,4 @@ const styles = StyleSheet.create({
     color: colors.warm.muted,
     textAlign: 'center',
   },
-
 });

@@ -17,12 +17,19 @@ interface TabConfig {
 }
 
 function makeTabIcon(tab: TabConfig) {
-  return ({ focused, color, size }: { focused: boolean; color: string; size: number }) => (
-    <View style={styles.iconWrapper}>
-      {focused && <View style={styles.activeIndicator} />}
-      <Ionicons name={focused ? tab.activeIcon : tab.inactiveIcon} size={size} color={color} />
-    </View>
-  );
+  function TabIcon({
+    focused,
+    color,
+    size,
+  }: Readonly<{ focused: boolean; color: string; size: number }>) {
+    return (
+      <View style={styles.iconWrapper}>
+        {focused && <View style={styles.activeIndicator} />}
+        <Ionicons name={focused ? tab.activeIcon : tab.inactiveIcon} size={size} color={color} />
+      </View>
+    );
+  }
+  return TabIcon;
 }
 
 const TABS: TabConfig[] = [
@@ -31,6 +38,10 @@ const TABS: TabConfig[] = [
   { name: 'favorites', title: 'Favorites', activeIcon: 'heart', inactiveIcon: 'heart-outline' },
   { name: 'profile', title: 'Profile', activeIcon: 'person', inactiveIcon: 'person-outline' },
 ];
+
+function NoLabel() {
+  return null;
+}
 
 function CreateTabButton({ onPress }: { onPress: () => void }) {
   return (
@@ -79,10 +90,7 @@ export default function TabsLayout() {
         },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{ title: 'Home', tabBarIcon: makeTabIcon(TABS[0]) }}
-      />
+      <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: makeTabIcon(TABS[0]) }} />
       <Tabs.Screen
         name="discover"
         options={{ title: 'Discover', tabBarIcon: makeTabIcon(TABS[1]) }}
@@ -94,7 +102,7 @@ export default function TabsLayout() {
         options={{
           title: '',
           href: isPro ? undefined : null,
-          tabBarLabel: () => null,
+          tabBarLabel: NoLabel,
           tabBarItemStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
           tabBarButton: () => <CreateTabButton onPress={handleCreatePress} />,
         }}
