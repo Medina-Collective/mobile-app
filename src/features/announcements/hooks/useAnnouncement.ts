@@ -91,6 +91,28 @@ export function useGetAnnouncement(id: string) {
   });
 }
 
+// ── All announcements for a professional profile (includes expired) ────────────
+
+export function useAnnouncementsByProfessional(professionalId: string) {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.announcements, 'professional', professionalId] as const,
+    queryFn: async (): Promise<Announcement[]> => {
+      const { data, error } = await supabase
+        .from('announcements')
+        .select('*, professionals(business_name, logo_uri)')
+        .eq('professional_id', professionalId)
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      if (data.length === 0) return [];
+      return data.map((r) =>
+        rowToAnnouncement(r, false, r.professionals as unknown as ProfessionalSnippet),
+      );
+    },
+    enabled: professionalId.length > 0,
+  });
+}
+
 // ── My announcements (PRO) ────────────────────────────────────────────────────
 
 export function useMyAnnouncements() {
