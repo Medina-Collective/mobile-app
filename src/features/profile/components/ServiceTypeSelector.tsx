@@ -1,6 +1,5 @@
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text } from '@components/ui';
-import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { SERVICE_TYPE_OPTIONS } from '../schemas/professional-profile.schema';
 
@@ -44,19 +43,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: 'rgba(160, 122, 95, 0.30)',
   },
   chipSelected: {
-    backgroundColor: colors.burgundy.raised,
-    borderColor: '#CEC1AE',
+    backgroundColor: '#fff9f5',
+    borderColor: '#2F0A0A',
   },
   chipLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.55)',
   },
   chipLabelSelected: {
-    color: '#CEC1AE',
+    color: '#1a1212',
     fontWeight: '600',
   },
 });

@@ -10,9 +10,9 @@ describe('ServiceTypeSelector', () => {
 
   it('renders all 4 service type options', () => {
     const { getByText } = render(<ServiceTypeSelector value={[]} onChange={jest.fn()} />);
-    expect(getByText('At home')).toBeTruthy();
-    expect(getByText('Has a studio')).toBeTruthy();
+    expect(getByText('In person')).toBeTruthy();
     expect(getByText('Online')).toBeTruthy();
+    expect(getByText('Hybrid')).toBeTruthy();
     expect(getByText('Travels to client')).toBeTruthy();
   });
 
@@ -32,8 +32,8 @@ describe('ServiceTypeSelector', () => {
 
   it('preserves existing selections when adding a new one', () => {
     const onChange = jest.fn();
-    const { getByText } = render(<ServiceTypeSelector value={['at_home']} onChange={onChange} />);
+    const { getByText } = render(<ServiceTypeSelector value={['in_person']} onChange={onChange} />);
     fireEvent.press(getByText('Online'));
-    expect(onChange).toHaveBeenCalledWith(['at_home', 'online']);
+    expect(onChange).toHaveBeenCalledWith(['in_person', 'online']);
   });
 });

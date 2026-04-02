@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@services/supabase.client';
-import type { Professional, ServiceTypeValue } from '@app-types/professional';
+import type { Professional, ProfileType, MonetizationType, ServiceTypeValue } from '@app-types/professional';
 import type { Database } from '@app-types/supabase';
 
 type ProfessionalRow = Database['public']['Tables']['professionals']['Row'];
@@ -9,7 +9,8 @@ function rowToProfessional(row: ProfessionalRow): Professional {
   return {
     id: row.id,
     businessName: row.business_name,
-    profileType: row.profile_type,
+    profileType: row.profile_type as ProfileType,
+    monetizationType: (row.monetization_type ?? 'for_profit') as MonetizationType,
     category: row.category,
     subcategories: row.subcategories,
     serviceTypes: row.service_types as ServiceTypeValue[],

@@ -1,17 +1,32 @@
-export type ProfileType = 'shop' | 'service' | 'organizer' | 'classes_circles';
+export type ProfileType =
+  | 'community_organizer'
+  | 'nonprofit_organization'
+  | 'business_brand'
+  | 'freelancer_service';
+
+export type MonetizationType = 'nonprofit' | 'for_profit';
+
 export type ProfileStatus =
   | 'draft'
   | 'pending_review'
   | 'approved'
   | 'changes_requested'
-  | 'rejected';
+  | 'rejected'
+  | 'needs_follow_up';
+
+export type MembershipStatus = 'member' | 'verified_applicant' | 'verified_approved';
+
+export type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'needs_follow_up';
+
 export type PriceRange = '$' | '$$' | '$$$';
-export type ServiceTypeValue = 'at_home' | 'has_studio' | 'online' | 'travels_to_client';
+
+export type ServiceTypeValue = 'in_person' | 'online' | 'hybrid' | 'travels_to_client';
 
 export interface Professional {
   id: string;
   businessName: string;
   profileType: ProfileType;
+  monetizationType: MonetizationType;
   category: string;
   subcategories: string[];
   serviceTypes: ServiceTypeValue[];
@@ -33,15 +48,20 @@ export interface Professional {
 // ── Display helpers ───────────────────────────────────────────────────────────
 
 export const PROFILE_TYPE_LABELS: Record<ProfileType, string> = {
-  shop: 'Shop',
-  service: 'Service',
-  organizer: 'Organizer',
-  classes_circles: 'Classes & Circles',
+  community_organizer: 'Community organizer',
+  nonprofit_organization: 'Mosque / association',
+  business_brand: 'Business / brand',
+  freelancer_service: 'Freelancer / service provider',
+};
+
+export const MONETIZATION_TYPE_LABELS: Record<MonetizationType, string> = {
+  nonprofit: 'Nonprofit / community-based',
+  for_profit: 'For-profit / paid',
 };
 
 export const SERVICE_TYPE_LABELS: Record<ServiceTypeValue, string> = {
-  at_home: 'At home',
-  has_studio: 'Has a studio',
+  in_person: 'In person',
   online: 'Online',
+  hybrid: 'Hybrid',
   travels_to_client: 'Travels to client',
 };

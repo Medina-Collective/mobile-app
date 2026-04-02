@@ -32,8 +32,18 @@ jest.mock('../BusinessTypeSelector', () => {
   const { Text } = require('react-native');
   return {
     BusinessTypeSelector: ({ onChange }: { onChange: (v: string) => void }) => (
-      <Text testID="type-selector" onPress={() => onChange('service')}>
+      <Text testID="type-selector" onPress={() => onChange('freelancer_service')}>
         select-type
+      </Text>
+    ),
+  };
+});
+jest.mock('../MonetizationTypeSelector', () => {
+  const { Text } = require('react-native');
+  return {
+    MonetizationTypeSelector: ({ onChange }: { onChange: (v: string) => void }) => (
+      <Text testID="monetization-selector" onPress={() => onChange('for_profit')}>
+        select-monetization
       </Text>
     ),
   };
@@ -62,7 +72,7 @@ jest.mock('../ServiceTypeSelector', () => {
   const { Text } = require('react-native');
   return {
     ServiceTypeSelector: ({ onChange }: { onChange: (v: string[]) => void }) => (
-      <Text testID="service-type-selector" onPress={() => onChange(['at_home'])}>
+      <Text testID="service-type-selector" onPress={() => onChange(['in_person'])}>
         select-service-type
       </Text>
     ),
@@ -104,9 +114,12 @@ jest.mock('../ProfilePreviewCard', () => {
 
 const mockOnSubmit = jest.fn().mockResolvedValue(undefined);
 
+// business_brand skips subcategory (step 3) and service type (step 4)
+// path: 0 → 1 → 2 → 5 → 6 → 7 (5 Next presses to reach review)
 const fullDefaultValues = {
   businessName: 'Test Business',
-  profileType: 'shop' as const,
+  profileType: 'business_brand' as const,
+  monetizationType: 'for_profit' as const,
   category: 'Food & Sweets',
   subcategories: [],
   serviceTypes: [],
@@ -163,31 +176,47 @@ describe('ProfileWizard', () => {
     expect(getByDisplayValue('My Business')).toBeTruthy();
   });
 
-  it('skips subcategory step (step 2) for non-service profile types', async () => {
+  it('skips subcategory and service type steps for non-freelancer_service profile types', async () => {
     const { getByText, getByTestId } = render(
       <ProfileWizard
         submitLabel="Submit"
         onSubmit={mockOnSubmit}
-        defaultValues={{ businessName: 'Test', profileType: 'shop', category: 'Food & Sweets' }}
+        defaultValues={{
+          businessName: 'Test',
+          profileType: 'business_brand',
+          monetizationType: 'for_profit',
+          category: 'Food & Sweets',
+        }}
       />,
     );
     await act(async () => fireEvent.press(getByText('Next')));
     expect(getByTestId('step-indicator').props.children).toBe('step-1');
     await act(async () => fireEvent.press(getByText('Next')));
-    expect(getByTestId('step-indicator').props.children).toBe('step-3');
+    expect(getByTestId('step-indicator').props.children).toBe('step-2');
+    await act(async () => fireEvent.press(getByText('Next')));
+    // Skips step 3 (subcategory) and step 4 (service type) → lands on step 5
+    expect(getByTestId('step-indicator').props.children).toBe('step-5');
   });
 
-  it('goes to step 2 (subcategory) for service profile type', async () => {
+  it('goes to step 3 (subcategory) for freelancer_service profile type', async () => {
     const { getByText, getByTestId } = render(
       <ProfileWizard
         submitLabel="Submit"
         onSubmit={mockOnSubmit}
-        defaultValues={{ businessName: 'Test', profileType: 'service', category: 'Beauty' }}
+        defaultValues={{
+          businessName: 'Test',
+          profileType: 'freelancer_service',
+          monetizationType: 'for_profit',
+          category: 'Beauty',
+        }}
       />,
     );
     await act(async () => fireEvent.press(getByText('Next')));
+    expect(getByTestId('step-indicator').props.children).toBe('step-1');
     await act(async () => fireEvent.press(getByText('Next')));
     expect(getByTestId('step-indicator').props.children).toBe('step-2');
+    await act(async () => fireEvent.press(getByText('Next')));
+    expect(getByTestId('step-indicator').props.children).toBe('step-3');
   });
 
   it('Back from step 1 returns to step 0', async () => {
@@ -195,7 +224,12 @@ describe('ProfileWizard', () => {
       <ProfileWizard
         submitLabel="Submit"
         onSubmit={mockOnSubmit}
-        defaultValues={{ businessName: 'Test', profileType: 'shop', category: 'Food & Sweets' }}
+        defaultValues={{
+          businessName: 'Test',
+          profileType: 'business_brand',
+          monetizationType: 'for_profit',
+          category: 'Food & Sweets',
+        }}
       />,
     );
     await act(async () => fireEvent.press(getByText('Next')));
@@ -204,35 +238,47 @@ describe('ProfileWizard', () => {
     expect(getByTestId('step-indicator').props.children).toBe('step-0');
   });
 
-  it('Back from step 3 goes to step 1 for non-service type (skips subcategory)', async () => {
+  it('Back from step 5 goes to step 2 for non-freelancer_service type (skips steps 3 and 4)', async () => {
     const { getByText, getByTestId } = render(
       <ProfileWizard
         submitLabel="Submit"
         onSubmit={mockOnSubmit}
-        defaultValues={{ businessName: 'Test', profileType: 'shop', category: 'Food & Sweets' }}
-      />,
-    );
-    await act(async () => fireEvent.press(getByText('Next')));
-    await act(async () => fireEvent.press(getByText('Next')));
-    expect(getByTestId('step-indicator').props.children).toBe('step-3');
-    fireEvent.press(getByText('Back'));
-    expect(getByTestId('step-indicator').props.children).toBe('step-1');
-  });
-
-  it('Back from step 3 goes to step 2 for service type', async () => {
-    const { getByText, getByTestId } = render(
-      <ProfileWizard
-        submitLabel="Submit"
-        onSubmit={mockOnSubmit}
-        defaultValues={{ businessName: 'Test', profileType: 'service', category: 'Beauty' }}
+        defaultValues={{
+          businessName: 'Test',
+          profileType: 'business_brand',
+          monetizationType: 'for_profit',
+          category: 'Food & Sweets',
+        }}
       />,
     );
     await act(async () => fireEvent.press(getByText('Next')));
     await act(async () => fireEvent.press(getByText('Next')));
     await act(async () => fireEvent.press(getByText('Next')));
-    expect(getByTestId('step-indicator').props.children).toBe('step-3');
+    expect(getByTestId('step-indicator').props.children).toBe('step-5');
     fireEvent.press(getByText('Back'));
     expect(getByTestId('step-indicator').props.children).toBe('step-2');
+  });
+
+  it('Back from step 4 goes to step 3 for freelancer_service type', async () => {
+    const { getByText, getByTestId } = render(
+      <ProfileWizard
+        submitLabel="Submit"
+        onSubmit={mockOnSubmit}
+        defaultValues={{
+          businessName: 'Test',
+          profileType: 'freelancer_service',
+          monetizationType: 'for_profit',
+          category: 'Beauty',
+        }}
+      />,
+    );
+    await act(async () => fireEvent.press(getByText('Next')));
+    await act(async () => fireEvent.press(getByText('Next')));
+    await act(async () => fireEvent.press(getByText('Next')));
+    await act(async () => fireEvent.press(getByText('Next')));
+    expect(getByTestId('step-indicator').props.children).toBe('step-4');
+    fireEvent.press(getByText('Back'));
+    expect(getByTestId('step-indicator').props.children).toBe('step-3');
   });
 
   it('shows the submitLabel on the last step', async () => {
@@ -243,6 +289,7 @@ describe('ProfileWizard', () => {
         defaultValues={fullDefaultValues}
       />,
     );
+    // business_brand path: 0→1→2→5→6→7 (5 presses)
     for (let i = 0; i < 5; i++) {
       await act(async () => fireEvent.press(getByText('Next')));
     }
@@ -267,14 +314,15 @@ describe('ProfileWizard', () => {
     );
   });
 
-  it('resets subcategories when category changes on step 1', async () => {
+  it('resets subcategories when category changes on step 2', async () => {
     const { getByText, getByTestId } = render(
       <ProfileWizard
         submitLabel="Submit"
         onSubmit={mockOnSubmit}
         defaultValues={{
           businessName: 'Test',
-          profileType: 'service',
+          profileType: 'freelancer_service',
+          monetizationType: 'for_profit',
           category: 'Beauty',
           subcategories: ['Henna'],
         }}
@@ -282,11 +330,13 @@ describe('ProfileWizard', () => {
     );
     await act(async () => fireEvent.press(getByText('Next')));
     expect(getByTestId('step-indicator').props.children).toBe('step-1');
+    await act(async () => fireEvent.press(getByText('Next')));
+    expect(getByTestId('step-indicator').props.children).toBe('step-2');
     // Trigger category change — mock calls onChange('Beauty'), which resets subcategories
     fireEvent.press(getByTestId('category-selector'));
     // Advance to subcategory step and check subcategories were reset
     await act(async () => fireEvent.press(getByText('Next')));
-    expect(getByTestId('step-indicator').props.children).toBe('step-2');
+    expect(getByTestId('step-indicator').props.children).toBe('step-3');
   });
 
   it('onEditStep from preview card navigates back to the given step', async () => {
@@ -297,15 +347,16 @@ describe('ProfileWizard', () => {
         defaultValues={fullDefaultValues}
       />,
     );
+    // business_brand path: 0→1→2→5→6→7 (5 presses)
     for (let i = 0; i < 5; i++) {
       await act(async () => fireEvent.press(getByText('Next')));
     }
-    expect(getByTestId('step-indicator').props.children).toBe('step-6');
+    expect(getByTestId('step-indicator').props.children).toBe('step-7');
     fireEvent.press(getByTestId('preview-card'));
     expect(getByTestId('step-indicator').props.children).toBe('step-0');
   });
 
-  it('shows the price chip toggle on step 5', async () => {
+  it('shows the price chip toggle on step 6 (About & Contact)', async () => {
     const { getByText, getByTestId } = render(
       <ProfileWizard
         submitLabel="Submit"
@@ -313,11 +364,11 @@ describe('ProfileWizard', () => {
         defaultValues={fullDefaultValues}
       />,
     );
-    // Navigate to step 5: 0→1→3→4→5
+    // Navigate to step 6: 0→1→2→5→6 (4 presses for business_brand)
     for (let i = 0; i < 4; i++) {
       await act(async () => fireEvent.press(getByText('Next')));
     }
-    expect(getByTestId('step-indicator').props.children).toBe('step-5');
+    expect(getByTestId('step-indicator').props.children).toBe('step-6');
     // Select a price range chip
     fireEvent.press(getByText('$'));
     // Press it again to deselect (covers the isSelected ? undefined : range branch)

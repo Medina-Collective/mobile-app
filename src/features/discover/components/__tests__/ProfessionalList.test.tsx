@@ -16,7 +16,8 @@ const mockRetry = jest.fn().mockResolvedValue(undefined);
 const professional: Professional = {
   id: '1',
   businessName: 'Henna by Fatima',
-  profileType: 'service',
+  profileType: 'freelancer_service',
+  monetizationType: 'for_profit',
   category: 'Beauty',
   subcategories: [],
   serviceTypes: [],

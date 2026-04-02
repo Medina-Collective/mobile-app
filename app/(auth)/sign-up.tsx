@@ -10,41 +10,33 @@ import {
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text, Button, Input, BackButton } from '@components/ui';
 import { spacing } from '@theme/spacing';
 import { useAuth } from '@features/auth';
 import { signUpSchema, type SignUpFormData } from '@features/auth/schemas/auth.schema';
 
-type Role = 'user' | 'professional';
-const ROLES: { value: Role; label: string; description: string }[] = [
-  { value: 'user', label: 'Member', description: 'Discover events & professionals' },
-  { value: 'professional', label: 'Professional', description: 'Publish events & a profile' },
-];
-
 export default function SignUpScreen() {
   const router = useRouter();
   const { signUp, isLoading } = useAuth();
+  const [applyingForVerified, setApplyingForVerified] = useState(false);
+  const [serverError, setServerError] = useState<string | undefined>(undefined);
 
   const {
     control,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: { displayName: '', email: '', role: 'user', password: '', confirmPassword: '' },
+    defaultValues: { displayName: '', email: '', password: '', confirmPassword: '' },
   });
-
-  const selectedRole = watch('role');
-  const [serverError, setServerError] = useState<string | undefined>(undefined);
 
   const onSubmit = async (data: SignUpFormData) => {
     setServerError(undefined);
     try {
       await signUp(data.email, data.password, data.displayName);
-      if (data.role === 'professional') {
+      if (applyingForVerified) {
         router.replace('/(auth)/professional-profile');
       } else {
         router.replace('/(tabs)');
@@ -78,31 +70,21 @@ export default function SignUpScreen() {
             </Text>
           </View>
 
-          <View style={styles.roleSection}>
-            <Text variant="overline" style={styles.subtitle}>
-              I am joining as
-            </Text>
-            <View style={styles.roleRow}>
-              {ROLES.map(({ value, label, description }) => {
-                const isSelected = selectedRole === value;
-                return (
-                  <TouchableOpacity
-                    key={value}
-                    onPress={() => setValue('role', value)}
-                    style={[styles.roleCard, isSelected && styles.roleCardSelected]}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={[styles.roleLabel, isSelected && styles.roleLabelSelected]}>
-                      {label}
-                    </Text>
-                    <Text style={[styles.roleDesc, isSelected && styles.roleDescSelected]}>
-                      {description}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+          {/* Verified profile intent badge */}
+          {applyingForVerified && (
+            <View style={styles.verifiedBadge}>
+              <View style={styles.verifiedBadgeLeft}>
+                <Ionicons name="checkmark-circle" size={15} color="#2F0A0A" />
+                <Text style={styles.verifiedBadgeText}>Applying for a verified profile</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setApplyingForVerified(false)}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Ionicons name="close" size={16} color="#2F0A0A" />
+              </TouchableOpacity>
             </View>
-          </View>
+          )}
 
           <Controller
             control={control}
@@ -184,6 +166,22 @@ export default function SignUpScreen() {
             textColor="#ffffff"
           />
 
+          {/* Verified profile application link */}
+          {!applyingForVerified && (
+            <TouchableOpacity
+              onPress={() => setApplyingForVerified(true)}
+              style={styles.verifiedLink}
+              activeOpacity={0.7}
+            >
+              <Text variant="caption" style={styles.verifiedLinkLabel}>
+                Are you an organizer, business, or community group?
+              </Text>
+              <Text variant="caption" style={styles.verifiedLinkCta}>
+                Apply for a verified profile →
+              </Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity onPress={() => router.push('/(auth)/sign-in')} style={styles.footer}>
             <Text variant="caption" style={styles.footerText}>
               {'Already have an account?  '}
@@ -206,30 +204,48 @@ const styles = StyleSheet.create({
   heading: { color: '#1a1212' },
   subtitle: { color: 'rgba(26, 18, 18, 0.45)' },
 
-  roleSection: { marginBottom: spacing[10], gap: spacing[4] },
-  roleRow: { flexDirection: 'row', gap: spacing[3] },
-  roleCard: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: 'rgba(160, 122, 95, 0.30)',
+  verifiedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#e8ddd4',
     borderRadius: 8,
-    padding: spacing[4],
-    gap: spacing[1],
-    backgroundColor: 'transparent',
+    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[4],
+    marginBottom: spacing[6],
   },
-  roleCardSelected: { borderColor: '#2F0A0A', backgroundColor: 'rgba(40, 2, 10, 0.04)' },
-  roleLabel: {
-    fontSize: 13,
+  verifiedBadgeLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  verifiedBadgeText: {
+    fontSize: 12,
     fontWeight: '600',
-    color: 'rgba(26, 18, 18, 0.55)',
-    letterSpacing: 0.3,
+    color: '#2F0A0A',
+    letterSpacing: 0.2,
   },
-  roleLabelSelected: { color: '#1a1212' },
-  roleDesc: { fontSize: 11, color: 'rgba(26, 18, 18, 0.45)', lineHeight: 15, opacity: 0.7 },
-  roleDescSelected: { color: 'rgba(26, 18, 18, 0.55)', opacity: 1 },
 
   serverError: { color: '#e57373', textAlign: 'center', marginTop: spacing[2] },
   cta: { width: '100%', marginTop: spacing[4], backgroundColor: '#2F0A0A' },
+
+  verifiedLink: {
+    marginTop: spacing[6],
+    alignItems: 'center',
+    gap: spacing[1],
+    paddingVertical: spacing[3],
+  },
+  verifiedLinkLabel: {
+    color: 'rgba(26, 18, 18, 0.40)',
+    textAlign: 'center',
+  },
+  verifiedLinkCta: {
+    color: 'rgba(47, 10, 10, 0.65)',
+    fontWeight: '600',
+    textAlign: 'center',
+    letterSpacing: 0.1,
+  },
+
   footer: { marginTop: spacing[8], alignItems: 'center' },
   footerText: { color: 'rgba(26, 18, 18, 0.45)' },
   footerLink: { color: '#2F0A0A', fontWeight: '600' },

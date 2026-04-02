@@ -1,7 +1,6 @@
 import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@components/ui';
-import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { fontSize } from '@theme/typography';
 
@@ -37,7 +36,7 @@ export function BusinessLogoPicker({
           )}
         </View>
         <View style={styles.badge}>
-          <Ionicons name="camera" size={14} color={colors.burgundy.deep} />
+          <Ionicons name="camera" size={14} color="#ffffff" />
         </View>
       </TouchableOpacity>
       <Text variant="caption" style={styles.hint}>
@@ -61,9 +60,9 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: colors.burgundy.raised,
+    backgroundColor: '#fff9f5',
     borderWidth: 2,
-    borderColor: colors.burgundy.mid,
+    borderColor: 'rgba(160, 122, 95, 0.30)',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -75,7 +74,7 @@ const styles = StyleSheet.create({
   initials: {
     fontSize: fontSize.xl,
     fontWeight: '700',
-    color: '#CEC1AE',
+    color: '#2F0A0A',
     letterSpacing: 1,
   },
   badge: {
@@ -85,13 +84,13 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#CEC1AE',
+    backgroundColor: '#2F0A0A',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.burgundy.deep,
+    borderColor: '#faf6f0',
   },
   hint: {
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.45)',
   },
 });

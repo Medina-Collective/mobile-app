@@ -1,13 +1,13 @@
 import { View, StyleSheet } from 'react-native';
 import { Text } from '@components/ui';
-import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 
 const STEP_LABELS = [
-  'Profile Type',
+  'Identity',
+  'How you operate',
   'Category',
-  'Subcategory',
-  'Service Type',
+  'Specialties',
+  'Delivery',
   'Location',
   'About & Contact',
   'Review',
@@ -53,13 +53,13 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   barActive: {
-    backgroundColor: '#CEC1AE',
+    backgroundColor: '#2F0A0A',
   },
   barInactive: {
-    backgroundColor: colors.burgundy.raised,
+    backgroundColor: '#e5e1dc',
   },
   label: {
-    color: colors.burgundy.muted,
+    color: '#2F0A0A',
     letterSpacing: 0.3,
   },
 });

@@ -11,6 +11,7 @@ import { fontSize } from '@theme/typography';
 import {
   professionalProfileSchema,
   CATEGORY_STEP_COPY,
+  SERVICE_TYPE_STEP_COPY,
   PRICE_RANGES,
   STEP_FIELDS,
   type ProfessionalProfileFormData,
@@ -18,6 +19,7 @@ import {
 import { StepIndicator } from '@features/profile/components/StepIndicator';
 import { BusinessLogoPicker } from '@features/profile/components/BusinessLogoPicker';
 import { BusinessTypeSelector } from '@features/profile/components/BusinessTypeSelector';
+import { MonetizationTypeSelector } from '@features/profile/components/MonetizationTypeSelector';
 import { CategorySelector } from '@features/profile/components/CategorySelector';
 import { SubcategorySelector } from '@features/profile/components/SubcategorySelector';
 import { ServiceTypeSelector } from '@features/profile/components/ServiceTypeSelector';
@@ -26,7 +28,7 @@ import { ProfilePreviewCard } from '@features/profile/components/ProfilePreviewC
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 8;
 
 // ── Props ──────────────────────────────────────────────────────────────────────
 
@@ -81,8 +83,25 @@ export function ProfileWizard({
 
   const scrollToTop = () => scrollRef.current?.scrollTo({ y: 0, animated: false });
 
-  // Step 2 (index 2) is Subcategory — only relevant for 'service' profile type
-  const shouldSkipSubcategory = watchedValues.profileType !== 'service';
+  // Step 3 (subcategory) — only for freelancer_service
+  const shouldSkipSubcategory = watchedValues.profileType !== 'freelancer_service';
+
+  // Step 4 (how you work / delivery mode) — only for freelancer_service
+  const shouldSkipServiceType = watchedValues.profileType !== 'freelancer_service';
+
+  const getNextStep = (from: number): number => {
+    const next = from + 1;
+    if (next === 3 && shouldSkipSubcategory) return getNextStep(3);
+    if (next === 4 && shouldSkipServiceType) return getNextStep(4);
+    return next;
+  };
+
+  const getPrevStep = (from: number): number => {
+    const prev = from - 1;
+    if (prev === 3 && shouldSkipSubcategory) return getPrevStep(3);
+    if (prev === 4 && shouldSkipServiceType) return getPrevStep(4);
+    return prev;
+  };
 
   const handleNext = async () => {
     const fields = STEP_FIELDS[currentStep];
@@ -90,11 +109,8 @@ export function ProfileWizard({
       const isValid = await trigger(fields);
       if (!isValid) return;
     }
-    const nextStep = currentStep + 1;
-    // Skip subcategory step for non-service types
-    const resolvedNext = nextStep === 2 && shouldSkipSubcategory ? 3 : nextStep;
     scrollToTop();
-    setCurrentStep(resolvedNext);
+    setCurrentStep(getNextStep(currentStep));
   };
 
   const handleBack = () => {
@@ -106,11 +122,8 @@ export function ProfileWizard({
       }
       return;
     }
-    const prevStep = currentStep - 1;
-    // Skip subcategory step for non-service types when going back
-    const resolvedPrev = prevStep === 2 && shouldSkipSubcategory ? 1 : prevStep;
     scrollToTop();
-    setCurrentStep(resolvedPrev);
+    setCurrentStep(getPrevStep(currentStep));
   };
 
   const onSubmitHandler: SubmitHandler<ProfessionalProfileFormData> = async (data) => {
@@ -121,6 +134,14 @@ export function ProfileWizard({
       setIsSubmitting(false);
     }
   };
+
+  // Pricing fields visible for for-profit and mixed profiles
+  const showPricingFields = watchedValues.monetizationType === 'for_profit';
+
+  const bookingLinkLabel =
+    watchedValues.monetizationType === 'nonprofit'
+      ? 'Registration or contact link (optional)'
+      : 'Booking link (optional)';
 
   const isLastStep = currentStep === TOTAL_STEPS - 1;
 
@@ -134,12 +155,12 @@ export function ProfileWizard({
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Step 0: Profile Type ──────────────────────────────────────────── */}
+        {/* ── Step 0: Identity ──────────────────────────────────────────────── */}
         {currentStep === 0 && (
           <View>
             <View style={styles.stepHeader}>
               <Text variant="heading2" style={styles.stepTitle}>
-                {"Let's set up\nyour profile"}
+                {"Let's set up\nyour verified profile"}
               </Text>
               <Text variant="bodySm" style={styles.stepSubtitle}>
                 Tell us who you are so the right people can find you.
@@ -181,7 +202,8 @@ export function ProfileWizard({
               name="businessName"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label="Business or profile name"
+                  variant="light"
+                  label="Profile name"
                   placeholder="Your name, brand, or initiative"
                   value={value}
                   onChangeText={onChange}
@@ -205,8 +227,34 @@ export function ProfileWizard({
           </View>
         )}
 
-        {/* ── Step 1: Category ──────────────────────────────────────────────── */}
+        {/* ── Step 1: Monetization ──────────────────────────────────────────── */}
         {currentStep === 1 && (
+          <View>
+            <View style={styles.stepHeader}>
+              <Text variant="heading2" style={styles.stepTitle}>
+                How do you operate?
+              </Text>
+              <Text variant="bodySm" style={styles.stepSubtitle}>
+                This helps us tailor your profile and ensures accurate admin review.
+              </Text>
+            </View>
+
+            <Controller
+              control={control}
+              name="monetizationType"
+              render={({ field: { value, onChange } }) => (
+                <MonetizationTypeSelector
+                  value={value}
+                  onChange={onChange}
+                  error={errors.monetizationType?.message}
+                />
+              )}
+            />
+          </View>
+        )}
+
+        {/* ── Step 2: Category ──────────────────────────────────────────────── */}
+        {currentStep === 2 && (
           <View>
             <View style={styles.stepHeader}>
               <Text variant="heading2" style={styles.stepTitle}>
@@ -230,7 +278,6 @@ export function ProfileWizard({
                   value={value}
                   onChange={(cat) => {
                     onChange(cat);
-                    // Reset subcategories when category changes
                     setValue('subcategories', []);
                   }}
                   error={errors.category?.message}
@@ -240,8 +287,8 @@ export function ProfileWizard({
           </View>
         )}
 
-        {/* ── Step 2: Subcategory (service only) ───────────────────────────── */}
-        {currentStep === 2 && (
+        {/* ── Step 3: Subcategory (freelancer_service only) ─────────────────── */}
+        {currentStep === 3 && (
           <View>
             <View style={styles.stepHeader}>
               <Text variant="heading2" style={styles.stepTitle}>
@@ -260,15 +307,21 @@ export function ProfileWizard({
           </View>
         )}
 
-        {/* ── Step 3: Service Type ─────────────────────────────────────────── */}
-        {currentStep === 3 && (
+        {/* ── Step 4: Delivery mode (freelancer_service + class_workshop_host) ─ */}
+        {currentStep === 4 && (
           <View>
             <View style={styles.stepHeader}>
               <Text variant="heading2" style={styles.stepTitle}>
-                How do you work?
+                {watchedValues.profileType !== undefined &&
+                SERVICE_TYPE_STEP_COPY[watchedValues.profileType] !== undefined
+                  ? SERVICE_TYPE_STEP_COPY[watchedValues.profileType]!.title
+                  : 'How do you work?'}
               </Text>
               <Text variant="bodySm" style={styles.stepSubtitle}>
-                Select all that apply. Optional but helps people find you.
+                {watchedValues.profileType !== undefined &&
+                SERVICE_TYPE_STEP_COPY[watchedValues.profileType] !== undefined
+                  ? SERVICE_TYPE_STEP_COPY[watchedValues.profileType]!.subtitle
+                  : 'Select all that apply.'}
               </Text>
             </View>
 
@@ -279,8 +332,8 @@ export function ProfileWizard({
           </View>
         )}
 
-        {/* ── Step 4: Location ─────────────────────────────────────────────── */}
-        {currentStep === 4 && (
+        {/* ── Step 5: Location ──────────────────────────────────────────────── */}
+        {currentStep === 5 && (
           <View>
             <View style={styles.stepHeader}>
               <Text variant="heading2" style={styles.stepTitle}>
@@ -301,8 +354,8 @@ export function ProfileWizard({
           </View>
         )}
 
-        {/* ── Step 5: About & Contact ──────────────────────────────────────── */}
-        {currentStep === 5 && (
+        {/* ── Step 6: About & Contact ───────────────────────────────────────── */}
+        {currentStep === 6 && (
           <View>
             <View style={styles.stepHeader}>
               <Text variant="heading2" style={styles.stepTitle}>
@@ -352,51 +405,55 @@ export function ProfileWizard({
               )}
             />
 
-            {/* Price range */}
-            <View style={styles.fieldGroup}>
-              <Text variant="overline" style={styles.groupLabel}>
-                Price range (optional)
-              </Text>
-              <Controller
-                control={control}
-                name="priceRange"
-                render={({ field: { value, onChange } }) => (
-                  <View style={styles.chipRow}>
-                    {PRICE_RANGES.map((range) => {
-                      const isSelected = value === range;
-                      return (
-                        <View
-                          key={range}
-                          style={[styles.priceChip, isSelected && styles.priceChipSelected]}
-                        >
-                          <Text
-                            onPress={() => onChange(isSelected ? undefined : range)}
-                            style={[styles.priceLabel, isSelected && styles.priceLabelSelected]}
-                          >
-                            {range}
-                          </Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                )}
-              />
-            </View>
+            {/* Pricing — only for for-profit and mixed profiles */}
+            {showPricingFields && (
+              <>
+                <View style={styles.fieldGroup}>
+                  <Text variant="overline" style={styles.groupLabel}>
+                    Price range (optional)
+                  </Text>
+                  <Controller
+                    control={control}
+                    name="priceRange"
+                    render={({ field: { value, onChange } }) => (
+                      <View style={styles.chipRow}>
+                        {PRICE_RANGES.map((range) => {
+                          const isSelected = value === range;
+                          return (
+                            <View
+                              key={range}
+                              style={[styles.priceChip, isSelected && styles.priceChipSelected]}
+                            >
+                              <Text
+                                onPress={() => onChange(isSelected ? undefined : range)}
+                                style={[styles.priceLabel, isSelected && styles.priceLabelSelected]}
+                              >
+                                {range}
+                              </Text>
+                            </View>
+                          );
+                        })}
+                      </View>
+                    )}
+                  />
+                </View>
 
-            {/* Starting price */}
-            <Controller
-              control={control}
-              name="startingPrice"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  label="Starting price (optional)"
-                  placeholder="e.g. $50, $25/hr"
-                  value={value}
-                  onChangeText={onChange}
-                  autoCapitalize="none"
+                <Controller
+                  control={control}
+                  name="startingPrice"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      variant="light"
+                      label="Starting price (optional)"
+                      placeholder="e.g. $50, $25/hr"
+                      value={value}
+                      onChangeText={onChange}
+                      autoCapitalize="none"
+                    />
+                  )}
                 />
-              )}
-            />
+              </>
+            )}
 
             {/* Public inquiry email */}
             <Controller
@@ -405,8 +462,9 @@ export function ProfileWizard({
               render={({ field: { onChange, value } }) => (
                 <View>
                   <Input
+                    variant="light"
                     label="Public inquiry email"
-                    placeholder="hello@yourbusiness.com"
+                    placeholder="hello@yourprofile.com"
                     value={value}
                     onChangeText={onChange}
                     keyboardType="email-address"
@@ -427,6 +485,7 @@ export function ProfileWizard({
               name="instagram"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  variant="light"
                   label="Instagram handle (optional)"
                   placeholder="yourhandle (without @)"
                   value={value}
@@ -437,14 +496,15 @@ export function ProfileWizard({
               )}
             />
 
-            {/* Booking link */}
+            {/* Booking / registration link */}
             <Controller
               control={control}
               name="bookingLink"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label="Booking link (optional)"
-                  placeholder="e.g. Calendly, Square, etc."
+                  variant="light"
+                  label={bookingLinkLabel}
+                  placeholder="e.g. Calendly, Eventbrite, form link..."
                   value={value}
                   onChangeText={onChange}
                   autoCapitalize="none"
@@ -460,6 +520,7 @@ export function ProfileWizard({
               name="website"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  variant="light"
                   label="Website (optional)"
                   placeholder="https://yourwebsite.com"
                   value={value}
@@ -477,6 +538,7 @@ export function ProfileWizard({
               name="phone"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  variant="light"
                   label="Phone / WhatsApp (optional)"
                   placeholder="+1 555 000 0000"
                   value={value}
@@ -488,12 +550,12 @@ export function ProfileWizard({
           </View>
         )}
 
-        {/* ── Step 6: Review ────────────────────────────────────────────────── */}
-        {currentStep === 6 && (
+        {/* ── Step 7: Review ────────────────────────────────────────────────── */}
+        {currentStep === 7 && (
           <View>
             <View style={styles.stepHeader}>
               <Text variant="heading2" style={styles.stepTitle}>
-                Review your profile
+                Review your application
               </Text>
               <Text variant="bodySm" style={styles.stepSubtitle}>
                 Once submitted, our team will review your profile before it goes live.
@@ -512,8 +574,8 @@ export function ProfileWizard({
 
             <View style={styles.reviewNote}>
               <Text variant="caption" style={styles.reviewNoteText}>
-                Your profile will be submitted for review. You will be notified once it is approved
-                and visible to the community.
+                Your verified profile application will be manually reviewed by our team. You will be
+                notified once it is approved and visible to the community.
               </Text>
             </View>
           </View>
@@ -556,10 +618,10 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   stepTitle: {
-    color: '#CEC1AE',
+    color: '#2F0A0A',
   },
   stepSubtitle: {
-    color: '#7b625b',
+    color: 'rgba(26, 18, 18, 0.45)',
   },
 
   // Description textarea
@@ -568,7 +630,7 @@ const styles = StyleSheet.create({
   },
   textareaLabel: {
     marginBottom: spacing[2],
-    color: '#7b625b',
+    color: 'rgba(26, 18, 18, 0.45)',
   },
   textarea: {
     minHeight: 100,
@@ -576,12 +638,12 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[2],
     paddingHorizontal: 0,
     fontSize: fontSize.base,
-    color: '#CEC1AE',
+    color: '#1a1212',
     backgroundColor: 'transparent',
     textAlignVertical: 'top',
   },
   textareaDefault: {
-    borderBottomColor: '#7b625b',
+    borderBottomColor: 'rgba(160, 122, 95, 0.30)',
   },
   textareaError: {
     borderBottomColor: colors.error[500],
@@ -596,12 +658,12 @@ const styles = StyleSheet.create({
     color: colors.error[500],
   },
   charCount: {
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.45)',
   },
 
   // Field note
   fieldNote: {
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.45)',
     marginTop: -spacing[4],
     marginBottom: spacing[6],
   },
@@ -612,7 +674,7 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   groupLabel: {
-    color: '#7b625b',
+    color: 'rgba(26, 18, 18, 0.45)',
   },
   chipRow: {
     flexDirection: 'row',
@@ -623,37 +685,37 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[6],
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: 'rgba(160, 122, 95, 0.30)',
     alignItems: 'center',
   },
   priceChipSelected: {
-    borderColor: '#CEC1AE',
-    backgroundColor: colors.burgundy.raised,
+    borderColor: '#2F0A0A',
+    backgroundColor: '#fff9f5',
   },
   priceLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.45)',
   },
   priceLabelSelected: {
-    color: '#CEC1AE',
+    color: '#2F0A0A',
     fontWeight: '700',
   },
 
   // Review card
   previewCard: {
-    backgroundColor: colors.burgundy.surface,
+    backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: spacing[6],
     borderWidth: 1,
-    borderColor: colors.burgundy.raised,
+    borderColor: '#e5e1dc',
   },
   reviewNote: {
     marginTop: spacing[6],
     paddingHorizontal: spacing[2],
   },
   reviewNoteText: {
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.45)',
     textAlign: 'center',
     lineHeight: 18,
   },
@@ -665,13 +727,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[4],
     gap: spacing[3],
     borderTopWidth: 1,
-    borderTopColor: colors.burgundy.surface,
+    borderTopColor: '#e5e1dc',
   },
   backBtn: {
     flex: 1,
   },
   nextBtn: {
     flex: 2,
-    backgroundColor: '#CEC1AE',
+    backgroundColor: '#2F0A0A',
   },
 });

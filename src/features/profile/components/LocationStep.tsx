@@ -1,6 +1,5 @@
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text } from '@components/ui';
-import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { BASED_IN_OPTIONS, SERVES_AREAS_OPTIONS } from '../schemas/professional-profile.schema';
 import { SelectableList } from './SelectableList';
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   sectionLabel: {
-    color: '#7b625b',
+    color: 'rgba(26, 18, 18, 0.45)',
     marginBottom: spacing[1],
   },
   chips: {
@@ -85,23 +84,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: 'rgba(160, 122, 95, 0.30)',
   },
   chipSelected: {
-    backgroundColor: colors.burgundy.raised,
-    borderColor: '#CEC1AE',
+    backgroundColor: '#fff9f5',
+    borderColor: '#2F0A0A',
   },
   chipLabel: {
     fontSize: 13,
     fontWeight: '500',
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.55)',
   },
   chipLabelSelected: {
-    color: '#CEC1AE',
+    color: '#1a1212',
     fontWeight: '600',
   },
   error: {
     marginTop: spacing[1],
-    color: colors.error[500],
+    color: '#ef4444',
   },
 });

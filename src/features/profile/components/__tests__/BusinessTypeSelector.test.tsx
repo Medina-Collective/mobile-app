@@ -10,17 +10,17 @@ describe('BusinessTypeSelector', () => {
 
   it('renders all 4 profile type cards', () => {
     const { getByText } = render(<BusinessTypeSelector value={undefined} onChange={jest.fn()} />);
-    expect(getByText('Shop')).toBeTruthy();
-    expect(getByText('Service')).toBeTruthy();
-    expect(getByText('Organizer')).toBeTruthy();
-    expect(getByText('Classes & Circles')).toBeTruthy();
+    expect(getByText('Community organizer')).toBeTruthy();
+    expect(getByText('Mosque / association')).toBeTruthy();
+    expect(getByText('Business / brand')).toBeTruthy();
+    expect(getByText('Freelancer / service provider')).toBeTruthy();
   });
 
   it('calls onChange with the selected type when a card is pressed', () => {
     const onChange = jest.fn();
     const { getByText } = render(<BusinessTypeSelector value={undefined} onChange={onChange} />);
-    fireEvent.press(getByText('Service'));
-    expect(onChange).toHaveBeenCalledWith('service');
+    fireEvent.press(getByText('Freelancer / service provider'));
+    expect(onChange).toHaveBeenCalledWith('freelancer_service');
   });
 
   it('renders an error message when error prop is provided', () => {
@@ -35,8 +35,10 @@ describe('BusinessTypeSelector', () => {
     expect(queryByText('Required')).toBeNull();
   });
 
-  it('renders the "shop" card as selected when value is shop', () => {
-    const { getByText } = render(<BusinessTypeSelector value="shop" onChange={jest.fn()} />);
-    expect(getByText('Shop')).toBeTruthy();
+  it('renders the "community_organizer" card as selected when value is community_organizer', () => {
+    const { getByText } = render(
+      <BusinessTypeSelector value="community_organizer" onChange={jest.fn()} />,
+    );
+    expect(getByText('Community organizer')).toBeTruthy();
   });
 });
