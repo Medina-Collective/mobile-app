@@ -3,15 +3,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
-import { ANNOUNCEMENT_TYPE_OPTIONS } from '../schemas/announcement.schema';
-import type { AnnouncementType } from '@app-types/announcement';
+import { ANNOUNCEMENT_FORM_TYPES } from '../schemas/announcement.schema';
+import type { AnnouncementFormType } from '../schemas/announcement.schema';
 import type { ComponentProps } from 'react';
 
 type IoniconName = ComponentProps<typeof Ionicons>['name'];
 
 interface AnnouncementTypeSelectorProps {
-  value: AnnouncementType | undefined;
-  onChange: (type: AnnouncementType) => void;
+  value: AnnouncementFormType | undefined;
+  onChange: (type: AnnouncementFormType) => void;
   error?: string | undefined;
 }
 
@@ -23,7 +23,7 @@ export function AnnouncementTypeSelector({
   return (
     <View>
       <View style={styles.grid}>
-        {ANNOUNCEMENT_TYPE_OPTIONS.map((option) => {
+        {ANNOUNCEMENT_FORM_TYPES.map((option) => {
           const isSelected = value === option.value;
           return (
             <TouchableOpacity

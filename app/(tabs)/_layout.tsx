@@ -4,7 +4,7 @@ import { Redirect, Tabs, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@features/auth';
 import { useAuthStore } from '@store/auth.store';
-import { USER_ROLES } from '@constants';
+import { USER_ROLES } from '@constants/index';
 import { colors } from '@theme/colors';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -90,10 +90,10 @@ export default function TabsLayout() {
         },
       }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: makeTabIcon(TABS[0]) }} />
+      <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: makeTabIcon(TABS[0]!) }} />
       <Tabs.Screen
         name="discover"
-        options={{ title: 'Discover', tabBarIcon: makeTabIcon(TABS[1]) }}
+        options={{ title: 'Discover', tabBarIcon: makeTabIcon(TABS[1]!) }}
       />
 
       {/* Create — center raised button, pro only */}
@@ -101,7 +101,7 @@ export default function TabsLayout() {
         name="create"
         options={{
           title: '',
-          href: isPro ? undefined : null,
+          ...(isPro ? {} : { href: null }),
           tabBarLabel: NoLabel,
           tabBarItemStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
           tabBarButton: () => <CreateTabButton onPress={handleCreatePress} />,
@@ -110,11 +110,11 @@ export default function TabsLayout() {
 
       <Tabs.Screen
         name="favorites"
-        options={{ title: 'Favorites', tabBarIcon: makeTabIcon(TABS[2]) }}
+        options={{ title: 'Favorites', tabBarIcon: makeTabIcon(TABS[2]!) }}
       />
       <Tabs.Screen
         name="profile"
-        options={{ title: 'Profile', tabBarIcon: makeTabIcon(TABS[3]) }}
+        options={{ title: 'Profile', tabBarIcon: makeTabIcon(TABS[3]!) }}
       />
 
       {/* Hidden routes */}

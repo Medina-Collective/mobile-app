@@ -273,20 +273,14 @@ describe('useMyAnnouncements', () => {
 
 describe('useCreateAnnouncement', () => {
   const mockFormData = {
-    type: 'activity_event' as const,
+    type: 'event' as const,
     title: 'New Event',
     description: 'Description',
+    category: 'Events & Activities',
+    girlsOnly: false,
+    isFree: true,
     visibilityStart: new Date('2026-03-01'),
     visibilityEnd: new Date('2026-04-01'),
-    audience: 'public' as const,
-    participationEnabled: false,
-    location: undefined,
-    eventStart: undefined,
-    eventEnd: undefined,
-    deadline: undefined,
-    externalUrl: undefined,
-    maxCapacity: undefined,
-    coverImageUri: undefined,
   };
 
   it('throws when not authenticated', async () => {
