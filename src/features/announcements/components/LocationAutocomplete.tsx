@@ -37,6 +37,7 @@ export function LocationAutocomplete({
 
   // Sync external value changes (e.g. form reset in edit screen)
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setInputText(value ?? '');
   }, [value]);
 
@@ -50,29 +51,26 @@ export function LocationAutocomplete({
       return;
     }
     try {
-      const res = await fetch(
-        'https://places.googleapis.com/v1/places:autocomplete',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Goog-Api-Key': PLACES_API_KEY,
-            'X-Goog-FieldMask':
-              'suggestions.placePrediction.placeId,suggestions.placePrediction.text',
-          },
-          body: JSON.stringify({
-            input: query,
-            languageCode: 'en',
-            regionCode: 'CA',
-            locationRestriction: {
-              rectangle: {
-                low: { latitude: 44.9, longitude: -79.8 },
-                high: { latitude: 62.6, longitude: -57.1 },
-              },
-            },
-          }),
+      const res = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': PLACES_API_KEY,
+          'X-Goog-FieldMask':
+            'suggestions.placePrediction.placeId,suggestions.placePrediction.text',
         },
-      );
+        body: JSON.stringify({
+          input: query,
+          languageCode: 'en',
+          regionCode: 'CA',
+          locationRestriction: {
+            rectangle: {
+              low: { latitude: 44.9, longitude: -79.8 },
+              high: { latitude: 62.6, longitude: -57.1 },
+            },
+          },
+        }),
+      });
       const json = (await res.json()) as {
         suggestions?: {
           placePrediction: { placeId: string; text: { text: string } };
@@ -146,7 +144,10 @@ export function LocationAutocomplete({
           onSubmitEditing={() => setShowList(false)}
         />
         {inputText.length > 0 && (
-          <TouchableOpacity onPress={() => handleSelect('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <TouchableOpacity
+            onPress={() => handleSelect('')}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
             <Ionicons name="close-circle" size={18} color={colors.warm.muted} />
           </TouchableOpacity>
         )}
@@ -174,7 +175,12 @@ export function LocationAutocomplete({
               onPress={() => handleSelect(item.description)}
               activeOpacity={0.7}
             >
-              <Ionicons name="location-outline" size={14} color={colors.warm.muted} style={styles.rowIcon} />
+              <Ionicons
+                name="location-outline"
+                size={14}
+                color={colors.warm.muted}
+                style={styles.rowIcon}
+              />
               <Text style={styles.rowText} numberOfLines={2}>
                 {item.description}
               </Text>

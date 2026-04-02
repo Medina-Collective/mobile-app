@@ -260,9 +260,17 @@ export default function ProfessionalProfileScreen() {
             <View style={styles.announcementList}>
               {announcements.map((a: Announcement) => {
                 const endDate = new Date(a.visibilityEnd);
-                const endLocalDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                const endLocalDay = new Date(
+                  endDate.getFullYear(),
+                  endDate.getMonth(),
+                  endDate.getDate(),
+                );
                 const today = new Date();
-                const todayLocalDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                const todayLocalDay = new Date(
+                  today.getFullYear(),
+                  today.getMonth(),
+                  today.getDate(),
+                );
                 const isExpired = differenceInDays(endLocalDay, todayLocalDay) < 0;
                 return (
                   <View key={a.id} style={styles.announcementWrapper}>

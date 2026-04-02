@@ -12,14 +12,17 @@ import { spacing } from '@theme/spacing';
 const ACCENT = colors.burgundy.mid;
 const ACCENT_LIGHT = 'rgba(68, 0, 7, 0.15)';
 
-type MarkedDates = Record<string, {
-  startingDay?: boolean;
-  endingDay?: boolean;
-  color?: string;
-  textColor?: string;
-  selected?: boolean;
-  selectedColor?: string;
-}>;
+type MarkedDates = Record<
+  string,
+  {
+    startingDay?: boolean;
+    endingDay?: boolean;
+    color?: string;
+    textColor?: string;
+    selected?: boolean;
+    selectedColor?: string;
+  }
+>;
 
 function toDateStr(d: Date): string {
   return format(d, 'yyyy-MM-dd');

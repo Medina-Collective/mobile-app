@@ -16,9 +16,24 @@ export const ANNOUNCEMENT_TYPE_OPTIONS = [
 // ── Form types (3 simplified types matching the web app) ──────────────────────
 
 export const ANNOUNCEMENT_FORM_TYPES = [
-  { value: 'event' as const, label: 'Event / Activity', description: 'Gatherings, classes, workshops', icon: 'calendar-outline' },
-  { value: 'offer' as const, label: 'Offer / Promotion', description: 'Sales, deals, launches', icon: 'pricetag-outline' },
-  { value: 'update' as const, label: 'Community Update', description: 'News, registrations, announcements', icon: 'megaphone-outline' },
+  {
+    value: 'event' as const,
+    label: 'Event / Activity',
+    description: 'Gatherings, classes, workshops',
+    icon: 'calendar-outline',
+  },
+  {
+    value: 'offer' as const,
+    label: 'Offer / Promotion',
+    description: 'Sales, deals, launches',
+    icon: 'pricetag-outline',
+  },
+  {
+    value: 'update' as const,
+    label: 'Community Update',
+    description: 'News, registrations, announcements',
+    icon: 'megaphone-outline',
+  },
 ] as const;
 
 export type AnnouncementFormType = 'event' | 'offer' | 'update';
@@ -39,47 +54,41 @@ export const ANNOUNCEMENT_CATEGORIES = [
 
 // ── Zod schema ────────────────────────────────────────────────────────────────
 
-export const announcementSchema = z.object({
-  type: z.enum(['event', 'offer', 'update']),
-  title: z
-    .string()
-    .min(2, 'Title must be at least 2 characters')
-    .max(100, 'Title cannot exceed 100 characters'),
-  description: z
-    .string()
-    .max(1000, 'Description cannot exceed 1,000 characters')
-    .optional(),
-  category: z.string().min(1, 'Please select a category'),
-  coverImageUri: z.string().optional(),
+export const announcementSchema = z
+  .object({
+    type: z.enum(['event', 'offer', 'update']),
+    title: z
+      .string()
+      .min(2, 'Title must be at least 2 characters')
+      .max(100, 'Title cannot exceed 100 characters'),
+    description: z.string().max(1000, 'Description cannot exceed 1,000 characters').optional(),
+    category: z.string().min(1, 'Please select a category'),
+    coverImageUri: z.string().optional(),
 
-  // ── Event fields ────────────────────────────────────────────────────────────
-  eventDate: z.date().optional(),
-  eventTime: z.date().optional(),
-  location: z.string().max(200, 'Location is too long').optional(),
-  girlsOnly: z.boolean().default(false),
-  isFree: z.boolean().default(true),
-  price: z.string().optional(),
-  maxParticipants: z
-    .number()
-    .int()
-    .positive('Capacity must be a positive number')
-    .optional(),
-  registrationLink: z.string().optional(),
+    // ── Event fields ────────────────────────────────────────────────────────────
+    eventDate: z.date().optional(),
+    eventTime: z.date().optional(),
+    location: z.string().max(200, 'Location is too long').optional(),
+    girlsOnly: z.boolean().default(false),
+    isFree: z.boolean().default(true),
+    price: z.string().optional(),
+    maxParticipants: z.number().int().positive('Capacity must be a positive number').optional(),
+    registrationLink: z.string().optional(),
 
-  // ── Offer fields ────────────────────────────────────────────────────────────
-  discountLabel: z.string().optional(),
-  validUntil: z.date().optional(),
-  promoCode: z.string().optional(),
-  shopLink: z.string().optional(),
+    // ── Offer fields ────────────────────────────────────────────────────────────
+    discountLabel: z.string().optional(),
+    validUntil: z.date().optional(),
+    promoCode: z.string().optional(),
+    shopLink: z.string().optional(),
 
-  // ── Update fields ───────────────────────────────────────────────────────────
-  deadline: z.date().optional(),
-  externalLink: z.string().optional(),
+    // ── Update fields ───────────────────────────────────────────────────────────
+    deadline: z.date().optional(),
+    externalLink: z.string().optional(),
 
-  // ── Visibility window (required) ────────────────────────────────────────────
-  visibilityStart: z.date(),
-  visibilityEnd: z.date(),
-})
+    // ── Visibility window (required) ────────────────────────────────────────────
+    visibilityStart: z.date(),
+    visibilityEnd: z.date(),
+  })
   .refine((d) => d.visibilityEnd > d.visibilityStart, {
     message: 'End date must be after start date',
     path: ['visibilityEnd'],

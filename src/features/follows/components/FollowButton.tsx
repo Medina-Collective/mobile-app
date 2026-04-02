@@ -45,10 +45,7 @@ export function FollowButton({ professionalId, variant = 'pill' }: Readonly<Foll
       activeOpacity={0.8}
     >
       {isToggling ? (
-        <ActivityIndicator
-          size="small"
-          color={isFollowing ? '#fff' : colors.burgundy.deep}
-        />
+        <ActivityIndicator size="small" color={isFollowing ? '#fff' : colors.burgundy.deep} />
       ) : (
         <Text style={[styles.pillLabel, isFollowing && styles.pillLabelFollowing]}>
           {isFollowing ? 'Following' : 'Follow'}

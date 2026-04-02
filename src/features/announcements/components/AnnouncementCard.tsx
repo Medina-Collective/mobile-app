@@ -359,7 +359,9 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
                 color={announcement.location === undefined ? 'transparent' : colors.warm.body}
               />
               <Text style={featuredStyles.metaText} numberOfLines={1}>
-                {announcement.location !== undefined ? announcement.location.split(',')[0] : '\u00A0'}
+                {announcement.location !== undefined
+                  ? announcement.location.split(',')[0]
+                  : '\u00A0'}
               </Text>
             </View>
           </View>
