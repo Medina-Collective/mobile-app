@@ -7,6 +7,7 @@ import {
   Linking,
   StyleSheet,
 } from 'react-native';
+import { differenceInDays } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -258,7 +259,7 @@ export default function ProfessionalProfileScreen() {
             </Text>
             <View style={styles.announcementList}>
               {announcements.map((a: Announcement) => {
-                const isExpired = new Date() > new Date(a.visibilityEnd);
+                const isExpired = differenceInDays(new Date(a.visibilityEnd), new Date()) <= 0;
                 return (
                   <View key={a.id} style={styles.announcementWrapper}>
                     <AnnouncementCard announcement={a} variant="compact" />
