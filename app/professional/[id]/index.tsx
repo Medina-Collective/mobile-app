@@ -259,7 +259,7 @@ export default function ProfessionalProfileScreen() {
             </Text>
             <View style={styles.announcementList}>
               {announcements.map((a: Announcement) => {
-                const isExpired = differenceInDays(new Date(a.visibilityEnd), new Date()) <= 0;
+                const isExpired = differenceInDays(new Date(a.visibilityEnd), new Date()) < 0;
                 return (
                   <View key={a.id} style={styles.announcementWrapper}>
                     <AnnouncementCard announcement={a} variant="compact" />

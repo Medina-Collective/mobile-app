@@ -103,7 +103,8 @@ export default function AnnouncementDetailScreen() {
 
   const daysUntilExpiry = differenceInDays(new Date(announcement.visibilityEnd), new Date());
   let expiryLabel = `Expires in ${daysUntilExpiry} days`;
-  if (daysUntilExpiry <= 0) expiryLabel = 'Expired';
+  if (daysUntilExpiry < 0) expiryLabel = 'Expired';
+  else if (daysUntilExpiry === 0) expiryLabel = 'Expires today';
   else if (daysUntilExpiry === 1) expiryLabel = 'Expires tomorrow';
 
   return (
