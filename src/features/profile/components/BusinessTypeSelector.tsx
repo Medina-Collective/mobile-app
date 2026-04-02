@@ -18,7 +18,7 @@ export function BusinessTypeSelector({
   return (
     <View style={styles.container}>
       <Text variant="overline" style={styles.label}>
-        Profile type
+        Which best describes you?
       </Text>
       <View style={styles.grid}>
         {PROFILE_TYPES.map(({ value: typeValue, label, description }) => {
@@ -55,44 +55,42 @@ const styles = StyleSheet.create({
   },
   label: {
     marginBottom: spacing[3],
-    color: '#7b625b',
+    color: 'rgba(26, 18, 18, 0.45)',
   },
   grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: spacing[2],
   },
   card: {
-    width: '48%',
+    width: '100%',
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[4],
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: 'rgba(160, 122, 95, 0.30)',
     borderRadius: 8,
     gap: spacing[1],
   },
   cardSelected: {
-    borderColor: '#CEC1AE',
-    backgroundColor: colors.burgundy.raised,
+    borderColor: '#2F0A0A',
+    backgroundColor: '#fff9f5',
   },
   cardLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.55)',
     letterSpacing: 0.2,
   },
   cardLabelSelected: {
-    color: '#CEC1AE',
+    color: '#1a1212',
   },
   cardDesc: {
     fontSize: 11,
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.45)',
     lineHeight: 15,
     opacity: 0.7,
   },
   cardDescSelected: {
-    color: '#CEC1AE',
-    opacity: 0.8,
+    color: 'rgba(26, 18, 18, 0.55)',
+    opacity: 1,
   },
   error: {
     marginTop: spacing[2],

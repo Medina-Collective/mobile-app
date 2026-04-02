@@ -1,6 +1,7 @@
 import {
   professionalProfileSchema,
   PROFILE_TYPES,
+  MONETIZATION_TYPES,
   CATEGORIES_BY_TYPE,
   SUBCATEGORIES_BY_CATEGORY,
   SERVICE_TYPE_OPTIONS,
@@ -14,10 +15,11 @@ import {
 
 const validBase = {
   businessName: 'Henna by Fatima',
-  profileType: 'service' as const,
+  profileType: 'freelancer_service' as const,
+  monetizationType: 'for_profit' as const,
   category: 'Beauty',
   subcategories: ['Henna', 'Makeup'],
-  serviceTypes: ['at_home', 'travels_to_client'],
+  serviceTypes: ['in_person', 'travels_to_client'],
   basedIn: 'Montreal',
   servesAreas: ['Laval', 'Longueuil'],
   description: 'Specialised henna artist serving the Montreal community.',
@@ -52,6 +54,21 @@ describe('professionalProfileSchema', () => {
   it('accepts all valid profile types', () => {
     for (const { value } of PROFILE_TYPES) {
       const result = professionalProfileSchema.safeParse({ ...validBase, profileType: value });
+      expect(result.success).toBe(true);
+    }
+  });
+
+  it('rejects an invalid monetizationType', () => {
+    const result = professionalProfileSchema.safeParse({
+      ...validBase,
+      monetizationType: 'mixed',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts all valid monetization types', () => {
+    for (const { value } of MONETIZATION_TYPES) {
+      const result = professionalProfileSchema.safeParse({ ...validBase, monetizationType: value });
       expect(result.success).toBe(true);
     }
   });
@@ -103,12 +120,12 @@ describe('PROFILE_TYPES', () => {
     expect(PROFILE_TYPES).toHaveLength(4);
   });
 
-  it('includes shop, service, organizer, classes_circles', () => {
+  it('includes the 4 verified profile identity types', () => {
     const values = PROFILE_TYPES.map((t) => t.value);
-    expect(values).toContain('shop');
-    expect(values).toContain('service');
-    expect(values).toContain('organizer');
-    expect(values).toContain('classes_circles');
+    expect(values).toContain('community_organizer');
+    expect(values).toContain('nonprofit_organization');
+    expect(values).toContain('business_brand');
+    expect(values).toContain('freelancer_service');
   });
 
   it('each type has a label and description', () => {
@@ -119,12 +136,31 @@ describe('PROFILE_TYPES', () => {
   });
 });
 
+describe('MONETIZATION_TYPES', () => {
+  it('contains exactly 2 options', () => {
+    expect(MONETIZATION_TYPES).toHaveLength(2);
+  });
+
+  it('includes nonprofit and for_profit', () => {
+    const values = MONETIZATION_TYPES.map((t) => t.value);
+    expect(values).toContain('nonprofit');
+    expect(values).toContain('for_profit');
+  });
+
+  it('each option has a label and description', () => {
+    for (const type of MONETIZATION_TYPES) {
+      expect(type.label.length).toBeGreaterThan(0);
+      expect(type.description.length).toBeGreaterThan(0);
+    }
+  });
+});
+
 describe('CATEGORIES_BY_TYPE', () => {
   it('has categories for all 4 profile types', () => {
-    expect(CATEGORIES_BY_TYPE.shop.length).toBeGreaterThan(0);
-    expect(CATEGORIES_BY_TYPE.service.length).toBeGreaterThan(0);
-    expect(CATEGORIES_BY_TYPE.organizer.length).toBeGreaterThan(0);
-    expect(CATEGORIES_BY_TYPE.classes_circles.length).toBeGreaterThan(0);
+    expect(CATEGORIES_BY_TYPE.community_organizer.length).toBeGreaterThan(0);
+    expect(CATEGORIES_BY_TYPE.nonprofit_organization.length).toBeGreaterThan(0);
+    expect(CATEGORIES_BY_TYPE.business_brand.length).toBeGreaterThan(0);
+    expect(CATEGORIES_BY_TYPE.freelancer_service.length).toBeGreaterThan(0);
   });
 });
 
@@ -141,6 +177,14 @@ describe('SUBCATEGORIES_BY_CATEGORY', () => {
 describe('SERVICE_TYPE_OPTIONS', () => {
   it('contains 4 options', () => {
     expect(SERVICE_TYPE_OPTIONS).toHaveLength(4);
+  });
+
+  it('includes in_person, online, hybrid, travels_to_client', () => {
+    const values = SERVICE_TYPE_OPTIONS.map((o) => o.value);
+    expect(values).toContain('in_person');
+    expect(values).toContain('online');
+    expect(values).toContain('hybrid');
+    expect(values).toContain('travels_to_client');
   });
 
   it('each option has value and label', () => {
@@ -171,7 +215,12 @@ describe('PRICE_RANGES', () => {
 
 describe('CATEGORY_STEP_COPY', () => {
   it('has copy for all profile types', () => {
-    const types = ['shop', 'service', 'organizer', 'classes_circles'] as const;
+    const types = [
+      'community_organizer',
+      'nonprofit_organization',
+      'business_brand',
+      'freelancer_service',
+    ] as const;
     for (const type of types) {
       expect(CATEGORY_STEP_COPY[type].title.length).toBeGreaterThan(0);
       expect(CATEGORY_STEP_COPY[type].subtitle.length).toBeGreaterThan(0);
@@ -180,8 +229,8 @@ describe('CATEGORY_STEP_COPY', () => {
 });
 
 describe('STEP_FIELDS', () => {
-  it('has 7 entries for 7 steps', () => {
-    expect(STEP_FIELDS).toHaveLength(7);
+  it('has 8 entries for 8 steps', () => {
+    expect(STEP_FIELDS).toHaveLength(8);
   });
 
   it('step 0 validates businessName and profileType', () => {
@@ -189,12 +238,16 @@ describe('STEP_FIELDS', () => {
     expect(STEP_FIELDS[0]).toContain('profileType');
   });
 
-  it('step 1 validates category', () => {
-    expect(STEP_FIELDS[1]).toContain('category');
+  it('step 1 validates monetizationType', () => {
+    expect(STEP_FIELDS[1]).toContain('monetizationType');
   });
 
-  it('step 4 validates basedIn', () => {
-    expect(STEP_FIELDS[4]).toContain('basedIn');
+  it('step 2 validates category', () => {
+    expect(STEP_FIELDS[2]).toContain('category');
+  });
+
+  it('step 5 validates basedIn', () => {
+    expect(STEP_FIELDS[5]).toContain('basedIn');
   });
 });
 
@@ -205,5 +258,6 @@ describe('PROFILE_STATUS', () => {
     expect(PROFILE_STATUS.APPROVED).toBe('approved');
     expect(PROFILE_STATUS.CHANGES_REQUESTED).toBe('changes_requested');
     expect(PROFILE_STATUS.REJECTED).toBe('rejected');
+    expect(PROFILE_STATUS.NEEDS_FOLLOW_UP).toBe('needs_follow_up');
   });
 });

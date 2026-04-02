@@ -16,10 +16,11 @@ jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }) }));
 const base: Professional = {
   id: '1',
   businessName: 'Henna by Fatima',
-  profileType: 'service',
+  profileType: 'freelancer_service',
+  monetizationType: 'for_profit',
   category: 'Beauty',
   subcategories: ['Henna', 'Makeup'],
-  serviceTypes: ['at_home'],
+  serviceTypes: ['in_person'],
   basedIn: 'Montreal',
   servesAreas: ['Montreal'],
   description: 'Test description',
@@ -37,7 +38,7 @@ describe('ProfessionalCard', () => {
     expect(getByText('Henna by Fatima')).toBeTruthy();
     expect(getByText('Beauty · Henna, Makeup')).toBeTruthy();
     expect(getByText('Montreal')).toBeTruthy();
-    expect(getByText('Service')).toBeTruthy();
+    expect(getByText('Freelancer / service provider')).toBeTruthy();
   });
 
   it('renders avatar initials from the first two words', () => {

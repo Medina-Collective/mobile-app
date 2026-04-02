@@ -1,11 +1,11 @@
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@components/ui';
-import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { fontSize } from '@theme/typography';
 import {
   PROFILE_TYPES,
+  MONETIZATION_TYPES,
   SERVICE_TYPE_OPTIONS,
   type ProfessionalProfileFormData,
 } from '../schemas/professional-profile.schema';
@@ -53,6 +53,10 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
   const profileTypeLabel =
     PROFILE_TYPES.find((t) => t.value === data.profileType)?.label ?? data.profileType;
 
+  const monetizationLabel =
+    MONETIZATION_TYPES.find((t) => t.value === data.monetizationType)?.label ??
+    data.monetizationType;
+
   const serviceTypeLabels = data.serviceTypes.map(
     (v) => SERVICE_TYPE_OPTIONS.find((o) => o.value === v)?.label ?? v,
   );
@@ -76,8 +80,8 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
 
       <View style={styles.divider} />
 
-      {/* Profile Type */}
-      <SectionRow label="Profile Type" onEdit={() => onEditStep(0)}>
+      {/* Profile Identity */}
+      <SectionRow label="Profile type" onEdit={() => onEditStep(0)}>
         <View style={styles.pills}>
           <View style={styles.pill}>
             <Text style={styles.pillText}>{profileTypeLabel}</Text>
@@ -85,8 +89,19 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
         </View>
       </SectionRow>
 
+      {/* Monetization */}
+      {data.monetizationType !== undefined && (
+        <SectionRow label="How you operate" onEdit={() => onEditStep(1)}>
+          <View style={styles.pills}>
+            <View style={[styles.pill, styles.pillMuted]}>
+              <Text style={styles.pillText}>{monetizationLabel}</Text>
+            </View>
+          </View>
+        </SectionRow>
+      )}
+
       {/* Category */}
-      <SectionRow label="Category" onEdit={() => onEditStep(1)}>
+      <SectionRow label="Category" onEdit={() => onEditStep(2)}>
         {data.category.length > 0 ? (
           <View style={styles.pills}>
             <View style={[styles.pill, styles.pillAccent]}>
@@ -107,7 +122,7 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
 
       {/* Service Type */}
       {serviceTypeLabels.length > 0 && (
-        <SectionRow label="Service Type" onEdit={() => onEditStep(3)}>
+        <SectionRow label="Delivery" onEdit={() => onEditStep(4)}>
           <View style={styles.pills}>
             {serviceTypeLabels.map((label) => (
               <View key={label} style={styles.pill}>
@@ -119,11 +134,11 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
       )}
 
       {/* Location */}
-      <SectionRow label="Location" onEdit={() => onEditStep(4)}>
+      <SectionRow label="Location" onEdit={() => onEditStep(5)}>
         {data.basedIn.length > 0 ? (
           <View style={styles.locationBlock}>
             <View style={styles.contactRow}>
-              <Ionicons name="location-outline" size={13} color={colors.burgundy.muted} />
+              <Ionicons name="location-outline" size={13} color="rgba(26, 18, 18, 0.45)" />
               <Text variant="caption" style={styles.contactText}>
                 Based in {data.basedIn}
               </Text>
@@ -142,7 +157,7 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
       </SectionRow>
 
       {/* About & Contact */}
-      <SectionRow label="About & Contact" onEdit={() => onEditStep(5)}>
+      <SectionRow label="About & Contact" onEdit={() => onEditStep(6)}>
         {data.description.length > 0 && (
           <Text variant="bodySm" style={styles.description}>
             {data.description}
@@ -151,7 +166,7 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
         <View style={styles.contactList}>
           {data.priceRange !== undefined && (
             <View style={styles.contactRow}>
-              <Ionicons name="pricetag-outline" size={13} color={colors.burgundy.muted} />
+              <Ionicons name="pricetag-outline" size={13} color="rgba(26, 18, 18, 0.45)" />
               <Text variant="caption" style={styles.contactText}>
                 {data.priceRange}
                 {data.startingPrice !== undefined && data.startingPrice.length > 0
@@ -162,7 +177,7 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
           )}
           {data.inquiryEmail.length > 0 && (
             <View style={styles.contactRow}>
-              <Ionicons name="mail-outline" size={13} color={colors.burgundy.muted} />
+              <Ionicons name="mail-outline" size={13} color="rgba(26, 18, 18, 0.45)" />
               <Text variant="caption" style={styles.contactText}>
                 {data.inquiryEmail}
               </Text>
@@ -170,7 +185,7 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
           )}
           {data.instagram !== undefined && data.instagram.length > 0 && (
             <View style={styles.contactRow}>
-              <Ionicons name="logo-instagram" size={13} color={colors.burgundy.muted} />
+              <Ionicons name="logo-instagram" size={13} color="rgba(26, 18, 18, 0.45)" />
               <Text variant="caption" style={styles.contactText}>
                 @{data.instagram}
               </Text>
@@ -178,7 +193,7 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
           )}
           {data.phone !== undefined && data.phone.length > 0 && (
             <View style={styles.contactRow}>
-              <Ionicons name="call-outline" size={13} color={colors.burgundy.muted} />
+              <Ionicons name="call-outline" size={13} color="rgba(26, 18, 18, 0.45)" />
               <Text variant="caption" style={styles.contactText}>
                 {data.phone}
               </Text>
@@ -186,7 +201,7 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
           )}
           {data.website !== undefined && data.website.length > 0 && (
             <View style={styles.contactRow}>
-              <Ionicons name="link-outline" size={13} color={colors.burgundy.muted} />
+              <Ionicons name="link-outline" size={13} color="rgba(26, 18, 18, 0.45)" />
               <Text variant="caption" style={styles.contactText}>
                 {data.website}
               </Text>
@@ -194,7 +209,7 @@ export function ProfilePreviewCard({ data, onEditStep }: Readonly<ProfilePreview
           )}
           {data.bookingLink !== undefined && data.bookingLink.length > 0 && (
             <View style={styles.contactRow}>
-              <Ionicons name="calendar-outline" size={13} color={colors.burgundy.muted} />
+              <Ionicons name="calendar-outline" size={13} color="rgba(26, 18, 18, 0.45)" />
               <Text variant="caption" style={styles.contactText}>
                 {data.bookingLink}
               </Text>
@@ -217,16 +232,16 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: colors.burgundy.raised,
+    backgroundColor: '#fff9f5',
     borderWidth: 2,
-    borderColor: colors.burgundy.mid,
+    borderColor: 'rgba(160, 122, 95, 0.30)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   initials: {
     fontSize: fontSize.lg,
     fontWeight: '700',
-    color: '#CEC1AE',
+    color: '#2F0A0A',
     letterSpacing: 1,
   },
   headerText: {
@@ -234,14 +249,14 @@ const styles = StyleSheet.create({
     gap: spacing[1],
   },
   businessName: {
-    color: '#CEC1AE',
+    color: '#1a1212',
   },
   profileTypeBadge: {
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.45)',
   },
   divider: {
     height: 1,
-    backgroundColor: colors.burgundy.surface,
+    backgroundColor: '#e5e1dc',
     marginBottom: spacing[6],
   },
   sectionRow: {
@@ -254,10 +269,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sectionLabel: {
-    color: '#7b625b',
+    color: 'rgba(26, 18, 18, 0.45)',
   },
   editLink: {
-    color: '#CEC1AE',
+    color: '#2F0A0A',
     fontWeight: '600',
     letterSpacing: 0,
   },
@@ -270,16 +285,20 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[1],
     paddingHorizontal: spacing[3],
     borderRadius: 20,
-    backgroundColor: colors.burgundy.raised,
+    backgroundColor: '#fff9f5',
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: 'rgba(160, 122, 95, 0.30)',
   },
   pillAccent: {
-    borderColor: '#CEC1AE',
+    borderColor: '#2F0A0A',
+  },
+  pillMuted: {
+    borderColor: 'transparent',
+    backgroundColor: '#f3f0eb',
   },
   pillText: {
     fontSize: 12,
-    color: '#CEC1AE',
+    color: '#1a1212',
     fontWeight: '500',
   },
   pillTextAccent: {
@@ -289,13 +308,12 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   emptyText: {
-    color: colors.burgundy.raised,
+    color: 'rgba(26, 18, 18, 0.35)',
     fontStyle: 'italic',
   },
   description: {
-    color: '#CEC1AE',
+    color: 'rgba(26, 18, 18, 0.75)',
     lineHeight: 20,
-    opacity: 0.85,
   },
   contactList: {
     gap: spacing[2],
@@ -306,6 +324,6 @@ const styles = StyleSheet.create({
     gap: spacing[2],
   },
   contactText: {
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.55)',
   },
 });

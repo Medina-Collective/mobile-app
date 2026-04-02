@@ -22,7 +22,7 @@ export default function CheckEmailScreen() {
     } = supabase.auth.onAuthStateChange((event, session) => {
       if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
         void setAuth().then(() => {
-          if (role === 'professional') {
+          if (role === 'verified') {
             router.replace('/(auth)/professional-profile');
           } else {
             router.replace('/(tabs)');
@@ -41,7 +41,7 @@ export default function CheckEmailScreen() {
       } = await supabase.auth.getSession();
       if (session) {
         await setAuth();
-        if (role === 'professional') {
+        if (role === 'verified') {
           router.replace('/(auth)/professional-profile');
         } else {
           router.replace('/(tabs)');

@@ -11,7 +11,8 @@ export type Database = {
           id: string;
           user_id: string;
           business_name: string;
-          profile_type: 'shop' | 'service' | 'organizer' | 'classes_circles';
+          profile_type: string;
+          monetization_type: 'nonprofit' | 'for_profit' | null;
           category: string;
           subcategories: string[];
           service_types: string[];
@@ -26,7 +27,13 @@ export type Database = {
           price_range: '$' | '$$' | '$$$' | null;
           starting_price: string | null;
           logo_uri: string | null;
-          status: 'draft' | 'pending_review' | 'approved' | 'changes_requested' | 'rejected';
+          status:
+            | 'draft'
+            | 'pending_review'
+            | 'approved'
+            | 'changes_requested'
+            | 'rejected'
+            | 'needs_follow_up';
           created_at: string;
           updated_at: string;
         };
@@ -34,7 +41,8 @@ export type Database = {
           id?: string;
           user_id: string;
           business_name: string;
-          profile_type: 'shop' | 'service' | 'organizer' | 'classes_circles';
+          profile_type: string;
+          monetization_type?: 'nonprofit' | 'for_profit' | null;
           category: string;
           subcategories?: string[];
           service_types?: string[];
@@ -49,11 +57,18 @@ export type Database = {
           price_range?: '$' | '$$' | '$$$' | null;
           starting_price?: string | null;
           logo_uri?: string | null;
-          status?: 'draft' | 'pending_review' | 'approved' | 'changes_requested' | 'rejected';
+          status?:
+            | 'draft'
+            | 'pending_review'
+            | 'approved'
+            | 'changes_requested'
+            | 'rejected'
+            | 'needs_follow_up';
         };
         Update: {
           business_name?: string;
-          profile_type?: 'shop' | 'service' | 'organizer' | 'classes_circles';
+          profile_type?: string;
+          monetization_type?: 'nonprofit' | 'for_profit' | null;
           category?: string;
           subcategories?: string[];
           service_types?: string[];
@@ -68,7 +83,13 @@ export type Database = {
           price_range?: '$' | '$$' | '$$$' | null;
           starting_price?: string | null;
           logo_uri?: string | null;
-          status?: 'draft' | 'pending_review' | 'approved' | 'changes_requested' | 'rejected';
+          status?:
+            | 'draft'
+            | 'pending_review'
+            | 'approved'
+            | 'changes_requested'
+            | 'rejected'
+            | 'needs_follow_up';
           updated_at?: string;
         };
         Relationships: [];
@@ -196,10 +217,14 @@ export type Database = {
       };
     };
     Enums: {
-      profile_type: 'shop' | 'service' | 'organizer' | 'classes_circles';
-      profile_status: 'draft' | 'pending_review' | 'approved' | 'changes_requested' | 'rejected';
+      profile_status:
+        | 'draft'
+        | 'pending_review'
+        | 'approved'
+        | 'changes_requested'
+        | 'rejected'
+        | 'needs_follow_up';
       price_range: '$' | '$$' | '$$$';
-      service_type_value: 'at_home' | 'has_studio' | 'online' | 'travels_to_client';
       announcement_type:
         | 'activity_event'
         | 'bazaar'

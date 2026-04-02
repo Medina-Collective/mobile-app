@@ -31,23 +31,12 @@ describe('signUpSchema', () => {
   const valid = {
     displayName: 'Wissem',
     email: 'wissem@example.com',
-    role: 'user' as const,
     password: 'Password1',
     confirmPassword: 'Password1',
   };
 
   it('accepts a valid member sign-up', () => {
     expect(signUpSchema.safeParse(valid).success).toBe(true);
-  });
-
-  it('accepts a professional role', () => {
-    const result = signUpSchema.safeParse({ ...valid, role: 'professional' });
-    expect(result.success).toBe(true);
-  });
-
-  it('rejects an invalid role', () => {
-    const result = signUpSchema.safeParse({ ...valid, role: 'admin' });
-    expect(result.success).toBe(false);
   });
 
   it('rejects a display name shorter than 2 characters', () => {

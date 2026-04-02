@@ -1,7 +1,6 @@
 import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '@theme/colors';
 import { ProfileWizard } from '@features/profile/components/ProfileWizard';
 import { supabase } from '@services/supabase.client';
 import { useAuthStore } from '@store/auth.store';
@@ -34,6 +33,6 @@ export default function ProfessionalProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.burgundy.deep },
+  safe: { flex: 1, backgroundColor: '#faf6f0' },
   flex: { flex: 1 },
 });

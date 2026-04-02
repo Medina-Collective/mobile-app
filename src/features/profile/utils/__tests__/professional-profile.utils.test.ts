@@ -3,10 +3,11 @@ import type { ProfessionalProfileFormData } from '@features/profile/schemas/prof
 
 const base: ProfessionalProfileFormData = {
   businessName: 'Henna by Fatima',
-  profileType: 'service',
+  profileType: 'freelancer_service',
+  monetizationType: 'for_profit',
   category: 'Beauty',
   subcategories: ['Henna'],
-  serviceTypes: ['at_home'],
+  serviceTypes: ['in_person'],
   basedIn: 'Montreal',
   servesAreas: ['Montreal'],
   description: 'A great henna artist.',
@@ -22,10 +23,11 @@ describe('formDataToRow', () => {
   it('maps all required fields correctly', () => {
     const row = formDataToRow(base);
     expect(row.business_name).toBe('Henna by Fatima');
-    expect(row.profile_type).toBe('service');
+    expect(row.profile_type).toBe('freelancer_service');
+    expect(row.monetization_type).toBe('for_profit');
     expect(row.category).toBe('Beauty');
     expect(row.subcategories).toEqual(['Henna']);
-    expect(row.service_types).toEqual(['at_home']);
+    expect(row.service_types).toEqual(['in_person']);
     expect(row.based_in).toBe('Montreal');
     expect(row.serves_areas).toEqual(['Montreal']);
     expect(row.description).toBe('A great henna artist.');

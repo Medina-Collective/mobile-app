@@ -5,10 +5,11 @@ import type { ProfessionalProfileFormData } from '../../schemas/professional-pro
 
 const baseData: ProfessionalProfileFormData = {
   businessName: 'Henna by Fatima',
-  profileType: 'service',
+  profileType: 'freelancer_service',
+  monetizationType: 'for_profit',
   category: 'Beauty',
   subcategories: ['Henna', 'Makeup'],
-  serviceTypes: ['at_home', 'travels_to_client'],
+  serviceTypes: ['in_person', 'travels_to_client'],
   basedIn: 'Montreal',
   servesAreas: ['Laval'],
   description: 'Specialised henna artist serving the Montreal community.',
@@ -34,7 +35,7 @@ describe('ProfilePreviewCard', () => {
 
   it('displays the profile type label', () => {
     const { getAllByText } = render(<ProfilePreviewCard data={baseData} onEditStep={jest.fn()} />);
-    expect(getAllByText('Service').length).toBeGreaterThan(0);
+    expect(getAllByText('Freelancer / service provider').length).toBeGreaterThan(0);
   });
 
   it('displays the category', () => {
@@ -50,7 +51,7 @@ describe('ProfilePreviewCard', () => {
 
   it('displays service type labels', () => {
     const { getByText } = render(<ProfilePreviewCard data={baseData} onEditStep={jest.fn()} />);
-    expect(getByText('At home')).toBeTruthy();
+    expect(getByText('In person')).toBeTruthy();
     expect(getByText('Travels to client')).toBeTruthy();
   });
 
@@ -74,13 +75,13 @@ describe('ProfilePreviewCard', () => {
     expect(getByText('hello@henna.com')).toBeTruthy();
   });
 
-  it('calls onEditStep with step 1 when Category Edit is pressed', () => {
+  it('calls onEditStep with step 2 when Category Edit is pressed', () => {
     const onEditStep = jest.fn();
     const { getAllByText } = render(<ProfilePreviewCard data={baseData} onEditStep={onEditStep} />);
     const editButtons = getAllByText('Edit');
-    // Category section is the second Edit button (after Profile Type)
-    fireEvent.press(editButtons[1]);
-    expect(onEditStep).toHaveBeenCalledWith(1);
+    // Order: Profile type (0→step0), How you operate (1→step1), Category (2→step2)
+    fireEvent.press(editButtons[2]);
+    expect(onEditStep).toHaveBeenCalledWith(2);
   });
 
   it('shows empty state when category is not set', () => {
@@ -104,6 +105,6 @@ describe('ProfilePreviewCard', () => {
     const { queryByText } = render(
       <ProfilePreviewCard data={{ ...baseData, serviceTypes: [] }} onEditStep={jest.fn()} />,
     );
-    expect(queryByText('Service Type')).toBeNull();
+    expect(queryByText('Delivery')).toBeNull();
   });
 });

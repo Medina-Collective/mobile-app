@@ -9,7 +9,6 @@ export const signUpSchema = z
   .object({
     displayName: z.string().min(2, 'Name must be at least 2 characters').max(50),
     email: z.email(),
-    role: z.enum(['user', 'professional']),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')

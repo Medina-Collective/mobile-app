@@ -8,6 +8,7 @@ export function formDataToRow(data: ProfessionalProfileFormData) {
   return {
     business_name: data.businessName,
     profile_type: data.profileType,
+    monetization_type: data.monetizationType,
     category: data.category,
     subcategories: data.subcategories,
     service_types: data.serviceTypes,

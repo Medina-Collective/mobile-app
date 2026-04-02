@@ -4,27 +4,27 @@ import { StepIndicator } from '../StepIndicator';
 
 describe('StepIndicator', () => {
   it('renders without crashing', () => {
-    const { toJSON } = render(<StepIndicator currentStep={0} totalSteps={7} />);
+    const { toJSON } = render(<StepIndicator currentStep={0} totalSteps={8} />);
     expect(toJSON()).not.toBeNull();
   });
 
   it('displays the correct step label for step 0', () => {
-    const { getByText } = render(<StepIndicator currentStep={0} totalSteps={7} />);
-    expect(getByText(/Profile Type/)).toBeTruthy();
+    const { getByText } = render(<StepIndicator currentStep={0} totalSteps={8} />);
+    expect(getByText(/Identity/)).toBeTruthy();
   });
 
   it('displays the correct step label for step 1', () => {
-    const { getByText } = render(<StepIndicator currentStep={1} totalSteps={7} />);
-    expect(getByText(/Category/)).toBeTruthy();
+    const { getByText } = render(<StepIndicator currentStep={1} totalSteps={8} />);
+    expect(getByText(/How you operate/)).toBeTruthy();
   });
 
   it('displays the current step number and total', () => {
-    const { getByText } = render(<StepIndicator currentStep={2} totalSteps={7} />);
-    expect(getByText(/3 of 7/)).toBeTruthy();
+    const { getByText } = render(<StepIndicator currentStep={2} totalSteps={8} />);
+    expect(getByText(/3 of 8/)).toBeTruthy();
   });
 
   it('shows the last step label correctly', () => {
-    const { getByText } = render(<StepIndicator currentStep={6} totalSteps={7} />);
+    const { getByText } = render(<StepIndicator currentStep={7} totalSteps={8} />);
     expect(getByText(/Review/)).toBeTruthy();
   });
 

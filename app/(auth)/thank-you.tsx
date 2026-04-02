@@ -31,13 +31,12 @@ export default function ThankYouScreen() {
         </Text>
 
         <Text variant="bodySm" style={styles.body}>
-          Thank you for joining Medina Collective. We have received your profile request and will
-          review it as soon as possible.
+          Thank you for joining Medina Collective. We have received your verified profile
+          application and will review it as soon as possible.
         </Text>
 
         <Text variant="bodySm" style={styles.body}>
-          You will receive an email once your profile is approved. In the meantime, feel free to
-          explore the app.
+          You will receive an email once your profile is approved and visible to the community.
         </Text>
 
         <Text variant="caption" style={styles.note}>

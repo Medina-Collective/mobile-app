@@ -1,6 +1,5 @@
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text } from '@components/ui';
-import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 
 interface SelectableListProps {
@@ -45,25 +44,25 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   itemSelected: {
-    backgroundColor: colors.burgundy.raised,
-    borderColor: '#CEC1AE',
+    backgroundColor: '#fff9f5',
+    borderColor: '#2F0A0A',
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.burgundy.mid,
+    backgroundColor: 'rgba(160, 122, 95, 0.30)',
   },
   dotSelected: {
-    backgroundColor: '#CEC1AE',
+    backgroundColor: '#2F0A0A',
   },
   itemLabel: {
     fontSize: 14,
     fontWeight: '400',
-    color: colors.burgundy.muted,
+    color: 'rgba(26, 18, 18, 0.55)',
   },
   itemLabelSelected: {
-    color: '#CEC1AE',
+    color: '#1a1212',
     fontWeight: '600',
   },
 });

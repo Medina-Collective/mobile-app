@@ -10,17 +10,17 @@ describe('CategorySelector', () => {
     expect(getByText(/Go back and select a profile type first/)).toBeTruthy();
   });
 
-  it('renders categories for the service profile type', () => {
+  it('renders categories for the freelancer_service profile type', () => {
     const { getByText } = render(
-      <CategorySelector profileType="service" value="" onChange={jest.fn()} />,
+      <CategorySelector profileType="freelancer_service" value="" onChange={jest.fn()} />,
     );
     expect(getByText('Beauty')).toBeTruthy();
     expect(getByText('Fitness')).toBeTruthy();
   });
 
-  it('renders categories for the shop profile type', () => {
+  it('renders categories for the business_brand profile type', () => {
     const { getByText } = render(
-      <CategorySelector profileType="shop" value="" onChange={jest.fn()} />,
+      <CategorySelector profileType="business_brand" value="" onChange={jest.fn()} />,
     );
     expect(getByText('Clothing')).toBeTruthy();
     expect(getByText('Food & Sweets')).toBeTruthy();
@@ -29,7 +29,7 @@ describe('CategorySelector', () => {
   it('calls onChange with the selected category when pressed', () => {
     const onChange = jest.fn();
     const { getByText } = render(
-      <CategorySelector profileType="service" value="" onChange={onChange} />,
+      <CategorySelector profileType="freelancer_service" value="" onChange={onChange} />,
     );
     fireEvent.press(getByText('Beauty'));
     expect(onChange).toHaveBeenCalledWith('Beauty');
@@ -38,7 +38,7 @@ describe('CategorySelector', () => {
   it('renders an error message when error prop is provided', () => {
     const { getByText } = render(
       <CategorySelector
-        profileType="service"
+        profileType="freelancer_service"
         value=""
         onChange={jest.fn()}
         error="Please select a category"
@@ -49,7 +49,7 @@ describe('CategorySelector', () => {
 
   it('does not render error text when error is undefined', () => {
     const { queryByText } = render(
-      <CategorySelector profileType="service" value="" onChange={jest.fn()} />,
+      <CategorySelector profileType="freelancer_service" value="" onChange={jest.fn()} />,
     );
     expect(queryByText('Please select a category')).toBeNull();
   });
