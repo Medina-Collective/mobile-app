@@ -611,7 +611,11 @@ function CategoryPicker({
   value,
   onChange,
   error,
-}: Readonly<{ value: string | undefined; onChange: (v: string) => void; error?: string | undefined }>) {
+}: Readonly<{
+  value: string | undefined;
+  onChange: (v: string) => void;
+  error?: string | undefined;
+}>) {
   const [open, setOpen] = useState(false);
   const hasError = error !== undefined && error.length > 0;
   return (
