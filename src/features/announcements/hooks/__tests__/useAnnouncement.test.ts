@@ -6,6 +6,11 @@ import {
   useGetAnnouncement,
   useMyAnnouncements,
   useCreateAnnouncement,
+  useUpdateAnnouncement,
+  useDeleteAnnouncement,
+  useAnnouncementsByProfessional,
+  useCurrentProfessionalId,
+  fromDbType,
 } from '../useAnnouncement';
 import { useAuthStore } from '@store/auth.store';
 import { supabase } from '@services/supabase.client';
@@ -56,6 +61,8 @@ function makeQueryChain(resolveValue: { data: any; error: null | Error }) {
     'in',
     'order',
     'insert',
+    'update',
+    'delete',
     'single',
     'maybeSingle',
   ]) {
@@ -328,6 +335,283 @@ describe('useCreateAnnouncement', () => {
     const { result } = renderHook(() => useCreateAnnouncement(), { wrapper: createWrapper() });
     await act(async () => {
       await expect(result.current.mutateAsync(mockFormData)).rejects.toThrow();
+    });
+  });
+
+  it('combines eventDate and eventTime into eventStart for event type', async () => {
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'professionals') return makeQueryChain({ data: { id: 'pro-1' }, error: null });
+      if (table === 'announcements') return makeQueryChain({ data: mockRow, error: null });
+      return makeQueryChain({ data: null, error: null });
+    });
+
+    const { result } = renderHook(() => useCreateAnnouncement(), { wrapper: createWrapper() });
+    await act(async () => {
+      const data = await result.current.mutateAsync({
+        ...mockFormData,
+        type: 'event',
+        eventDate: new Date('2026-06-15'),
+        eventTime: new Date('2026-06-15T14:30:00'),
+      });
+      expect(data.title).toBe('Test Event');
+    });
+  });
+});
+
+// ── fromDbType ─────────────────────────────────────────────────────────────────
+
+describe('fromDbType', () => {
+  it('maps limited_offer → offer', () => {
+    expect(fromDbType('limited_offer')).toBe('offer');
+  });
+
+  it('maps other → update', () => {
+    expect(fromDbType('other')).toBe('update');
+  });
+
+  it('maps activity_event → event', () => {
+    expect(fromDbType('activity_event')).toBe('event');
+  });
+
+  it('maps bazaar → event (fallback)', () => {
+    expect(fromDbType('bazaar')).toBe('event');
+  });
+
+  it('maps brand_popup → event (fallback)', () => {
+    expect(fromDbType('brand_popup')).toBe('event');
+  });
+
+  it('maps halaqa → event (fallback)', () => {
+    expect(fromDbType('halaqa')).toBe('event');
+  });
+
+  it('maps any unknown string → event (fallback)', () => {
+    expect(fromDbType('unknown_type')).toBe('event');
+  });
+});
+
+// ── useAnnouncementsByProfessional ────────────────────────────────────────────
+
+describe('useAnnouncementsByProfessional', () => {
+  it('fetches announcements for a given professional id', async () => {
+    const chain = makeQueryChain({ data: [mockRow], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useAnnouncementsByProfessional('pro-1'), {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toHaveLength(1);
+    expect(result.current.data![0]!.title).toBe('Test Event');
+  });
+
+  it('returns empty list when no announcements found', async () => {
+    const chain = makeQueryChain({ data: [], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useAnnouncementsByProfessional('pro-1'), {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual([]);
+  });
+
+  it('throws when supabase returns error', async () => {
+    const chain = makeQueryChain({ data: null, error: new Error('DB error') });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useAnnouncementsByProfessional('pro-1'), {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+  });
+
+  it('does not fetch when professionalId is empty', () => {
+    const chain = makeQueryChain({ data: [], error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useAnnouncementsByProfessional(''), {
+      wrapper: createWrapper(),
+    });
+    // enabled: false means query won't run — stays in idle state
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.data).toBeUndefined();
+  });
+});
+
+// ── useCurrentProfessionalId ──────────────────────────────────────────────────
+
+describe('useCurrentProfessionalId', () => {
+  it('returns the professional id for the logged-in user', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null });
+    mockFrom.mockReturnValue(makeQueryChain({ data: { id: 'pro-1' }, error: null }));
+
+    const { result } = renderHook(() => useCurrentProfessionalId(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toBe('pro-1');
+  });
+
+  it('returns null when no user is logged in', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null }, error: null });
+
+    const { result } = renderHook(() => useCurrentProfessionalId(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toBeNull();
+  });
+
+  it('returns null when professional profile does not exist', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null });
+    mockFrom.mockReturnValue(makeQueryChain({ data: null, error: null }));
+
+    const { result } = renderHook(() => useCurrentProfessionalId(), { wrapper: createWrapper() });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toBeNull();
+  });
+});
+
+// ── useUpdateAnnouncement ─────────────────────────────────────────────────────
+
+describe('useUpdateAnnouncement', () => {
+  const updateFormData = {
+    type: 'event' as const,
+    title: 'Updated Event',
+    description: 'Updated description',
+    category: 'Events & Activities',
+    girlsOnly: false,
+    isFree: true,
+    visibilityStart: new Date('2026-03-01'),
+    visibilityEnd: new Date('2026-04-01'),
+  };
+
+  it('throws when not authenticated', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null }, error: null });
+
+    const { result } = renderHook(() => useUpdateAnnouncement(), { wrapper: createWrapper() });
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({ id: 'ann-1', formData: updateFormData }),
+      ).rejects.toThrow('Not authenticated');
+    });
+  });
+
+  it('throws when professional profile fetch fails', async () => {
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'professionals')
+        return makeQueryChain({ data: null, error: new Error('No profile') });
+      return makeQueryChain({ data: null, error: null });
+    });
+
+    const { result } = renderHook(() => useUpdateAnnouncement(), { wrapper: createWrapper() });
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({ id: 'ann-1', formData: updateFormData }),
+      ).rejects.toThrow();
+    });
+  });
+
+  it('updates announcement successfully', async () => {
+    const updatedRow = {
+      ...mockRow,
+      title: 'Updated Event',
+      professionals: { business_name: 'Test Pro', logo_uri: null },
+    };
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'professionals') return makeQueryChain({ data: { id: 'pro-1' }, error: null });
+      if (table === 'announcements') return makeQueryChain({ data: updatedRow, error: null });
+      return makeQueryChain({ data: null, error: null });
+    });
+
+    const { result } = renderHook(() => useUpdateAnnouncement(), { wrapper: createWrapper() });
+    await act(async () => {
+      const data = await result.current.mutateAsync({ id: 'ann-1', formData: updateFormData });
+      expect(data.title).toBe('Updated Event');
+    });
+  });
+
+  it('throws when update query fails', async () => {
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'professionals') return makeQueryChain({ data: { id: 'pro-1' }, error: null });
+      return makeQueryChain({ data: null, error: new Error('Update failed') });
+    });
+
+    const { result } = renderHook(() => useUpdateAnnouncement(), { wrapper: createWrapper() });
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({ id: 'ann-1', formData: updateFormData }),
+      ).rejects.toThrow();
+    });
+  });
+
+  it('preserves existingCoverUrl when no new image is provided', async () => {
+    const updatedRow = {
+      ...mockRow,
+      cover_image_url: 'https://existing.com/image.jpg',
+      professionals: { business_name: 'Test Pro', logo_uri: null },
+    };
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'professionals') return makeQueryChain({ data: { id: 'pro-1' }, error: null });
+      if (table === 'announcements') return makeQueryChain({ data: updatedRow, error: null });
+      return makeQueryChain({ data: null, error: null });
+    });
+
+    const { result } = renderHook(() => useUpdateAnnouncement(), { wrapper: createWrapper() });
+    await act(async () => {
+      const data = await result.current.mutateAsync({
+        id: 'ann-1',
+        formData: updateFormData,
+        existingCoverUrl: 'https://existing.com/image.jpg',
+      });
+      expect(data).toBeDefined();
+    });
+  });
+
+  it('combines eventDate and eventTime for event type on update', async () => {
+    const updatedRow = {
+      ...mockRow,
+      professionals: { business_name: 'Test Pro', logo_uri: null },
+    };
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'professionals') return makeQueryChain({ data: { id: 'pro-1' }, error: null });
+      if (table === 'announcements') return makeQueryChain({ data: updatedRow, error: null });
+      return makeQueryChain({ data: null, error: null });
+    });
+
+    const { result } = renderHook(() => useUpdateAnnouncement(), { wrapper: createWrapper() });
+    await act(async () => {
+      const data = await result.current.mutateAsync({
+        id: 'ann-1',
+        formData: {
+          ...updateFormData,
+          type: 'event',
+          eventDate: new Date('2026-06-15'),
+          eventTime: new Date('2026-06-15T14:30:00'),
+        },
+      });
+      expect(data).toBeDefined();
+    });
+  });
+});
+
+// ── useDeleteAnnouncement ─────────────────────────────────────────────────────
+
+describe('useDeleteAnnouncement', () => {
+  it('deletes an announcement successfully', async () => {
+    const chain = makeQueryChain({ data: null, error: null });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useDeleteAnnouncement(), { wrapper: createWrapper() });
+    await act(async () => {
+      await expect(result.current.mutateAsync('ann-1')).resolves.toBeUndefined();
+    });
+  });
+
+  it('throws when delete query fails', async () => {
+    const chain = makeQueryChain({ data: null, error: new Error('Delete failed') });
+    mockFrom.mockReturnValue(chain);
+
+    const { result } = renderHook(() => useDeleteAnnouncement(), { wrapper: createWrapper() });
+    await act(async () => {
+      await expect(result.current.mutateAsync('ann-1')).rejects.toThrow('Delete failed');
     });
   });
 });
