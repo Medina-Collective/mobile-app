@@ -1,15 +1,5 @@
-import { useCallback, useState } from 'react';
-import {
-  View,
-  ScrollView,
-  Switch,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  Modal,
-  FlatList,
-  type TextStyle,
-} from 'react-native';
+import { useCallback } from 'react';
+import { View, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,210 +10,24 @@ import { Screen } from '@components/layout';
 import { Text, Input, Button, BackButton } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
-import { fontFamily } from '@theme/typography';
 import { useAuthStore } from '@store/auth.store';
 import { USER_ROLES } from '@constants/index';
 import {
   announcementSchema,
   ANNOUNCEMENT_FORM_TYPES,
-  ANNOUNCEMENT_CATEGORIES,
   MAX_VISIBILITY_DAYS,
 } from '@features/announcements/schemas/announcement.schema';
 import { useCreateAnnouncement } from '@features/announcements/hooks/useAnnouncement';
 import { DatePicker } from '@features/announcements/components/DatePicker';
 import { TimePicker } from '@features/announcements/components/TimePicker';
 import { LocationAutocomplete } from '@features/announcements/components/LocationAutocomplete';
+import {
+  SectionBar,
+  CategoryPicker,
+  ToggleRow,
+  sharedFormStyles,
+} from '@features/announcements/components/AnnouncementFormShared';
 import type { AnnouncementFormData } from '@features/announcements/schemas/announcement.schema';
-
-// ── Label ─────────────────────────────────────────────────────────────────────
-
-function FieldLabel({ children }: Readonly<{ children: string }>) {
-  return <Text style={labelStyle}>{children}</Text>;
-}
-const labelStyle: TextStyle = {
-  fontSize: 10,
-  fontWeight: '700',
-  letterSpacing: 1.2,
-  textTransform: 'uppercase',
-  color: colors.warm.muted,
-  marginBottom: spacing[2],
-};
-
-// ── Section divider ───────────────────────────────────────────────────────────
-
-function SectionBar({ label }: Readonly<{ label: string }>) {
-  return (
-    <View style={sectionBarStyles.row}>
-      <View style={sectionBarStyles.line} />
-      <Text style={sectionBarStyles.label}>{label}</Text>
-    </View>
-  );
-}
-const sectionBarStyles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing[2], marginBottom: spacing[4] },
-  line: { width: 3, height: 16, backgroundColor: colors.burgundy.mid, borderRadius: 2 },
-  label: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.warm.title,
-  },
-});
-
-// ── Category Picker ───────────────────────────────────────────────────────────
-
-function CategoryPicker({
-  value,
-  onChange,
-  error,
-}: Readonly<{
-  value: string | undefined;
-  onChange: (v: string) => void;
-  error?: string | undefined;
-}>) {
-  const [open, setOpen] = useState(false);
-  const hasError = error !== undefined && error.length > 0;
-
-  return (
-    <View style={cpStyles.wrapper}>
-      <FieldLabel>Category</FieldLabel>
-      <TouchableOpacity
-        style={[cpStyles.trigger, hasError && cpStyles.triggerError]}
-        onPress={() => setOpen(true)}
-        activeOpacity={0.7}
-      >
-        <Text style={[cpStyles.triggerText, !value && cpStyles.placeholder]}>
-          {value ?? 'Select a category'}
-        </Text>
-        <Ionicons name="chevron-down" size={16} color={colors.warm.muted} />
-      </TouchableOpacity>
-      {hasError && <Text style={cpStyles.errorText}>{error}</Text>}
-
-      <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
-        <View style={cpStyles.overlay}>
-          <View style={cpStyles.sheet}>
-            <View style={cpStyles.sheetHeader}>
-              <Text style={cpStyles.sheetTitle}>Select a Category</Text>
-              <TouchableOpacity onPress={() => setOpen(false)}>
-                <Ionicons name="close" size={22} color={colors.warm.muted} />
-              </TouchableOpacity>
-            </View>
-            <FlatList
-              data={ANNOUNCEMENT_CATEGORIES as unknown as string[]}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[cpStyles.option, value === item && cpStyles.optionActive]}
-                  onPress={() => {
-                    onChange(item);
-                    setOpen(false);
-                  }}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[cpStyles.optionText, value === item && cpStyles.optionTextActive]}>
-                    {item}
-                  </Text>
-                  {value === item && (
-                    <Ionicons name="checkmark" size={16} color={colors.burgundy.mid} />
-                  )}
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        </View>
-      </Modal>
-    </View>
-  );
-}
-
-const cpStyles = StyleSheet.create({
-  wrapper: { marginBottom: spacing[4] },
-  trigger: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 44,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.warm.border,
-    backgroundColor: colors.warm.surface,
-    paddingHorizontal: spacing[3],
-  },
-  triggerError: { borderColor: colors.error[500] },
-  triggerText: { fontSize: 15, color: colors.warm.body, fontFamily: fontFamily.sansRegular },
-  placeholder: { color: colors.warm.muted },
-  errorText: { fontSize: 11, color: colors.error[500], marginTop: spacing[1] },
-  overlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.4)' },
-  sheet: {
-    backgroundColor: colors.neutral[0],
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingBottom: spacing[8],
-    maxHeight: '70%',
-  },
-  sheetHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing[4],
-    borderBottomWidth: 1,
-    borderBottomColor: colors.warm.border,
-  },
-  sheetTitle: { fontSize: 16, fontWeight: '600', color: colors.warm.title },
-  option: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[3],
-    borderBottomWidth: 1,
-    borderBottomColor: colors.warm.border,
-  },
-  optionActive: { backgroundColor: 'rgba(68, 0, 7, 0.04)' },
-  optionText: { fontSize: 15, color: colors.warm.body, fontFamily: fontFamily.sansRegular },
-  optionTextActive: { color: colors.burgundy.mid, fontWeight: '600' },
-});
-
-// ── Toggle Row ────────────────────────────────────────────────────────────────
-
-function ToggleRow({
-  label,
-  hint,
-  value,
-  onChange,
-}: Readonly<{ label: string; hint: string; value: boolean; onChange: (v: boolean) => void }>) {
-  return (
-    <View style={toggleStyles.row}>
-      <View style={toggleStyles.info}>
-        <Text style={toggleStyles.label}>{label}</Text>
-        <Text style={toggleStyles.hint}>{hint}</Text>
-      </View>
-      <Switch
-        value={value}
-        onValueChange={onChange}
-        trackColor={{ false: '#78716c', true: colors.burgundy.mid }}
-        ios_backgroundColor="#78716c"
-        thumbColor={colors.warm.elevated}
-      />
-    </View>
-  );
-}
-const toggleStyles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.warm.surface,
-    borderWidth: 1,
-    borderColor: colors.warm.border,
-    borderRadius: 12,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[3],
-    marginBottom: spacing[3],
-  },
-  info: { flex: 1, gap: spacing[1] },
-  label: { fontSize: 14, fontWeight: '600', color: colors.warm.title },
-  hint: { fontSize: 11, color: colors.warm.muted },
-});
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -293,8 +97,10 @@ export default function CreateAnnouncementScreen() {
   if (user?.role !== USER_ROLES.PROFESSIONAL) {
     return (
       <Screen>
-        <View style={styles.centered}>
-          <Text style={styles.gatedText}>Only professional accounts can create announcements.</Text>
+        <View style={sharedFormStyles.centered}>
+          <Text style={sharedFormStyles.mutedText}>
+            Only professional accounts can create announcements.
+          </Text>
           <Button title="Go Back" variant="outline" onPress={() => router.back()} />
         </View>
       </Screen>
@@ -307,29 +113,32 @@ export default function CreateAnnouncementScreen() {
     <Screen>
       <View style={styles.flex}>
         {/* ── Nav ─────────────────────────────────────────────────────────── */}
-        <View style={styles.navRow}>
+        <View style={sharedFormStyles.navRow}>
           <BackButton />
-          <Text style={styles.navTitle}>Create Announcement</Text>
-          <View style={styles.navSpacer} />
+          <Text style={sharedFormStyles.navTitle}>Create Announcement</Text>
+          <View style={sharedFormStyles.navSpacer} />
         </View>
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scroll}
+          contentContainerStyle={sharedFormStyles.scroll}
           keyboardShouldPersistTaps="always"
         >
           {/* ── Type ──────────────────────────────────────────────────────── */}
-          <View style={styles.section}>
-            <FieldLabel>Type</FieldLabel>
+          <View style={sharedFormStyles.section}>
+            <Text style={sharedFormStyles.fieldLabel}>Type</Text>
             <Controller
               control={control}
               name="type"
               render={({ field: { value, onChange } }) => (
-                <View style={styles.typeGrid}>
+                <View style={sharedFormStyles.typeGrid}>
                   {ANNOUNCEMENT_FORM_TYPES.map((pt) => (
                     <TouchableOpacity
                       key={pt.value}
-                      style={[styles.typeCard, value === pt.value && styles.typeCardActive]}
+                      style={[
+                        sharedFormStyles.typeCard,
+                        value === pt.value && sharedFormStyles.typeCardActive,
+                      ]}
                       onPress={() => onChange(pt.value)}
                       activeOpacity={0.8}
                     >
@@ -337,14 +146,17 @@ export default function CreateAnnouncementScreen() {
                         name={pt.icon as never}
                         size={22}
                         color={value === pt.value ? colors.burgundy.mid : colors.warm.muted}
-                        style={styles.typeIcon}
+                        style={sharedFormStyles.typeIcon}
                       />
                       <Text
-                        style={[styles.typeLabel, value === pt.value && styles.typeLabelActive]}
+                        style={[
+                          sharedFormStyles.typeLabel,
+                          value === pt.value && sharedFormStyles.typeLabelActive,
+                        ]}
                       >
                         {pt.label}
                       </Text>
-                      <Text style={styles.typeDesc}>{pt.description}</Text>
+                      <Text style={sharedFormStyles.typeDesc}>{pt.description}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -356,32 +168,36 @@ export default function CreateAnnouncementScreen() {
           </View>
 
           {/* ── Cover Image ───────────────────────────────────────────────── */}
-          <View style={styles.section}>
-            <FieldLabel>Cover Image</FieldLabel>
+          <View style={sharedFormStyles.section}>
+            <Text style={sharedFormStyles.fieldLabel}>Cover Image</Text>
             {coverImageUri !== undefined ? (
-              <View style={styles.imageContainer}>
+              <View style={sharedFormStyles.imageContainer}>
                 <Image
                   source={{ uri: coverImageUri }}
-                  style={styles.imagePreview}
+                  style={sharedFormStyles.imagePreview}
                   contentFit="cover"
                 />
                 <TouchableOpacity
-                  style={styles.removeImageBtn}
+                  style={sharedFormStyles.removeImageBtn}
                   onPress={() => setValue('coverImageUri', undefined)}
                 >
                   <Ionicons name="close" size={14} color="#fff" />
                 </TouchableOpacity>
               </View>
             ) : (
-              <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.8}>
+              <TouchableOpacity
+                style={sharedFormStyles.imagePicker}
+                onPress={pickImage}
+                activeOpacity={0.8}
+              >
                 <Ionicons name="image-outline" size={28} color={colors.warm.muted} />
-                <Text style={styles.imagePickerText}>Tap to upload</Text>
+                <Text style={sharedFormStyles.imagePickerText}>Tap to upload</Text>
               </TouchableOpacity>
             )}
           </View>
 
           {/* ── Title ─────────────────────────────────────────────────────── */}
-          <View style={styles.section}>
+          <View style={sharedFormStyles.section}>
             <Controller
               control={control}
               name="title"
@@ -400,7 +216,7 @@ export default function CreateAnnouncementScreen() {
           </View>
 
           {/* ── Description ───────────────────────────────────────────────── */}
-          <View style={styles.section}>
+          <View style={sharedFormStyles.section}>
             <Controller
               control={control}
               name="description"
@@ -415,17 +231,17 @@ export default function CreateAnnouncementScreen() {
                     placeholder="Describe what this is about…"
                     multiline
                     numberOfLines={4}
-                    style={styles.multiline}
+                    style={sharedFormStyles.multiline}
                     maxLength={1000}
                   />
-                  <Text style={styles.charCount}>{description.length}/1000</Text>
+                  <Text style={sharedFormStyles.charCount}>{description.length}/1000</Text>
                 </View>
               )}
             />
           </View>
 
           {/* ── Category ──────────────────────────────────────────────────── */}
-          <View style={styles.section}>
+          <View style={sharedFormStyles.section}>
             <Controller
               control={control}
               name="category"
@@ -441,7 +257,7 @@ export default function CreateAnnouncementScreen() {
 
           {/* ── EVENT FIELDS ──────────────────────────────────────────────── */}
           {selectedType === 'event' && (
-            <View style={styles.section}>
+            <View style={sharedFormStyles.section}>
               <SectionBar label="Event Details" />
 
               <Controller
@@ -568,7 +384,7 @@ export default function CreateAnnouncementScreen() {
 
           {/* ── OFFER FIELDS ──────────────────────────────────────────────── */}
           {selectedType === 'offer' && (
-            <View style={styles.section}>
+            <View style={sharedFormStyles.section}>
               <SectionBar label="Offer Details" />
 
               <Controller
@@ -638,7 +454,7 @@ export default function CreateAnnouncementScreen() {
 
           {/* ── UPDATE FIELDS ─────────────────────────────────────────────── */}
           {selectedType === 'update' && (
-            <View style={styles.section}>
+            <View style={sharedFormStyles.section}>
               <SectionBar label="Additional Details" />
 
               <Controller
@@ -674,10 +490,11 @@ export default function CreateAnnouncementScreen() {
               />
             </View>
           )}
+
           {/* ── Visibility Window ─────────────────────────────────────────── */}
-          <View style={styles.section}>
+          <View style={sharedFormStyles.section}>
             <SectionBar label="Visibility Window" />
-            <Text style={styles.visibilityHint}>
+            <Text style={sharedFormStyles.visibilityHint}>
               When should this post appear on the feed? It will be automatically hidden after the
               end date. Max {MAX_VISIBILITY_DAYS} days.
             </Text>
@@ -715,7 +532,7 @@ export default function CreateAnnouncementScreen() {
         </ScrollView>
 
         {/* ── Sticky Publish Bar ──────────────────────────────────────────── */}
-        <View style={styles.stickyBar}>
+        <View style={sharedFormStyles.stickyBar}>
           <Button
             title="Publish Announcement"
             loading={isPending}
@@ -731,105 +548,6 @@ export default function CreateAnnouncementScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  navRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing[2],
-    paddingBottom: spacing[4],
-  },
-  navTitle: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: 17,
-    fontWeight: '600',
-    color: colors.warm.title,
-  },
-  navSpacer: { width: 40 },
-  scroll: { paddingBottom: spacing[4] },
-  section: { marginBottom: spacing[5] },
-  typeGrid: { flexDirection: 'row', gap: spacing[2] },
-  typeCard: {
-    flex: 1,
-    alignItems: 'center',
-    padding: spacing[3],
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: colors.warm.border,
-    backgroundColor: colors.warm.surface,
-    gap: spacing[1],
-  },
-  typeCardActive: {
-    borderColor: colors.burgundy.mid,
-    backgroundColor: 'rgba(68, 0, 7, 0.05)',
-  },
-  typeIcon: { marginBottom: spacing[1] },
-  typeLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: colors.warm.title,
-    textAlign: 'center',
-    lineHeight: 14,
-  },
-  typeLabelActive: { color: colors.burgundy.mid },
-  typeDesc: {
-    fontSize: 9,
-    color: colors.warm.muted,
-    textAlign: 'center',
-    lineHeight: 12,
-    marginTop: 2,
-  },
   fieldError: { fontSize: 11, color: colors.error[500], marginTop: spacing[1] },
-  imageContainer: { position: 'relative', borderRadius: 12, overflow: 'hidden', height: 176 },
-  imagePreview: { width: '100%', height: '100%' },
-  removeImageBtn: {
-    position: 'absolute',
-    top: spacing[2],
-    right: spacing[2],
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  imagePicker: {
-    height: 144,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    borderColor: colors.warm.border,
-    backgroundColor: colors.warm.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing[2],
-  },
-  imagePickerText: { fontSize: 12, color: colors.warm.muted, fontWeight: '500' },
-  multiline: { height: 100, textAlignVertical: 'top', paddingTop: spacing[2] },
-  charCount: {
-    fontSize: 10,
-    color: colors.warm.muted,
-    textAlign: 'right',
-    marginTop: spacing[1],
-  },
-  visibilityHint: {
-    fontSize: 12,
-    color: colors.warm.muted,
-    lineHeight: 18,
-    marginBottom: spacing[4],
-  },
-  stickyBar: {
-    paddingHorizontal: spacing[0],
-    paddingVertical: spacing[3],
-    borderTopWidth: 1,
-    borderTopColor: colors.warm.border,
-    backgroundColor: colors.warm.elevated,
-  },
   publishBtn: { borderRadius: 999 },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing[4],
-  },
-  gatedText: { fontSize: 15, color: colors.warm.muted, textAlign: 'center' },
 });

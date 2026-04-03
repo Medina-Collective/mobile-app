@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
+import { render, fireEvent, act } from '@testing-library/react-native';
 import { LocationAutocomplete } from '../LocationAutocomplete';
 
 // EXPO_PUBLIC_GOOGLE_PLACES_API_KEY is set to 'test-api-key' in jest.setup.ts

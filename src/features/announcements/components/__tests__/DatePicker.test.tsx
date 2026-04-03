@@ -4,14 +4,12 @@ import { DatePicker } from '../DatePicker';
 // react-native-calendars uses native modules not available in Jest.
 // Mock it with a simple pressable that triggers onDayPress with a fixed date.
 jest.mock('react-native-calendars', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require('react');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { TouchableOpacity, Text } = require('react-native');
   return {
-    Calendar: ({
-      onDayPress,
-    }: {
-      onDayPress: (day: { dateString: string }) => void;
-    }) =>
+    Calendar: ({ onDayPress }: { onDayPress: (day: { dateString: string }) => void }) =>
       React.createElement(
         TouchableOpacity,
         { testID: 'mock-calendar', onPress: () => onDayPress({ dateString: '2026-06-15' }) },
@@ -56,9 +54,7 @@ describe('DatePicker', () => {
   });
 
   it('does not render error text when error is an empty string', () => {
-    const { queryByText } = render(
-      <DatePicker value={undefined} onChange={jest.fn()} error="" />,
-    );
+    const { queryByText } = render(<DatePicker value={undefined} onChange={jest.fn()} error="" />);
     // No error element rendered for an empty error string
     expect(queryByText('Date is required')).toBeNull();
   });
@@ -133,9 +129,7 @@ describe('DatePicker', () => {
   it('preserves the time component of an existing value when a day is selected', () => {
     const existing = new Date(2026, 0, 1, 14, 30, 0); // 14:30:00
     const onChange = jest.fn();
-    const { getByText, getByTestId } = render(
-      <DatePicker value={existing} onChange={onChange} />,
-    );
+    const { getByText, getByTestId } = render(<DatePicker value={existing} onChange={onChange} />);
     fireEvent.press(getByText('Jan 1, 2026'));
     fireEvent.press(getByTestId('mock-calendar'));
     fireEvent.press(getByText('Confirm'));
@@ -168,17 +162,13 @@ describe('DatePicker', () => {
   // ── Disabled state ──────────────────────────────────────────────────────────
 
   it('renders without crashing when disabled', () => {
-    const { getByText } = render(
-      <DatePicker value={undefined} onChange={jest.fn()} disabled />,
-    );
+    const { getByText } = render(<DatePicker value={undefined} onChange={jest.fn()} disabled />);
     expect(getByText('Select a date')).toBeTruthy();
   });
 
   it('renders a formatted value while disabled', () => {
     const date = new Date(2026, 0, 20);
-    const { getByText } = render(
-      <DatePicker value={date} onChange={jest.fn()} disabled />,
-    );
+    const { getByText } = render(<DatePicker value={date} onChange={jest.fn()} disabled />);
     expect(getByText('Jan 20, 2026')).toBeTruthy();
   });
 });

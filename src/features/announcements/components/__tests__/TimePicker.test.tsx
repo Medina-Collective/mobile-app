@@ -4,7 +4,9 @@ import { TimePicker } from '../TimePicker';
 
 // @react-native-community/datetimepicker is a native module — mock it.
 jest.mock('@react-native-community/datetimepicker', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require('react');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { View } = require('react-native');
   function MockDateTimePicker() {
     return React.createElement(View, { testID: 'mock-datetimepicker' });
@@ -53,9 +55,7 @@ describe('TimePicker', () => {
   });
 
   it('does not render error text when error is empty string', () => {
-    const { queryByText } = render(
-      <TimePicker value={undefined} onChange={jest.fn()} error="" />,
-    );
+    const { queryByText } = render(<TimePicker value={undefined} onChange={jest.fn()} error="" />);
     expect(queryByText('Time is required')).toBeNull();
   });
 
@@ -139,7 +139,9 @@ describe('TimePicker', () => {
 
   it('shows inline picker when trigger is pressed on Android', () => {
     Object.defineProperty(Platform, 'OS', { value: 'android', writable: true, configurable: true });
-    const { getByText, getByTestId } = render(<TimePicker value={undefined} onChange={jest.fn()} />);
+    const { getByText, getByTestId } = render(
+      <TimePicker value={undefined} onChange={jest.fn()} />,
+    );
     fireEvent.press(getByText('Select a time'));
     expect(getByTestId('mock-datetimepicker')).toBeTruthy();
   });
