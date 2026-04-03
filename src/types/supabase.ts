@@ -129,6 +129,9 @@ export type Database = {
           participation_enabled: boolean;
           max_capacity: number | null;
           participant_count: number;
+          category: string | null;
+          deadline: string | null;
+          external_url: string | null;
           status: 'draft' | 'published' | 'archived';
           created_at: string;
           updated_at: string;
@@ -143,6 +146,9 @@ export type Database = {
           location?: string | null;
           event_start?: string | null;
           event_end?: string | null;
+          category?: string | null;
+          deadline?: string | null;
+          external_url?: string | null;
           audience?: 'public' | 'pro_only';
           visibility_start: string;
           visibility_end: string;
@@ -159,6 +165,9 @@ export type Database = {
           location?: string | null;
           event_start?: string | null;
           event_end?: string | null;
+          category?: string | null;
+          deadline?: string | null;
+          external_url?: string | null;
           visibility_start?: string;
           visibility_end?: string;
           audience?: 'public' | 'pro_only';
@@ -203,6 +212,71 @@ export type Database = {
           user_id?: string;
           announcement_id?: string;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      saved_announcements: {
+        Row: {
+          user_id: string;
+          announcement_id: string;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          announcement_id: string;
+          created_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          announcement_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      push_tokens: {
+        Row: {
+          id: string;
+          user_id: string;
+          token: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          token: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          token?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          type: 'event_reminder' | 'offer' | 'announcement' | 'saved_event' | 'community';
+          title: string;
+          subtitle: string;
+          announcement_id: string | null;
+          read: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          type: 'event_reminder' | 'offer' | 'announcement' | 'saved_event' | 'community';
+          title: string;
+          subtitle: string;
+          announcement_id?: string | null;
+          read?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          read?: boolean;
         };
         Relationships: [];
       };

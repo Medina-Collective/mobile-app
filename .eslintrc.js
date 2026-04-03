@@ -23,5 +23,5 @@ module.exports = {
     'react-native/no-inline-styles': 'warn',
     'no-console': ['warn', { allow: ['warn', 'error'] }],
   },
-  ignorePatterns: ['node_modules/', '.expo/', 'dist/', 'coverage/', '*.config.js', '*.config.ts', '.eslintrc.js'],
+  ignorePatterns: ['node_modules/', '.expo/', 'dist/', 'coverage/', '*.config.js', '*.config.ts', '.eslintrc.js', 'supabase/'],
 };

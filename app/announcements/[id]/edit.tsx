@@ -86,17 +86,29 @@ export default function EditAnnouncementScreen() {
     const eventStartDate =
       announcement.eventStart === undefined ? undefined : new Date(announcement.eventStart);
 
+    const formType = fromDbType(announcement.type);
+    const deadlineDate =
+      announcement.deadline === undefined ? undefined : new Date(announcement.deadline);
+
     reset({
-      type: fromDbType(announcement.type),
+      type: formType,
       title: announcement.title,
       description: announcement.description,
-      category: '', // no DB column — starts empty on edit
+      category: announcement.category ?? '',
       coverImageUri: undefined, // local-pick only; existing URL tracked separately
       location: announcement.location,
       eventDate: eventStartDate,
       eventTime: eventStartDate, // TimePicker reads hours/minutes from this
       girlsOnly: false,
       isFree: true,
+      // Restore offer fields
+      validUntil: formType === 'offer' ? deadlineDate : undefined,
+      shopLink: formType === 'offer' ? announcement.externalUrl : undefined,
+      // Restore update fields
+      deadline: formType === 'update' ? deadlineDate : undefined,
+      externalLink: formType === 'update' ? announcement.externalUrl : undefined,
+      // Restore event fields
+      registrationLink: formType === 'event' ? announcement.externalUrl : undefined,
       visibilityStart: new Date(announcement.visibilityStart),
       visibilityEnd: new Date(announcement.visibilityEnd),
     });

@@ -10,6 +10,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as ExpoLinking from 'expo-linking';
 import { format } from 'date-fns';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -33,6 +34,7 @@ import { FollowButton } from '@features/follows/components/FollowButton';
 import { useSavedStore } from '@store/saved.store';
 import { useRecommendationsStore } from '@store/recommendations.store';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
+import { LinkButton, normalizeUrl } from '@features/announcements/components/LinkButton';
 
 type IoniconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -141,7 +143,35 @@ export default function AnnouncementDetailScreen() {
 
   const handleShare = async () => {
     if (announcement === undefined) return;
-    await Share.share({ message: announcement.title, title: announcement.title });
+
+    // Deep link that opens the app directly if installed
+    const deepLink = ExpoLinking.createURL(`announcements/${id}`);
+
+    // Store fallback links shown in the message for recipients without the app
+    const appStoreUrl = 'https://apps.apple.com/app/id6744012679';
+    const playStoreUrl =
+      'https://play.google.com/store/apps/details?id=org.medinacollective.medina';
+
+    const message = [
+      announcement.title,
+      announcement.professionalName.length > 0 ? `by ${announcement.professionalName}` : '',
+      '',
+      `Open in app: ${deepLink}`,
+      '',
+      `Don't have the app yet?\niOS: ${appStoreUrl}\nAndroid: ${playStoreUrl}`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    await Share.share(
+      {
+        title: announcement.title,
+        message,
+        // url is iOS-only: shows as the tappable link in iMessage / Mail / Notes
+        url: deepLink,
+      },
+      { dialogTitle: 'Share announcement' },
+    );
   };
 
   if (isLoading) {
@@ -338,7 +368,11 @@ export default function AnnouncementDetailScreen() {
                   <InfoCard icon="time-outline" label="Time" value={eventTimeLabel} />
                 )}
                 {deadlineDateLabel !== undefined && (
-                  <InfoCard icon="alarm-outline" label="Deadline" value={deadlineDateLabel} />
+                  <InfoCard
+                    icon="calendar-outline"
+                    label="Date"
+                    value={`Deadline: ${deadlineDateLabel}`}
+                  />
                 )}
                 {announcement.location !== undefined && (
                   <InfoCard
@@ -356,7 +390,7 @@ export default function AnnouncementDetailScreen() {
                 <View style={styles.offerHeader}>
                   <Text style={styles.offerTitle}>Special Offer</Text>
                   <TouchableOpacity
-                    onPress={() => Linking.openURL(announcement.externalUrl!)}
+                    onPress={() => Linking.openURL(normalizeUrl(announcement.externalUrl!))}
                     activeOpacity={0.7}
                   >
                     <Text style={styles.offerLink}>View Details</Text>
@@ -390,21 +424,6 @@ export default function AnnouncementDetailScreen() {
 
         {/* ── Sticky bottom CTA ── */}
         <View style={styles.stickyBar}>
-          <TouchableOpacity
-            style={styles.bookmarkBtn}
-            onPress={() => {
-              if (!isSaved) recordSignal(announcement.type, 'save');
-              toggleSaved(id);
-            }}
-            activeOpacity={0.7}
-          >
-            <Ionicons
-              name={isSaved ? 'bookmark' : 'bookmark-outline'}
-              size={20}
-              color={isSaved ? colors.burgundy.mid : colors.warm.muted}
-            />
-          </TouchableOpacity>
-
           {announcement.participationEnabled ? (
             <View style={styles.ctaFlex}>
               <ParticipationButton
@@ -415,7 +434,20 @@ export default function AnnouncementDetailScreen() {
               />
             </View>
           ) : (
-            <Button title={ctaLabel} variant="solid" style={styles.ctaFlex} />
+            <Button
+              title={ctaLabel}
+              variant="solid"
+              style={styles.ctaFlex}
+              onPress={
+                announcement.externalUrl !== undefined
+                  ? () => Linking.openURL(normalizeUrl(announcement.externalUrl!))
+                  : undefined
+              }
+            />
+          )}
+
+          {announcement.externalUrl !== undefined && (
+            <LinkButton url={announcement.externalUrl} size={48} />
           )}
         </View>
       </View>
@@ -580,17 +612,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[5],
     paddingVertical: spacing[4],
     backgroundColor: 'rgba(250,246,240,0.92)',
-  },
-  bookmarkBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: colors.warm.border,
-    backgroundColor: colors.warm.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexShrink: 0,
   },
   ctaFlex: { flex: 1 },
 });

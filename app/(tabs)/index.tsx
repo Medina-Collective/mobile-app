@@ -12,6 +12,7 @@ import { fontFamily } from '@theme/typography';
 import { useAuth } from '@features/auth';
 import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncement';
 import { useRankedAnnouncements } from '@features/announcements/hooks/useRecommendations';
+import { useNotifications } from '@features/notifications/hooks/useNotifications';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
 import { filterChipStyles } from '@components/ui/filterChipStyles';
 import type { AnnouncementType } from '@app-types/announcement';
@@ -42,6 +43,7 @@ export default function HomeScreen() {
     refetch,
   } = useListAnnouncements(activeFilterType);
   const featuredAnnouncements = useRankedAnnouncements(allAnnouncements);
+  const { unreadCount } = useNotifications();
 
   const handleRefresh = useCallback(() => {
     refetch().catch(() => null);
@@ -70,10 +72,14 @@ export default function HomeScreen() {
           <Text style={styles.greeting}>Assalamu Alaikum</Text>
           <Text style={styles.firstName}>{firstName}</Text>
         </View>
-        <View style={styles.notificationBtn}>
+        <TouchableOpacity
+          onPress={() => router.push('/notifications')}
+          style={styles.notificationBtn}
+          hitSlop={8}
+        >
           <Ionicons name="notifications-outline" size={20} color={colors.warm.title} />
-          <View style={styles.notificationDot} />
-        </View>
+          {unreadCount > 0 && <View style={styles.notificationDot} />}
+        </TouchableOpacity>
       </View>
 
       <ScrollView
