@@ -37,6 +37,52 @@ export function fromDbType(dbType: string): 'event' | 'offer' | 'update' {
   return 'event'; // activity_event, bazaar, brand_popup, halaqa
 }
 
+// ── Private helpers ───────────────────────────────────────────────────────────
+
+/** Resolves the professional profile id for an authenticated user. */
+async function fetchProfessionalId(userId: string): Promise<string> {
+  const { data: professional, error: profError } = await supabase
+    .from('professionals')
+    .select('id')
+    .eq('user_id', userId)
+    .single();
+  if (profError) throw profError;
+  return professional.id;
+}
+
+/**
+ * Uploads a local image URI to Supabase Storage and returns the public URL.
+ * fetch().blob() returns 0 bytes for local file URIs in React Native.
+ * XHR with arraybuffer is the reliable cross-platform alternative.
+ */
+async function uploadCoverImage(uri: string, professionalId: string): Promise<string> {
+  const filename = `${professionalId}/${Date.now()}.jpg`;
+  const arrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', uri);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = () => resolve(xhr.response as ArrayBuffer);
+    xhr.onerror = () => reject(new Error('Failed to read image file'));
+    xhr.send();
+  });
+  const { error: uploadError } = await supabase.storage
+    .from('announcement-images')
+    .upload(filename, arrayBuffer, { contentType: 'image/jpeg', upsert: false });
+  if (uploadError) throw uploadError;
+  const { data: urlData } = supabase.storage.from('announcement-images').getPublicUrl(filename);
+  return urlData.publicUrl;
+}
+
+/** Combines the event date + optional time field into a single ISO string. */
+function buildEventStart(formData: AnnouncementFormData): string | null {
+  if (formData.type !== 'event' || formData.eventDate === undefined) return null;
+  const d = new Date(formData.eventDate);
+  if (formData.eventTime !== undefined) {
+    d.setHours(formData.eventTime.getHours(), formData.eventTime.getMinutes(), 0, 0);
+  }
+  return d.toISOString();
+}
+
 // ── List (active feed) ────────────────────────────────────────────────────────
 
 export function useListAnnouncements(typeFilter?: AnnouncementType | undefined) {
@@ -210,52 +256,19 @@ export function useCreateAnnouncement() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Resolve the professional profile ID from the current user
-      const { data: professional, error: profError } = await supabase
-        .from('professionals')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-      if (profError) throw profError;
+      const professionalId = await fetchProfessionalId(user.id);
 
-      // Upload cover image if one was selected
       let coverImageUrl: string | null = null;
       if (formData.coverImageUri !== undefined) {
-        const filename = `${professional.id}/${Date.now()}.jpg`;
-        // fetch().blob() returns 0 bytes for local file URIs in React Native.
-        // XHR with arraybuffer is the reliable cross-platform alternative.
-        const arrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open('GET', formData.coverImageUri!);
-          xhr.responseType = 'arraybuffer';
-          xhr.onload = () => resolve(xhr.response as ArrayBuffer);
-          xhr.onerror = () => reject(new Error('Failed to read image file'));
-          xhr.send();
-        });
-        const { error: uploadError } = await supabase.storage
-          .from('announcement-images')
-          .upload(filename, arrayBuffer, { contentType: 'image/jpeg', upsert: false });
-        if (uploadError) throw uploadError;
-        const { data: urlData } = supabase.storage
-          .from('announcement-images')
-          .getPublicUrl(filename);
-        coverImageUrl = urlData.publicUrl;
+        coverImageUrl = await uploadCoverImage(formData.coverImageUri, professionalId);
       }
 
-      // Combine event date + time into a single ISO string
-      let eventStart: string | null = null;
-      if (formData.type === 'event' && formData.eventDate !== undefined) {
-        const d = new Date(formData.eventDate);
-        if (formData.eventTime !== undefined) {
-          d.setHours(formData.eventTime.getHours(), formData.eventTime.getMinutes(), 0, 0);
-        }
-        eventStart = d.toISOString();
-      }
+      const eventStart = buildEventStart(formData);
 
       const { data, error } = await supabase
         .from('announcements')
         .insert({
-          professional_id: professional.id,
+          professional_id: professionalId,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           type: toDbType(formData.type) as any,
           title: formData.title,
@@ -304,43 +317,15 @@ export function useUpdateAnnouncement() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: professional, error: profError } = await supabase
-        .from('professionals')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-      if (profError) throw profError;
+      const professionalId = await fetchProfessionalId(user.id);
 
       // Determine cover image: upload new if picked, keep existing, or clear
       let coverImageUrl: string | null = existingCoverUrl ?? null;
       if (formData.coverImageUri !== undefined) {
-        const filename = `${professional.id}/${Date.now()}.jpg`;
-        const arrayBuffer = await new Promise<ArrayBuffer>((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open('GET', formData.coverImageUri!);
-          xhr.responseType = 'arraybuffer';
-          xhr.onload = () => resolve(xhr.response as ArrayBuffer);
-          xhr.onerror = () => reject(new Error('Failed to read image file'));
-          xhr.send();
-        });
-        const { error: uploadError } = await supabase.storage
-          .from('announcement-images')
-          .upload(filename, arrayBuffer, { contentType: 'image/jpeg', upsert: false });
-        if (uploadError) throw uploadError;
-        const { data: urlData } = supabase.storage
-          .from('announcement-images')
-          .getPublicUrl(filename);
-        coverImageUrl = urlData.publicUrl;
+        coverImageUrl = await uploadCoverImage(formData.coverImageUri, professionalId);
       }
 
-      let eventStart: string | null = null;
-      if (formData.type === 'event' && formData.eventDate !== undefined) {
-        const d = new Date(formData.eventDate);
-        if (formData.eventTime !== undefined) {
-          d.setHours(formData.eventTime.getHours(), formData.eventTime.getMinutes(), 0, 0);
-        }
-        eventStart = d.toISOString();
-      }
+      const eventStart = buildEventStart(formData);
 
       const { data, error } = await supabase
         .from('announcements')
