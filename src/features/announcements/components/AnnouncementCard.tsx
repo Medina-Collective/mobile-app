@@ -10,6 +10,7 @@ import { fontFamily } from '@theme/typography';
 import { useRecommendationsStore } from '@store/recommendations.store';
 import { ParticipationButton } from './ParticipationButton';
 import { SaveButton } from './SaveButton';
+import { LinkButton, normalizeUrl } from './LinkButton';
 import type { Announcement, AnnouncementType } from '@app-types/announcement';
 
 export type AnnouncementCardVariant = 'default' | 'featured' | 'compact';
@@ -31,35 +32,15 @@ function getTypeConfig(type: AnnouncementType): {
     return { label: 'Event', cta: 'Participate', badgeBg: '#2F0A0A', badgeText: '#ffffff' };
   }
   if (type === 'limited_offer') {
-    return {
-      label: 'Offer',
-      cta: 'View Offer',
-      badgeBg: 'rgba(206, 193, 174, 0.5)',
-      badgeText: '#2F0A0A',
-    };
+    return { label: 'Offer', cta: 'View Offer', badgeBg: '#2F0A0A', badgeText: '#ffffff' };
   }
   if (type === 'brand_popup') {
-    return {
-      label: 'Offer',
-      cta: 'View Offer',
-      badgeBg: 'rgba(206, 193, 174, 0.5)',
-      badgeText: '#2F0A0A',
-    };
+    return { label: 'Offer', cta: 'View Offer', badgeBg: '#2F0A0A', badgeText: '#ffffff' };
   }
-  if (type === 'update') {
-    return {
-      label: 'Update',
-      cta: 'Learn More',
-      badgeBg: 'rgba(100, 149, 237, 0.15)',
-      badgeText: '#4a73c4',
-    };
+  if (type === 'update' || type === 'other') {
+    return { label: 'Update', cta: 'Learn More', badgeBg: '#2F0A0A', badgeText: '#ffffff' };
   }
-  return {
-    label: 'Announcement',
-    cta: 'Learn More',
-    badgeBg: colors.warm.elevated,
-    badgeText: colors.warm.body,
-  };
+  return { label: 'Announcement', cta: 'Learn More', badgeBg: '#2F0A0A', badgeText: '#ffffff' };
 }
 
 function getCtaLabel(
@@ -185,7 +166,7 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
             )}
             {deadlineLabel !== undefined && (
               <View style={defaultStyles.metaItem}>
-                <Ionicons name="alarm-outline" size={12} color={colors.warm.body} />
+                <Ionicons name="calendar-outline" size={12} color={colors.warm.body} />
                 <Text style={defaultStyles.metaText}>Deadline: {deadlineLabel}</Text>
               </View>
             )}
@@ -220,17 +201,15 @@ function DefaultCard({ announcement }: Readonly<{ announcement: Announcement }>)
               onPress={() =>
                 announcement.externalUrl === undefined
                   ? router.push(`/announcements/${announcement.id}`)
-                  : Linking.openURL(announcement.externalUrl)
+                  : Linking.openURL(normalizeUrl(announcement.externalUrl))
               }
             >
               <Text style={defaultStyles.ctaButtonText}>{ctaLabel}</Text>
             </TouchableOpacity>
           )}
 
-          {/* Save outline button */}
-          <TouchableOpacity style={defaultStyles.saveOutlineButton} activeOpacity={0.8}>
-            <Text style={defaultStyles.saveOutlineText}>Save</Text>
-          </TouchableOpacity>
+          {/* External link circle button */}
+          {announcement.externalUrl !== undefined && <LinkButton url={announcement.externalUrl} />}
         </View>
       </View>
     </TouchableOpacity>
@@ -345,7 +324,7 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
                 </>
               ) : (
                 <>
-                  <Ionicons name="alarm-outline" size={12} color={colors.warm.body} />
+                  <Ionicons name="calendar-outline" size={12} color={colors.warm.body} />
                   <Text style={featuredStyles.metaText} numberOfLines={1}>
                     Deadline: {deadlineLabel}
                   </Text>
@@ -368,26 +347,31 @@ function FeaturedCard({ announcement }: Readonly<{ announcement: Announcement }>
         </View>
 
         {/* CTA — pinned to bottom */}
-        {announcement.participationEnabled && announcement.type !== 'limited_offer' ? (
-          <ParticipationButton
-            announcementId={announcement.id}
-            announcementType={announcement.type}
-            participantCount={announcement.participantCount}
-            maxCapacity={announcement.maxCapacity}
-          />
-        ) : (
-          <TouchableOpacity
-            style={featuredStyles.ctaButton}
-            activeOpacity={0.8}
-            onPress={() =>
-              announcement.externalUrl === undefined
-                ? router.push(`/announcements/${announcement.id}`)
-                : Linking.openURL(announcement.externalUrl)
-            }
-          >
-            <Text style={featuredStyles.ctaButtonText}>{ctaLabel}</Text>
-          </TouchableOpacity>
-        )}
+        <View style={featuredStyles.ctaRow}>
+          {announcement.participationEnabled && announcement.type !== 'limited_offer' ? (
+            <View style={featuredStyles.ctaFlex}>
+              <ParticipationButton
+                announcementId={announcement.id}
+                announcementType={announcement.type}
+                participantCount={announcement.participantCount}
+                maxCapacity={announcement.maxCapacity}
+              />
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={[featuredStyles.ctaButton, featuredStyles.ctaFlex]}
+              activeOpacity={0.8}
+              onPress={() =>
+                announcement.externalUrl === undefined
+                  ? router.push(`/announcements/${announcement.id}`)
+                  : Linking.openURL(normalizeUrl(announcement.externalUrl))
+              }
+            >
+              <Text style={featuredStyles.ctaButtonText}>{ctaLabel}</Text>
+            </TouchableOpacity>
+          )}
+          {announcement.externalUrl !== undefined && <LinkButton url={announcement.externalUrl} />}
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -523,24 +507,25 @@ const defaultStyles = StyleSheet.create({
   topLeftText: {
     flex: 1,
     minWidth: 0,
-    gap: 3,
+    gap: 2,
   },
   brandName: {
     fontFamily: fontFamily.sansSemiBold,
-    fontSize: 14,
+    fontSize: 13,
     color: colors.warm.title,
   },
   badge: {
     alignSelf: 'flex-start',
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 20,
+    paddingVertical: 0,
+    borderRadius: 999,
+    marginTop: -4,
   },
   badgeText: {
-    fontSize: 10,
+    fontSize: 8,
     fontWeight: '600',
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 2,
   },
   title: {
     fontFamily: fontFamily.serifBold,
@@ -579,27 +564,13 @@ const defaultStyles = StyleSheet.create({
   ctaButton: {
     flex: 1,
     height: 44,
-    borderRadius: 22,
+    borderRadius: 999,
     backgroundColor: '#2F0A0A',
     justifyContent: 'center',
     alignItems: 'center',
   },
   ctaButtonText: {
     color: '#ffffff',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  saveOutlineButton: {
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: '#2F0A0A',
-    paddingHorizontal: spacing[4],
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  saveOutlineText: {
-    color: '#2F0A0A',
     fontSize: 13,
     fontWeight: '600',
   },
@@ -704,11 +675,18 @@ const featuredStyles = StyleSheet.create({
     color: colors.warm.body,
     fontFamily: fontFamily.sansMedium,
   },
+  ctaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+  },
+  ctaFlex: {
+    flex: 1,
+  },
   ctaButton: {
     height: 44,
-    borderRadius: 22,
+    borderRadius: 999,
     backgroundColor: '#2F0A0A',
-    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },

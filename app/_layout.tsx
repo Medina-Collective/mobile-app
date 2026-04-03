@@ -7,12 +7,14 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { queryClient } from '@services/query.client';
 import { useAuthStore } from '@store/auth.store';
+import { usePushNotifications } from '@hooks/usePushNotifications';
 
 // Prevent the splash screen from auto-hiding before fonts are loaded
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const hydrateFromStorage = useAuthStore((s) => s.hydrateFromStorage);
+  usePushNotifications();
 
   const [fontsLoaded] = useFonts({
     'PlayfairDisplay-Regular': require('@expo-google-fonts/playfair-display/400Regular/PlayfairDisplay_400Regular.ttf'),

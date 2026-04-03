@@ -83,6 +83,21 @@ function buildEventStart(formData: AnnouncementFormData): string | null {
   return d.toISOString();
 }
 
+/** Resolves deadline across all form types. */
+function buildDeadline(formData: AnnouncementFormData): string | null {
+  if (formData.type === 'update') return formData.deadline?.toISOString() ?? null;
+  if (formData.type === 'offer') return formData.validUntil?.toISOString() ?? null;
+  return null;
+}
+
+/** Resolves external URL across all form types. */
+function buildExternalUrl(formData: AnnouncementFormData): string | null {
+  if (formData.type === 'update') return formData.externalLink ?? null;
+  if (formData.type === 'offer') return formData.shopLink ?? null;
+  if (formData.type === 'event') return formData.registrationLink ?? null;
+  return null;
+}
+
 // ── List (active feed) ────────────────────────────────────────────────────────
 
 export function useListAnnouncements(typeFilter?: AnnouncementType | undefined) {
@@ -273,10 +288,13 @@ export function useCreateAnnouncement() {
           type: toDbType(formData.type) as any,
           title: formData.title,
           description: formData.description ?? null,
+          category: formData.category ?? null,
           cover_image_url: coverImageUrl,
           location: formData.location ?? null,
           event_start: eventStart,
           event_end: null,
+          deadline: buildDeadline(formData),
+          external_url: buildExternalUrl(formData),
           visibility_start: startOfLocalDay(formData.visibilityStart).toISOString(),
           visibility_end: endOfLocalDay(formData.visibilityEnd).toISOString(),
           audience: 'public',
@@ -334,10 +352,13 @@ export function useUpdateAnnouncement() {
           type: toDbType(formData.type) as any,
           title: formData.title,
           description: formData.description ?? null,
+          category: formData.category ?? null,
           cover_image_url: coverImageUrl,
           location: formData.location ?? null,
           event_start: eventStart,
           event_end: null,
+          deadline: buildDeadline(formData),
+          external_url: buildExternalUrl(formData),
           visibility_start: startOfLocalDay(formData.visibilityStart).toISOString(),
           visibility_end: endOfLocalDay(formData.visibilityEnd).toISOString(),
           audience: 'public',

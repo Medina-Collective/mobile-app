@@ -1,7 +1,6 @@
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useSavedStore } from '@store/saved.store';
-import { useRecommendationsStore } from '@store/recommendations.store';
+import { useSave } from '@features/announcements/hooks/useSave';
 import { colors } from '@theme/colors';
 import type { AnnouncementType } from '@app-types/announcement';
 
@@ -16,9 +15,7 @@ export function SaveButton({
   announcementType,
   iconType = 'heart',
 }: Readonly<SaveButtonProps>) {
-  const isSaved = useSavedStore((s) => s.isSaved(announcementId));
-  const toggle = useSavedStore((s) => s.toggle);
-  const recordSignal = useRecommendationsStore((s) => s.recordSignal);
+  const { isSaved, toggle } = useSave(announcementId, announcementType);
 
   let iconName: 'bookmark' | 'bookmark-outline' | 'heart' | 'heart-outline';
   if (iconType === 'bookmark') {
@@ -30,10 +27,7 @@ export function SaveButton({
   return (
     <TouchableOpacity
       style={styles.btn}
-      onPress={() => {
-        if (!isSaved) recordSignal(announcementType, 'save');
-        toggle(announcementId);
-      }}
+      onPress={toggle}
       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       activeOpacity={0.7}
     >

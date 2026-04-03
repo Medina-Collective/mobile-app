@@ -40,6 +40,8 @@ export interface Announcement {
   participantCount: number;
   /** Whether the currently authenticated user has confirmed participation */
   hasParticipated: boolean;
+  /** Category tag selected at creation time */
+  category?: string | undefined;
   /** External URL for offers/updates — opens in browser instead of detail page */
   externalUrl?: string | undefined;
   /** ISO string — a registration or application deadline (mutually exclusive with eventStart/eventEnd) */
@@ -57,7 +59,7 @@ export const ANNOUNCEMENT_TYPE_LABELS: Record<AnnouncementType, string> = {
   halaqa: 'Halaqa',
   limited_offer: 'Limited Offer',
   update: 'Update',
-  other: 'Announcement',
+  other: 'Update',
 };
 
 /** Maps each type to an Ionicons icon name */
