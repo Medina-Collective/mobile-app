@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, ScrollView, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
@@ -36,8 +36,16 @@ export default function HomeScreen() {
   const [activeFilterIndex, setActiveFilterIndex] = useState(0);
   const activeFilterType: AnnouncementType | undefined = HOME_FILTERS[activeFilterIndex]?.type;
 
-  const { data: allAnnouncements = [] } = useListAnnouncements(activeFilterType);
+  const {
+    data: allAnnouncements = [],
+    isRefetching,
+    refetch,
+  } = useListAnnouncements(activeFilterType);
   const featuredAnnouncements = useRankedAnnouncements(allAnnouncements);
+
+  const handleRefresh = useCallback(() => {
+    refetch().catch(() => null);
+  }, [refetch]);
 
   // "Coming Up" card — first announcement with a future eventStart, else first item
   const now = new Date();
@@ -68,7 +76,17 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={handleRefresh}
+            tintColor={colors.burgundy.mid}
+          />
+        }
+      >
         {/* ── 2. Coming Up Card ──────────────────────────────────────────── */}
         <View style={styles.comingUpWrapper}>
           {upcomingAnnouncement === undefined ? (

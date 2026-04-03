@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   TextInput,
+  RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,8 +16,6 @@ import { SectionHeader } from '@components/SectionHeader';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
 import { fontFamily } from '@theme/typography';
-import { useAuthStore } from '@store/auth.store';
-import { USER_ROLES } from '@constants/index';
 import { useListAnnouncements } from '@features/announcements/hooks/useAnnouncement';
 import { useTrendingAnnouncements } from '@features/announcements/hooks/useRecommendations';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
@@ -38,14 +37,23 @@ const FILTERS: { value: FilterValue; label: string }[] = [
 
 export default function DiscoverScreen() {
   const router = useRouter();
-  const isPro = useAuthStore((s) => s.user?.role === USER_ROLES.PROFESSIONAL);
   const [activeFilter, setActiveFilter] = useState<FilterValue>(ALL_FILTER);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: allAnnouncements = [], isLoading, isError, refetch } = useListAnnouncements();
+  const {
+    data: allAnnouncements = [],
+    isLoading,
+    isError,
+    isRefetching,
+    refetch,
+  } = useListAnnouncements();
 
   const handleRetry = useCallback(async () => {
     await refetch();
+  }, [refetch]);
+
+  const handleRefresh = useCallback(() => {
+    refetch().catch(() => null);
   }, [refetch]);
 
   // Trending: top 3 by open count, falls back to recency
@@ -74,7 +82,17 @@ export default function DiscoverScreen() {
         <Text style={styles.subtitle}>Explore what's happening in Montreal</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={handleRefresh}
+            tintColor={colors.burgundy.mid}
+          />
+        }
+      >
         {/* ── Search Row ──────────────────────────────────────────────────── */}
         <View style={styles.searchRow}>
           <View style={styles.searchInputWrapper}>
@@ -176,16 +194,6 @@ export default function DiscoverScreen() {
           </View>
         </View>
       </ScrollView>
-
-      {isPro && (
-        <TouchableOpacity
-          style={styles.fab}
-          onPress={() => router.push('/announcements/create')}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.fabIcon}>+</Text>
-        </TouchableOpacity>
-      )}
     </Screen>
   );
 }
@@ -312,28 +320,5 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.warm.muted,
     textAlign: 'center',
-  },
-
-  // FAB
-  fab: {
-    position: 'absolute',
-    bottom: spacing[6],
-    right: spacing[5],
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.burgundy.mid,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  fabIcon: {
-    fontSize: 28,
-    color: '#ffffff',
-    lineHeight: 32,
   },
 });

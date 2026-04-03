@@ -1,6 +1,13 @@
-import { useCallback } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as ImagePicker from 'expo-image-picker';
@@ -17,7 +24,12 @@ import {
   ANNOUNCEMENT_FORM_TYPES,
   MAX_VISIBILITY_DAYS,
 } from '@features/announcements/schemas/announcement.schema';
-import { useCreateAnnouncement } from '@features/announcements/hooks/useAnnouncement';
+import {
+  useGetAnnouncement,
+  useUpdateAnnouncement,
+  useCurrentProfessionalId,
+  fromDbType,
+} from '@features/announcements/hooks/useAnnouncement';
 import { DatePicker } from '@features/announcements/components/DatePicker';
 import { TimePicker } from '@features/announcements/components/TimePicker';
 import { LocationAutocomplete } from '@features/announcements/components/LocationAutocomplete';
@@ -31,35 +43,64 @@ import type { AnnouncementFormData } from '@features/announcements/schemas/annou
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
-export default function CreateAnnouncementScreen() {
+export default function EditAnnouncementScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
-  const { mutate: create, isPending } = useCreateAnnouncement();
+
+  const { data: announcement, isLoading, isError } = useGetAnnouncement(id);
+  const { data: currentProfessionalId } = useCurrentProfessionalId();
+  const { mutate: update, isPending } = useUpdateAnnouncement();
+
+  // Tracks the existing remote cover URL separately from the form's local-file URI
+  const [existingCoverUrl, setExistingCoverUrl] = useState<string | undefined>(undefined);
 
   const {
     control,
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm<AnnouncementFormData>({
     resolver: zodResolver(announcementSchema),
-    defaultValues: {
-      girlsOnly: false,
-      isFree: true,
-    },
+    defaultValues: { girlsOnly: false, isFree: true },
   });
 
   const coverImageUri = watch('coverImageUri');
   const selectedType = watch('type');
   const isFree = watch('isFree');
-  const title = watch('title') ?? '';
   const description = watch('description') ?? '';
   const visibilityStart = watch('visibilityStart');
   const maxVisibilityEnd =
     visibilityStart === undefined
       ? undefined
       : new Date(visibilityStart.getTime() + MAX_VISIBILITY_DAYS * 24 * 60 * 60 * 1000);
+
+  // Pre-populate the form once the announcement data is available
+  useEffect(() => {
+    if (announcement === undefined) return;
+
+    setExistingCoverUrl(announcement.coverImageUrl);
+
+    const eventStartDate =
+      announcement.eventStart === undefined ? undefined : new Date(announcement.eventStart);
+
+    reset({
+      type: fromDbType(announcement.type),
+      title: announcement.title,
+      description: announcement.description,
+      category: '', // no DB column — starts empty on edit
+      coverImageUri: undefined, // local-pick only; existing URL tracked separately
+      location: announcement.location,
+      eventDate: eventStartDate,
+      eventTime: eventStartDate, // TimePicker reads hours/minutes from this
+      girlsOnly: false,
+      isFree: true,
+      visibilityStart: new Date(announcement.visibilityStart),
+      visibilityEnd: new Date(announcement.visibilityEnd),
+    });
+  }, [announcement, reset]);
 
   const pickImage = useCallback(async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -79,45 +120,89 @@ export default function CreateAnnouncementScreen() {
     }
   }, [setValue]);
 
+  const removePhoto = useCallback(() => {
+    setValue('coverImageUri', undefined);
+    setExistingCoverUrl(undefined);
+  }, [setValue]);
+
   const onSubmit = useCallback(
-    (data: AnnouncementFormData) => {
-      create(data, {
-        onSuccess: (announcement) => {
-          router.replace(`/announcements/${announcement.id}`);
+    (formData: AnnouncementFormData) => {
+      update(
+        { id, formData, ...(existingCoverUrl === undefined ? {} : { existingCoverUrl }) },
+        {
+          onSuccess: () => {
+            router.back();
+          },
+          onError: (err) => {
+            Alert.alert('Could not save changes', err.message);
+          },
         },
-        onError: (err) => {
-          Alert.alert('Could not publish', err.message);
-        },
-      });
+      );
     },
-    [create, router],
+    [update, id, existingCoverUrl, router],
   );
 
-  // Guard: PRO only — after all hooks
-  if (user?.role !== USER_ROLES.PROFESSIONAL) {
+  // ── Loading / error states ──────────────────────────────────────────────────
+
+  if (isLoading) {
     return (
       <Screen>
         <View style={sharedFormStyles.centered}>
-          <Text style={sharedFormStyles.mutedText}>
-            Only professional accounts can create announcements.
-          </Text>
+          <ActivityIndicator color={colors.burgundy.mid} />
+        </View>
+      </Screen>
+    );
+  }
+
+  if (isError || announcement === undefined) {
+    return (
+      <Screen>
+        <BackButton />
+        <View style={sharedFormStyles.centered}>
+          <Text style={sharedFormStyles.mutedText}>Could not load this announcement.</Text>
           <Button title="Go Back" variant="outline" onPress={() => router.back()} />
         </View>
       </Screen>
     );
   }
 
-  const canPublish = selectedType !== undefined && title.trim().length >= 2;
+  // ── Creator guard ───────────────────────────────────────────────────────────
+
+  if (
+    user?.role !== USER_ROLES.PROFESSIONAL ||
+    (currentProfessionalId !== undefined &&
+      currentProfessionalId !== null &&
+      currentProfessionalId !== announcement.professionalId)
+  ) {
+    return (
+      <Screen>
+        <BackButton />
+        <View style={sharedFormStyles.centered}>
+          <Text style={sharedFormStyles.mutedText}>You can only edit your own announcements.</Text>
+          <Button title="Go Back" variant="outline" onPress={() => router.back()} />
+        </View>
+      </Screen>
+    );
+  }
+
+  const isLive = new Date() >= new Date(announcement.visibilityStart);
+  const displayImageUri = coverImageUri ?? existingCoverUrl;
 
   return (
     <Screen>
       <View style={styles.flex}>
-        {/* ── Nav ─────────────────────────────────────────────────────────── */}
         <View style={sharedFormStyles.navRow}>
           <BackButton />
-          <Text style={sharedFormStyles.navTitle}>Create Announcement</Text>
+          <Text style={sharedFormStyles.navTitle}>Edit Announcement</Text>
           <View style={sharedFormStyles.navSpacer} />
         </View>
+
+        {isLive && (
+          <View style={styles.liveBanner}>
+            <Ionicons name="radio-outline" size={14} color={colors.burgundy.mid} />
+            <Text style={styles.liveBannerText}>This post is live on the feed</Text>
+          </View>
+        )}
 
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -162,29 +247,12 @@ export default function CreateAnnouncementScreen() {
                 </View>
               )}
             />
-            {errors.type !== undefined && (
-              <Text style={styles.fieldError}>{errors.type.message}</Text>
-            )}
           </View>
 
           {/* ── Cover Image ───────────────────────────────────────────────── */}
           <View style={sharedFormStyles.section}>
             <Text style={sharedFormStyles.fieldLabel}>Cover Image</Text>
-            {coverImageUri !== undefined ? (
-              <View style={sharedFormStyles.imageContainer}>
-                <Image
-                  source={{ uri: coverImageUri }}
-                  style={sharedFormStyles.imagePreview}
-                  contentFit="cover"
-                />
-                <TouchableOpacity
-                  style={sharedFormStyles.removeImageBtn}
-                  onPress={() => setValue('coverImageUri', undefined)}
-                >
-                  <Ionicons name="close" size={14} color="#fff" />
-                </TouchableOpacity>
-              </View>
-            ) : (
+            {displayImageUri === undefined ? (
               <TouchableOpacity
                 style={sharedFormStyles.imagePicker}
                 onPress={pickImage}
@@ -193,6 +261,17 @@ export default function CreateAnnouncementScreen() {
                 <Ionicons name="image-outline" size={28} color={colors.warm.muted} />
                 <Text style={sharedFormStyles.imagePickerText}>Tap to upload</Text>
               </TouchableOpacity>
+            ) : (
+              <View style={sharedFormStyles.imageContainer}>
+                <Image
+                  source={{ uri: displayImageUri }}
+                  style={sharedFormStyles.imagePreview}
+                  contentFit="cover"
+                />
+                <TouchableOpacity style={sharedFormStyles.removeImageBtn} onPress={removePhoto}>
+                  <Ionicons name="close" size={14} color="#fff" />
+                </TouchableOpacity>
+              </View>
             )}
           </View>
 
@@ -259,7 +338,6 @@ export default function CreateAnnouncementScreen() {
           {selectedType === 'event' && (
             <View style={sharedFormStyles.section}>
               <SectionBar label="Event Details" />
-
               <Controller
                 control={control}
                 name="eventDate"
@@ -268,13 +346,10 @@ export default function CreateAnnouncementScreen() {
                     label="Date"
                     value={value}
                     onChange={onChange}
-                    minimumDate={new Date()}
-                    error={errors.eventDate?.message}
                     placeholder="Pick a date"
                   />
                 )}
               />
-
               <Controller
                 control={control}
                 name="eventTime"
@@ -287,7 +362,6 @@ export default function CreateAnnouncementScreen() {
                   />
                 )}
               />
-
               <Controller
                 control={control}
                 name="location"
@@ -301,7 +375,6 @@ export default function CreateAnnouncementScreen() {
                   />
                 )}
               />
-
               <Controller
                 control={control}
                 name="girlsOnly"
@@ -314,7 +387,6 @@ export default function CreateAnnouncementScreen() {
                   />
                 )}
               />
-
               <Controller
                 control={control}
                 name="isFree"
@@ -327,7 +399,6 @@ export default function CreateAnnouncementScreen() {
                   />
                 )}
               />
-
               {!isFree && (
                 <Controller
                   control={control}
@@ -338,13 +409,11 @@ export default function CreateAnnouncementScreen() {
                       value={value}
                       onChangeText={onChange}
                       onBlur={onBlur}
-                      error={errors.price?.message}
                       placeholder="e.g. $25"
                     />
                   )}
                 />
               )}
-
               <Controller
                 control={control}
                 name="maxParticipants"
@@ -356,13 +425,11 @@ export default function CreateAnnouncementScreen() {
                       onChange(t.length > 0 ? Number.parseInt(t, 10) : undefined)
                     }
                     onBlur={onBlur}
-                    error={errors.maxParticipants?.message}
                     keyboardType="number-pad"
                     placeholder="Leave empty for unlimited"
                   />
                 )}
               />
-
               <Controller
                 control={control}
                 name="registrationLink"
@@ -372,7 +439,6 @@ export default function CreateAnnouncementScreen() {
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    error={errors.registrationLink?.message}
                     placeholder="https://..."
                     keyboardType="url"
                     autoCapitalize="none"
@@ -386,7 +452,6 @@ export default function CreateAnnouncementScreen() {
           {selectedType === 'offer' && (
             <View style={sharedFormStyles.section}>
               <SectionBar label="Offer Details" />
-
               <Controller
                 control={control}
                 name="discountLabel"
@@ -396,12 +461,10 @@ export default function CreateAnnouncementScreen() {
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    error={errors.discountLabel?.message}
-                    placeholder='e.g. "25% OFF", "Buy 1 Get 1"'
+                    placeholder='"25% OFF", "Buy 1 Get 1"'
                   />
                 )}
               />
-
               <Controller
                 control={control}
                 name="validUntil"
@@ -411,12 +474,10 @@ export default function CreateAnnouncementScreen() {
                     value={value}
                     onChange={onChange}
                     minimumDate={new Date()}
-                    error={errors.validUntil?.message}
                     placeholder="Pick an expiry date"
                   />
                 )}
               />
-
               <Controller
                 control={control}
                 name="promoCode"
@@ -426,13 +487,11 @@ export default function CreateAnnouncementScreen() {
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    error={errors.promoCode?.message}
                     placeholder="e.g. SPRING25"
                     autoCapitalize="characters"
                   />
                 )}
               />
-
               <Controller
                 control={control}
                 name="shopLink"
@@ -442,7 +501,6 @@ export default function CreateAnnouncementScreen() {
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    error={errors.shopLink?.message}
                     placeholder="https://..."
                     keyboardType="url"
                     autoCapitalize="none"
@@ -456,7 +514,6 @@ export default function CreateAnnouncementScreen() {
           {selectedType === 'update' && (
             <View style={sharedFormStyles.section}>
               <SectionBar label="Additional Details" />
-
               <Controller
                 control={control}
                 name="deadline"
@@ -466,12 +523,10 @@ export default function CreateAnnouncementScreen() {
                     value={value}
                     onChange={onChange}
                     minimumDate={new Date()}
-                    error={errors.deadline?.message}
                     placeholder="Set a deadline"
                   />
                 )}
               />
-
               <Controller
                 control={control}
                 name="externalLink"
@@ -481,7 +536,6 @@ export default function CreateAnnouncementScreen() {
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
-                    error={errors.externalLink?.message}
                     placeholder="https://..."
                     keyboardType="url"
                     autoCapitalize="none"
@@ -508,7 +562,12 @@ export default function CreateAnnouncementScreen() {
                   onChange={onChange}
                   minimumDate={new Date()}
                   error={errors.visibilityStart?.message}
-                  helperText="The day your announcement goes live on the feed"
+                  helperText={
+                    isLive
+                      ? 'Your post is live — start date cannot be changed'
+                      : 'The day your announcement goes live on the feed'
+                  }
+                  disabled={isLive}
                 />
               )}
             />
@@ -531,14 +590,13 @@ export default function CreateAnnouncementScreen() {
           </View>
         </ScrollView>
 
-        {/* ── Sticky Publish Bar ──────────────────────────────────────────── */}
+        {/* ── Sticky Save Bar ─────────────────────────────────────────────── */}
         <View style={sharedFormStyles.stickyBar}>
           <Button
-            title="Publish Announcement"
+            title="Save Changes"
             loading={isPending}
             onPress={handleSubmit(onSubmit)}
-            disabled={!canPublish}
-            style={styles.publishBtn}
+            style={styles.saveBtn}
           />
         </View>
       </View>
@@ -548,6 +606,16 @@ export default function CreateAnnouncementScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  fieldError: { fontSize: 11, color: colors.error[500], marginTop: spacing[1] },
-  publishBtn: { borderRadius: 999 },
+  liveBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[2],
+    backgroundColor: 'rgba(68, 0, 7, 0.06)',
+    borderRadius: 8,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[2],
+    marginBottom: spacing[4],
+  },
+  liveBannerText: { fontSize: 12, color: colors.burgundy.mid, fontWeight: '600' },
+  saveBtn: { borderRadius: 999 },
 });

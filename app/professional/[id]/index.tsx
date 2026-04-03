@@ -7,6 +7,7 @@ import {
   Linking,
   StyleSheet,
 } from 'react-native';
+import { differenceInDays } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +18,9 @@ import { fontSize } from '@theme/typography';
 import { PROFILE_TYPE_LABELS, SERVICE_TYPE_LABELS } from '@app-types/professional';
 import { useGetProfessional } from '@features/discover/hooks/useProfessional';
 import { FollowButton } from '@features/follows/components/FollowButton';
+import { useAnnouncementsByProfessional } from '@features/announcements/hooks/useAnnouncement';
+import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
+import type { Announcement } from '@app-types/announcement';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -71,6 +75,7 @@ export default function ProfessionalProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { data: professional, isLoading, isError, refetch } = useGetProfessional(id);
+  const { data: announcements = [] } = useAnnouncementsByProfessional(id);
 
   const handleBack = useCallback(() => {
     router.back();
@@ -245,6 +250,44 @@ export default function ProfessionalProfileScreen() {
             {professional.description}
           </Text>
         </View>
+
+        {/* Announcements */}
+        {announcements.length > 0 && (
+          <View style={styles.section}>
+            <Text variant="overline" style={styles.sectionLabel}>
+              Announcements
+            </Text>
+            <View style={styles.announcementList}>
+              {announcements.map((a: Announcement) => {
+                const endDate = new Date(a.visibilityEnd);
+                const endLocalDay = new Date(
+                  endDate.getFullYear(),
+                  endDate.getMonth(),
+                  endDate.getDate(),
+                );
+                const today = new Date();
+                const todayLocalDay = new Date(
+                  today.getFullYear(),
+                  today.getMonth(),
+                  today.getDate(),
+                );
+                const isExpired = differenceInDays(endLocalDay, todayLocalDay) < 0;
+                return (
+                  <View key={a.id} style={styles.announcementWrapper}>
+                    <AnnouncementCard announcement={a} variant="compact" />
+                    {isExpired && (
+                      <View style={styles.expiredOverlay} pointerEvents="none">
+                        <View style={styles.expiredBadge}>
+                          <Text style={styles.expiredBadgeText}>EXPIRED</Text>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
 
         {/* Contact */}
         <View style={styles.section}>
@@ -457,6 +500,39 @@ const styles = StyleSheet.create({
   description: {
     color: colors.beige[300],
     lineHeight: 22,
+  },
+
+  // Announcements
+  announcementList: {
+    gap: spacing[3],
+  },
+  announcementWrapper: {
+    position: 'relative',
+  },
+  expiredOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  expiredBadge: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
+  },
+  expiredBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    color: '#ffffff',
   },
 
   // Contact

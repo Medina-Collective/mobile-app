@@ -45,10 +45,7 @@ export function FollowButton({ professionalId, variant = 'pill' }: Readonly<Foll
       activeOpacity={0.8}
     >
       {isToggling ? (
-        <ActivityIndicator
-          size="small"
-          color={isFollowing ? colors.burgundy.muted : colors.burgundy.deep}
-        />
+        <ActivityIndicator size="small" color={isFollowing ? '#fff' : colors.burgundy.deep} />
       ) : (
         <Text style={[styles.pillLabel, isFollowing && styles.pillLabelFollowing]}>
           {isFollowing ? 'Following' : 'Follow'}
@@ -66,27 +63,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pill: {
-    paddingHorizontal: spacing[5],
-    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[4],
     borderRadius: 20,
-    backgroundColor: '#CEC1AE',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 90,
-    height: 36,
-  },
-  pillFollowing: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: colors.burgundy.muted,
+    borderColor: colors.burgundy.deep,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 32,
+  },
+  pillFollowing: {
+    backgroundColor: colors.burgundy.deep,
+    borderColor: colors.burgundy.deep,
   },
   pillLabel: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '600',
     color: colors.burgundy.deep,
   },
   pillLabelFollowing: {
-    color: colors.burgundy.muted,
-    fontWeight: '500',
+    color: '#fff',
   },
 });

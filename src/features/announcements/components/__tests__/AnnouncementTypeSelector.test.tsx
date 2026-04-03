@@ -1,14 +1,14 @@
 import { render, fireEvent } from '@testing-library/react-native';
 import { AnnouncementTypeSelector } from '../AnnouncementTypeSelector';
-import { ANNOUNCEMENT_TYPE_OPTIONS } from '@features/announcements/schemas/announcement.schema';
-import type { AnnouncementType } from '@app-types/announcement';
+import { ANNOUNCEMENT_FORM_TYPES } from '@features/announcements/schemas/announcement.schema';
+import type { AnnouncementFormType } from '@features/announcements/schemas/announcement.schema';
 
 describe('AnnouncementTypeSelector', () => {
-  it('renders all announcement type option labels', () => {
+  it('renders all announcement form type labels', () => {
     const { getByText } = render(
       <AnnouncementTypeSelector value={undefined} onChange={jest.fn()} />,
     );
-    for (const option of ANNOUNCEMENT_TYPE_OPTIONS) {
+    for (const option of ANNOUNCEMENT_FORM_TYPES) {
       expect(getByText(option.label)).toBeTruthy();
     }
   });
@@ -18,8 +18,8 @@ describe('AnnouncementTypeSelector', () => {
     const { getByText } = render(
       <AnnouncementTypeSelector value={undefined} onChange={onChange} />,
     );
-    fireEvent.press(getByText('Activity Event'));
-    expect(onChange).toHaveBeenCalledWith('activity_event');
+    fireEvent.press(getByText('Event / Activity'));
+    expect(onChange).toHaveBeenCalledWith('event');
   });
 
   it('calls onChange with the correct value for each option', () => {
@@ -28,10 +28,10 @@ describe('AnnouncementTypeSelector', () => {
       <AnnouncementTypeSelector value={undefined} onChange={onChange} />,
     );
 
-    fireEvent.press(getByText('Bazaar'));
-    expect(onChange).toHaveBeenLastCalledWith('bazaar');
+    fireEvent.press(getByText('Offer / Promotion'));
+    expect(onChange).toHaveBeenLastCalledWith('offer');
 
-    fireEvent.press(getByText('Update'));
+    fireEvent.press(getByText('Community Update'));
     expect(onChange).toHaveBeenLastCalledWith('update');
   });
 
@@ -50,8 +50,6 @@ describe('AnnouncementTypeSelector', () => {
     const { queryByText } = render(
       <AnnouncementTypeSelector value={undefined} onChange={jest.fn()} error="" />,
     );
-    // Empty string should not render any error node
-    // We check there's no text with "error" related content shown
     expect(queryByText('')).toBeNull();
   });
 
@@ -64,20 +62,19 @@ describe('AnnouncementTypeSelector', () => {
 
   it('the selected card calls onChange with the matching value', () => {
     const onChange = jest.fn();
-    const selectedType: AnnouncementType = 'halaqa';
+    const selectedType: AnnouncementFormType = 'event';
     const { getByText } = render(
       <AnnouncementTypeSelector value={selectedType} onChange={onChange} />,
     );
-    // Pressing the already-selected card still fires onChange
-    fireEvent.press(getByText('Halaqa'));
-    expect(onChange).toHaveBeenCalledWith('halaqa');
+    fireEvent.press(getByText('Event / Activity'));
+    expect(onChange).toHaveBeenCalledWith('event');
   });
 
   it('renders option descriptions', () => {
     const { getByText } = render(
       <AnnouncementTypeSelector value={undefined} onChange={jest.fn()} />,
     );
-    expect(getByText('A gathering or activity for the community')).toBeTruthy();
-    expect(getByText('A special promotion or sale')).toBeTruthy();
+    expect(getByText('Gatherings, classes, workshops')).toBeTruthy();
+    expect(getByText('Sales, deals, launches')).toBeTruthy();
   });
 });

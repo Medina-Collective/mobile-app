@@ -1,5 +1,9 @@
 import '@testing-library/jest-native/extend-expect';
 
+// Provide a dummy Google Places API key so LocationAutocomplete.tsx does not
+// short-circuit its fetch logic in tests (the key is read at module load time).
+process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY = 'test-api-key';
+
 // AsyncStorage is a native module — mock it for the Jest (Node) environment.
 // The official mock is maintained by the async-storage team and resets between tests.
 /* eslint-disable @typescript-eslint/no-require-imports */
