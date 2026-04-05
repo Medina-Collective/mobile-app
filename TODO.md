@@ -162,3 +162,7 @@
 
 ### Profile rework
 - Deferred — user confirmed: "for the profile we need to rework it but later"
+
+
+
+other: npx expo run:ios -d "iPhone 17"

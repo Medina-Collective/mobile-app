@@ -47,3 +47,6 @@ coverage/
 
 # Claude Code
 .claude/
+
+# Supabase local temp files
+supabase/.temp/
