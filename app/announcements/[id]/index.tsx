@@ -9,7 +9,9 @@ import {
   Linking,
   Dimensions,
 } from 'react-native';
+import { useEffect } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ExpoLinking from 'expo-linking';
 import { format } from 'date-fns';
 import { Image } from 'expo-image';
@@ -33,6 +35,7 @@ import { ParticipationButton } from '@features/announcements/components/Particip
 import { FollowButton } from '@features/follows/components/FollowButton';
 import { useSavedStore } from '@store/saved.store';
 import { useRecommendationsStore } from '@store/recommendations.store';
+import { useRecentlyViewedStore } from '@store/recentlyViewed.store';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
 import { LinkButton, normalizeUrl } from '@features/announcements/components/LinkButton';
 
@@ -105,6 +108,7 @@ const infoCardStyles = StyleSheet.create({
 export default function AnnouncementDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const { data: announcement, isLoading, isError } = useGetAnnouncement(id);
   const { data: currentProfessionalId } = useCurrentProfessionalId();
@@ -114,6 +118,11 @@ export default function AnnouncementDetailScreen() {
   const isSaved = useSavedStore((s) => s.isSaved(id));
   const toggleSaved = useSavedStore((s) => s.toggle);
   const recordSignal = useRecommendationsStore((s) => s.recordSignal);
+  const recordViewed = useRecentlyViewedStore((s) => s.record);
+
+  useEffect(() => {
+    if (id) recordViewed(id);
+  }, [id, recordViewed]);
 
   const isOwner =
     currentProfessionalId !== undefined &&
@@ -261,7 +270,7 @@ export default function AnnouncementDetailScreen() {
             </View>
 
             {/* Top nav — buttons with frosted card bg like the web */}
-            <View style={styles.heroNav}>
+            <View style={[styles.heroNav, { top: insets.top }]}>
               <TouchableOpacity
                 style={styles.navBtn}
                 onPress={() => router.back()}
@@ -343,7 +352,9 @@ export default function AnnouncementDetailScreen() {
                     <Text style={styles.brandSub}>Organizer</Text>
                   </View>
                 </TouchableOpacity>
-                <FollowButton professionalId={announcement.professionalId} variant="pill" />
+                {!isOwner && (
+                  <FollowButton professionalId={announcement.professionalId} variant="pill" />
+                )}
               </View>
             )}
 
@@ -468,7 +479,6 @@ const styles = StyleSheet.create({
 
   heroNav: {
     position: 'absolute',
-    top: spacing[12],
     left: spacing[4],
     right: spacing[4],
     flexDirection: 'row',

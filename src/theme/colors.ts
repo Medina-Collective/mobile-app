@@ -66,22 +66,24 @@ export const colors = {
    * dark text (#1a1212) on light backgrounds.
    */
   warm: {
-    /** Page background — warm off-white cream */
-    bg: '#faf6f0',
+    /** Page background — hsl(30 20% 98%) */
+    bg: '#FAF8F5',
     /** Card / surface — pure white */
     surface: '#ffffff',
     /** Elevated inner surface */
     elevated: '#fff9f5',
-    /** Border for cards on light bg — matches web --border: hsl(33 15% 88%) */
-    border: '#e5e1dc',
+    /** Border / dividers — hsl(33 15% 88%) */
+    border: '#E5DFD6',
     /** Stronger border for focused states */
     borderFocus: 'rgba(40, 2, 10, 0.35)',
-    /** Page-level titles — very dark */
-    title: '#1a1212',
-    /** Page-level body text */
+    /** Inactive tab / chip background — hsl(33 18% 93%) */
+    chip: '#EEEBE5',
+    /** Primary headings / brand names — hsl(0 60% 7%) */
+    title: '#1D0808',
+    /** Body text */
     body: 'rgba(26, 18, 18, 0.75)',
-    /** Page-level muted text */
-    muted: 'rgba(26, 18, 18, 0.45)',
+    /** Secondary text / muted-foreground — hsl(0 10% 45%) */
+    muted: '#807373',
     /** Faint dividers */
     divider: 'rgba(160, 122, 95, 0.10)',
     /** Shadow tint for cards */

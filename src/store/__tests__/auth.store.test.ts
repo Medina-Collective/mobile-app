@@ -177,3 +177,23 @@ describe('refreshUser', () => {
     expect(useAuthStore.getState().user).toBeNull();
   });
 });
+
+describe('activeView', () => {
+  it('defaults to professional', () => {
+    expect(useAuthStore.getState().activeView).toBe('professional');
+  });
+
+  it('setActiveView updates the active view', () => {
+    useAuthStore.getState().setActiveView('personal');
+    expect(useAuthStore.getState().activeView).toBe('personal');
+    useAuthStore.getState().setActiveView('professional');
+    expect(useAuthStore.getState().activeView).toBe('professional');
+  });
+
+  it('signOut resets activeView to professional', async () => {
+    useAuthStore.getState().setActiveView('personal');
+    (supabase.auth.signOut as jest.Mock).mockResolvedValue({});
+    await useAuthStore.getState().signOut();
+    expect(useAuthStore.getState().activeView).toBe('professional');
+  });
+});

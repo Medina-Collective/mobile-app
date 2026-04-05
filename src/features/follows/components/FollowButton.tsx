@@ -1,4 +1,4 @@
-import { TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { TouchableOpacity, ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@components/ui';
 import { colors } from '@theme/colors';
@@ -37,19 +37,32 @@ export function FollowButton({ professionalId, variant = 'pill' }: Readonly<Foll
     );
   }
 
+  // Pill variant: filled dark = default "Follow", outline = "Following"
   return (
     <TouchableOpacity
       onPress={toggle}
       disabled={isToggling}
-      style={[styles.pill, isFollowing && styles.pillFollowing]}
+      style={[styles.pill, isFollowing ? styles.pillFollowing : styles.pillDefault]}
       activeOpacity={0.8}
     >
       {isToggling ? (
-        <ActivityIndicator size="small" color={isFollowing ? '#fff' : colors.burgundy.deep} />
+        <ActivityIndicator size="small" color={isFollowing ? colors.warm.title : '#ffffff'} />
       ) : (
-        <Text style={[styles.pillLabel, isFollowing && styles.pillLabelFollowing]}>
-          {isFollowing ? 'Following' : 'Follow'}
-        </Text>
+        <View style={styles.pillContent}>
+          <Ionicons
+            name={isFollowing ? 'checkmark' : 'people-outline'}
+            size={15}
+            color={isFollowing ? colors.warm.title : '#ffffff'}
+          />
+          <Text
+            style={[
+              styles.pillLabel,
+              isFollowing ? styles.pillLabelFollowing : styles.pillLabelDefault,
+            ]}
+          >
+            {isFollowing ? 'Following' : 'Follow'}
+          </Text>
+        </View>
       )}
     </TouchableOpacity>
   );
@@ -63,25 +76,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pill: {
-    paddingHorizontal: spacing[4],
-    borderRadius: 20,
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: colors.burgundy.deep,
+    borderRadius: 24,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 32,
+    paddingHorizontal: spacing[4],
+  },
+  pillDefault: {
+    backgroundColor: colors.burgundy.deep,
+    borderWidth: 0,
   },
   pillFollowing: {
-    backgroundColor: colors.burgundy.deep,
-    borderColor: colors.burgundy.deep,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: colors.warm.border,
+  },
+  pillContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[1],
   },
   pillLabel: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
-    color: colors.burgundy.deep,
+  },
+  pillLabelDefault: {
+    color: '#ffffff',
   },
   pillLabelFollowing: {
-    color: '#fff',
+    color: colors.warm.title,
   },
 });

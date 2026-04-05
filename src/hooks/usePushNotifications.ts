@@ -1,9 +1,20 @@
 import { useEffect } from 'react';
-import * as Notifications from 'expo-notifications';
+import type * as NotificationsModule from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import { supabase } from '@services/supabase.client';
 import { useAuthStore } from '@store/auth.store';
+
+// Dynamic require so a missing native module (ExpoPushTokenManager) doesn't
+// crash the app at import time. This happens when the dev client was built
+// before expo-notifications was added, or when running in Expo Go.
+let Notifications: typeof NotificationsModule | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  Notifications = require('expo-notifications') as typeof NotificationsModule;
+} catch {
+  // Native module unavailable — push notifications silently disabled
+}
 
 /**
  * Call once near the root of the authenticated app.
@@ -14,7 +25,7 @@ export function usePushNotifications() {
   const userId = useAuthStore((s) => s.user?.id);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || Notifications === null) return;
 
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
@@ -30,6 +41,7 @@ export function usePushNotifications() {
 }
 
 async function registerAndSaveToken(userId: string) {
+  if (Notifications === null) return;
   if (!Device.isDevice) return; // push tokens don't work on simulators
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();

@@ -20,12 +20,18 @@ export const fontFamily = {
 } as const;
 
 export const fontSize = {
-  xs: 11,
-  sm: 13,
-  base: 15,
+  /** badges, timestamps, stat labels, chips */
+  xs: 12,
+  /** body text, descriptions, menu labels, buttons */
+  sm: 14,
+  /** location text, body descriptions */
+  base: 16,
   md: 17,
-  lg: 20,
-  xl: 24,
+  /** section titles, stat values */
+  lg: 18,
+  /** card brand names, profile names */
+  xl: 20,
+  /** profile header name */
   '2xl': 28,
   '3xl': 34,
   '4xl': 40,

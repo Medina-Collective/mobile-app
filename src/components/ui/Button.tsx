@@ -8,6 +8,7 @@ import {
 import { Text } from './Text';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
+import { fontFamily } from '@theme/typography';
 
 type ButtonVariant = 'solid' | 'outline' | 'ghost';
 
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     letterSpacing: 0.5,
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: fontFamily.sansBold,
   },
   labelAlt: {
     color: colors.warm.body,

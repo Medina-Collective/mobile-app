@@ -8,6 +8,8 @@ interface AuthState {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  activeView: 'personal' | 'professional';
+  setActiveView: (view: 'personal' | 'professional') => void;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, displayName: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -58,6 +60,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   isLoading: false,
   isAuthenticated: false,
+  activeView: 'professional',
+  setActiveView: (view) => set({ activeView: view }),
 
   signIn: async (email, password) => {
     set({ isLoading: true });
@@ -97,7 +101,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signOut: async () => {
     await supabase.auth.signOut();
-    set({ user: null, token: null, isAuthenticated: false });
+    set({ user: null, token: null, isAuthenticated: false, activeView: 'professional' });
   },
 
   hydrateFromStorage: async () => {

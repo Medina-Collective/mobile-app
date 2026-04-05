@@ -56,7 +56,9 @@ function CreateTabButton({ onPress }: { onPress: () => void }) {
 export default function TabsLayout() {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
-  const isPro = useAuthStore((s) => s.user?.role === USER_ROLES.PROFESSIONAL);
+  const isPro = useAuthStore(
+    (s) => s.user?.role === USER_ROLES.PROFESSIONAL && s.activeView === 'professional',
+  );
   const handleCreatePress = useCallback(() => router.push('/announcements/create'), [router]);
 
   if (!isAuthenticated) {
@@ -99,13 +101,16 @@ export default function TabsLayout() {
       {/* Create — center raised button, pro only */}
       <Tabs.Screen
         name="create"
-        options={{
-          title: '',
-          ...(isPro ? {} : { href: null }),
-          tabBarLabel: NoLabel,
-          tabBarItemStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-          tabBarButton: () => <CreateTabButton onPress={handleCreatePress} />,
-        }}
+        options={
+          isPro
+            ? {
+                title: '',
+                tabBarLabel: NoLabel,
+                tabBarItemStyle: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+                tabBarButton: () => <CreateTabButton onPress={handleCreatePress} />,
+              }
+            : { href: null }
+        }
       />
 
       <Tabs.Screen
@@ -119,8 +124,6 @@ export default function TabsLayout() {
 
       {/* Hidden routes */}
       <Tabs.Screen name="search" options={{ href: null }} />
-      <Tabs.Screen name="events" options={{ href: null }} />
-      <Tabs.Screen name="announcements" options={{ href: null }} />
       <Tabs.Screen name="notifications" options={{ href: null }} />
     </Tabs>
   );
