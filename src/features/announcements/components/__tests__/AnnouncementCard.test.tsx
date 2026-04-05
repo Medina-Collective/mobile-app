@@ -216,4 +216,47 @@ describe('AnnouncementCard — compact variant', () => {
     fireEvent.press(getByText('Test Event'));
     expect(mockPush).toHaveBeenCalledWith('/announcements/ann-1');
   });
+
+  it('renders event date in compact variant when eventStart is set', () => {
+    const ann = makeAnnouncement({ eventStart: '2026-04-18T10:00:00Z' });
+    const { getByText } = renderWithQuery(
+      <AnnouncementCard announcement={ann} variant="compact" />,
+    );
+    expect(getByText('Apr 18, 2026')).toBeTruthy();
+  });
+
+  it('renders deadline date in compact variant when no eventStart but deadline is set', () => {
+    const ann = makeAnnouncement({
+      eventStart: undefined,
+      deadline: '2026-05-15T12:00:00Z',
+    });
+    const { getByText } = renderWithQuery(
+      <AnnouncementCard announcement={ann} variant="compact" />,
+    );
+    expect(getByText('May 15, 2026')).toBeTruthy();
+  });
+
+  it('hides date row in compact variant when neither eventStart nor deadline is set', () => {
+    const ann = makeAnnouncement({ eventStart: undefined, deadline: undefined });
+    const { queryByText } = renderWithQuery(
+      <AnnouncementCard announcement={ann} variant="compact" />,
+    );
+    expect(queryByText(/2026/)).toBeNull();
+  });
+
+  it('hides professionalName row when name is empty string', () => {
+    const ann = makeAnnouncement({ professionalName: '' });
+    const { queryByText } = renderWithQuery(
+      <AnnouncementCard announcement={ann} variant="compact" />,
+    );
+    expect(queryByText('')).toBeNull();
+  });
+
+  it('renders cover image in compact variant when coverImageUrl is set', () => {
+    const ann = makeAnnouncement({ coverImageUrl: 'https://example.com/img.jpg' });
+    const { toJSON } = renderWithQuery(
+      <AnnouncementCard announcement={ann} variant="compact" />,
+    );
+    expect(toJSON()).toBeTruthy();
+  });
 });
