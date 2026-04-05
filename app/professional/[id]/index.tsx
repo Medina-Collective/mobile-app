@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   View,
   ScrollView,
@@ -6,23 +6,30 @@ import {
   ActivityIndicator,
   Linking,
   StyleSheet,
+  Image,
 } from 'react-native';
-import { differenceInDays } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { Text, Button } from '@components/ui';
 import { colors } from '@theme/colors';
 import { spacing } from '@theme/spacing';
-import { fontSize } from '@theme/typography';
-import { PROFILE_TYPE_LABELS, SERVICE_TYPE_LABELS } from '@app-types/professional';
+import { fontSize, fontFamily } from '@theme/typography';
 import { useGetProfessional } from '@features/discover/hooks/useProfessional';
 import { FollowButton } from '@features/follows/components/FollowButton';
-import { useAnnouncementsByProfessional } from '@features/announcements/hooks/useAnnouncement';
+import {
+  useAnnouncementsByProfessional,
+  useCurrentProfessionalId,
+} from '@features/announcements/hooks/useAnnouncement';
 import { AnnouncementCard } from '@features/announcements/components/AnnouncementCard';
+import { supabase } from '@services/supabase.client';
 import type { Announcement } from '@app-types/announcement';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+type Tab = 'Active' | 'Archived' | 'All';
+const TABS: Tab[] = ['Active', 'Archived', 'All'];
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
 
 function getInitials(name: string): string {
   return name
@@ -34,12 +41,18 @@ function getInitials(name: string): string {
 
 async function openLink(url: string): Promise<void> {
   const supported = await Linking.canOpenURL(url);
-  if (supported) {
-    await Linking.openURL(url);
-  }
+  if (supported) await Linking.openURL(url);
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+function isActive(a: Announcement): boolean {
+  return new Date(a.visibilityEnd) >= new Date();
+}
+
+function formatCount(n: number): string {
+  return n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
+}
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
 
 function ContactRow({
   icon,
@@ -52,38 +65,42 @@ function ContactRow({
 }>) {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.contactRow}>
-      <View style={styles.contactIconWrap}>
-        <Ionicons name={icon} size={16} color="#CEC1AE" />
+      <View style={styles.contactIcon}>
+        <Ionicons name={icon} size={16} color={colors.warm.body} />
       </View>
       <Text style={styles.contactLabel}>{label}</Text>
-      <Ionicons name="chevron-forward" size={14} color={colors.burgundy.muted} />
+      <Ionicons name="chevron-forward" size={14} color={colors.warm.muted} />
     </TouchableOpacity>
   );
 }
 
-function InfoChip({ label }: Readonly<{ label: string }>) {
-  return (
-    <View style={styles.chip}>
-      <Text style={styles.chipText}>{label}</Text>
-    </View>
-  );
-}
-
-// ── Screen ────────────────────────────────────────────────────────────────────
+// ── Screen ─────────────────────────────────────────────────────────────────────
 
 export default function ProfessionalProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<Tab>('Active');
+
   const { data: professional, isLoading, isError, refetch } = useGetProfessional(id);
   const { data: announcements = [] } = useAnnouncementsByProfessional(id);
+  const { data: myProfessionalId } = useCurrentProfessionalId();
+  const isOwnProfile = myProfessionalId === id;
 
-  const handleBack = useCallback(() => {
-    router.back();
-  }, [router]);
+  const { data: followerCount = 0 } = useQuery({
+    queryKey: ['follower-count', id],
+    queryFn: async (): Promise<number> => {
+      const { count, error } = await supabase
+        .from('followers')
+        .select('*', { count: 'exact', head: true })
+        .eq('professional_id', id);
+      if (error) throw error;
+      return count ?? 0;
+    },
+    enabled: id.length > 0,
+  });
 
-  const handleRetry = useCallback(async () => {
-    await refetch();
-  }, [refetch]);
+  const handleBack = useCallback(() => router.back(), [router]);
+  const handleRetry = useCallback(async () => refetch(), [refetch]);
 
   // ── Loading ────────────────────────────────────────────────────────────────
 
@@ -91,16 +108,12 @@ export default function ProfessionalProfileScreen() {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={styles.headerBar}>
-          <TouchableOpacity
-            onPress={handleBack}
-            style={styles.headerBtn}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Ionicons name="arrow-back" size={22} color="#CEC1AE" />
+          <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={20} color={colors.warm.body} />
           </TouchableOpacity>
         </View>
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#CEC1AE" />
+          <ActivityIndicator size="large" color={colors.warm.muted} />
         </View>
       </SafeAreaView>
     );
@@ -112,16 +125,12 @@ export default function ProfessionalProfileScreen() {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={styles.headerBar}>
-          <TouchableOpacity
-            onPress={handleBack}
-            style={styles.headerBtn}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Ionicons name="arrow-back" size={22} color="#CEC1AE" />
+          <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={20} color={colors.warm.body} />
           </TouchableOpacity>
         </View>
         <View style={styles.centered}>
-          <Ionicons name="alert-circle-outline" size={48} color={colors.burgundy.muted} />
+          <Ionicons name="alert-circle-outline" size={48} color={colors.warm.muted} />
           <Text variant="bodySm" style={styles.errorText}>
             Could not load this profile.
           </Text>
@@ -136,164 +145,136 @@ export default function ProfessionalProfileScreen() {
     );
   }
 
-  // ── Derived display values ─────────────────────────────────────────────────
+  // ── Derived ────────────────────────────────────────────────────────────────
 
-  const profileTypeLabel = PROFILE_TYPE_LABELS[professional.profileType];
-  const serviceTypeLabels = professional.serviceTypes.map((v) => SERVICE_TYPE_LABELS[v]);
+  const activeAnnouncements = announcements.filter(isActive);
+  const archivedAnnouncements = announcements.filter((a) => !isActive(a));
+  const displayed: Announcement[] =
+    activeTab === 'Active'
+      ? activeAnnouncements
+      : activeTab === 'Archived'
+        ? archivedAnnouncements
+        : announcements;
 
   return (
     <SafeAreaView style={styles.safe}>
       {/* Header */}
       <View style={styles.headerBar}>
-        <TouchableOpacity
-          onPress={handleBack}
-          style={styles.headerBtn}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Ionicons name="arrow-back" size={22} color="#CEC1AE" />
+        <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
+          <Ionicons name="arrow-back" size={20} color={colors.warm.body} />
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>Professional Profile</Text>
         <TouchableOpacity
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onPress={() => router.push(`/professional/${id}/edit` as any)}
-          style={styles.headerBtn}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          style={styles.backBtn}
         >
-          <Ionicons name="create-outline" size={20} color="#CEC1AE" />
+          <Ionicons name="create-outline" size={20} color={colors.warm.body} />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* Hero */}
-        <View style={styles.hero}>
-          <View style={styles.avatarCircle}>
-            <Text style={styles.avatarInitials}>
-              {getInitials(professional.businessName) || '?'}
-            </Text>
-          </View>
-          <Text variant="heading2" style={styles.businessName}>
-            {professional.businessName}
-          </Text>
-          <View style={styles.badgeRow}>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{profileTypeLabel}</Text>
-            </View>
-            {professional.priceRange !== undefined && (
-              <View style={[styles.badge, styles.badgePrice]}>
-                <Text style={styles.badgeText}>
-                  {professional.priceRange}
-                  {professional.startingPrice === undefined
-                    ? ''
-                    : ` · from ${professional.startingPrice}`}
-                </Text>
+        {/* Brand card */}
+        <View style={styles.card}>
+          <View style={styles.cardTop}>
+            {professional.logoUri ? (
+              <Image source={{ uri: professional.logoUri }} style={styles.logoImage} />
+            ) : (
+              <View style={styles.logo}>
+                <Text style={styles.logoText}>{getInitials(professional.businessName)}</Text>
               </View>
             )}
-          </View>
-
-          <FollowButton professionalId={id} variant="pill" />
-        </View>
-
-        <View style={styles.divider} />
-
-        {/* Category & subcategories */}
-        <View style={styles.section}>
-          <Text variant="overline" style={styles.sectionLabel}>
-            Speciality
-          </Text>
-          <View style={styles.chipRow}>
-            <View style={[styles.chip, styles.chipAccent]}>
-              <Text style={[styles.chipText, styles.chipTextAccent]}>{professional.category}</Text>
-            </View>
-            {professional.subcategories.map((sub) => (
-              <InfoChip key={sub} label={sub} />
-            ))}
-          </View>
-        </View>
-
-        {/* Service types */}
-        {serviceTypeLabels.length > 0 && (
-          <View style={styles.section}>
-            <Text variant="overline" style={styles.sectionLabel}>
-              How they work
-            </Text>
-            <View style={styles.chipRow}>
-              {serviceTypeLabels.map((label) => (
-                <InfoChip key={label} label={label} />
-              ))}
+            <View style={styles.cardInfo}>
+              <Text style={styles.businessName} numberOfLines={2}>
+                {professional.businessName}
+              </Text>
+              <View style={styles.locationRow}>
+                <Ionicons name="location-outline" size={16} color={colors.warm.muted} />
+                <Text style={styles.locationText}>{professional.basedIn}</Text>
+              </View>
             </View>
           </View>
-        )}
 
-        {/* Location */}
-        <View style={styles.section}>
-          <Text variant="overline" style={styles.sectionLabel}>
-            Location
-          </Text>
-          <View style={styles.locationRow}>
-            <Ionicons name="location-outline" size={14} color={colors.burgundy.muted} />
-            <Text variant="bodySm" style={styles.locationText}>
-              Based in {professional.basedIn}
-            </Text>
+          <Text style={styles.description}>{professional.description}</Text>
+
+          <View style={styles.divider} />
+
+          {/* Stats */}
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{formatCount(followerCount)}</Text>
+              <Text style={styles.statLabel}>Followers</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{announcements.length}</Text>
+              <Text style={styles.statLabel}>Posts</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{activeAnnouncements.length}</Text>
+              <Text style={styles.statLabel}>Active</Text>
+            </View>
           </View>
-          {professional.servesAreas.length > 0 && (
-            <Text variant="caption" style={styles.servesText}>
-              Serves: {professional.servesAreas.join(', ')}
-            </Text>
-          )}
+
+          {/* Action buttons */}
+          <View style={styles.actionRow}>
+            {!isOwnProfile && (
+              <View style={styles.followWrap}>
+                <FollowButton professionalId={id} variant="pill" />
+              </View>
+            )}
+            {professional.website !== undefined && (
+              <TouchableOpacity
+                style={styles.websiteBtn}
+                onPress={() => void openLink(professional.website!)}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="open-outline" size={18} color={colors.burgundy.deep} />
+                <Text style={styles.websiteBtnText}>Website</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
 
-        {/* About */}
-        <View style={styles.section}>
-          <Text variant="overline" style={styles.sectionLabel}>
-            About
-          </Text>
-          <Text variant="bodySm" style={styles.description}>
-            {professional.description}
-          </Text>
+        {/* Category chips */}
+        <View style={styles.chipsRow}>
+          <View style={[styles.chip, styles.chipAccent]}>
+            <Text style={[styles.chipText, styles.chipTextAccent]}>{professional.category}</Text>
+          </View>
+          {professional.subcategories.map((sub) => (
+            <View key={sub} style={styles.chip}>
+              <Text style={styles.chipText}>{sub}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Tabs */}
+        <View style={styles.tabRow}>
+          {TABS.map((tab) => (
+            <TouchableOpacity
+              key={tab}
+              style={[styles.tab, activeTab === tab && styles.tabActive]}
+              onPress={() => setActiveTab(tab)}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.tabLabel, activeTab === tab && styles.tabLabelActive]}>
+                {tab}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         {/* Announcements */}
-        {announcements.length > 0 && (
-          <View style={styles.section}>
-            <Text variant="overline" style={styles.sectionLabel}>
-              Announcements
-            </Text>
-            <View style={styles.announcementList}>
-              {announcements.map((a: Announcement) => {
-                const endDate = new Date(a.visibilityEnd);
-                const endLocalDay = new Date(
-                  endDate.getFullYear(),
-                  endDate.getMonth(),
-                  endDate.getDate(),
-                );
-                const today = new Date();
-                const todayLocalDay = new Date(
-                  today.getFullYear(),
-                  today.getMonth(),
-                  today.getDate(),
-                );
-                const isExpired = differenceInDays(endLocalDay, todayLocalDay) < 0;
-                return (
-                  <View key={a.id} style={styles.announcementWrapper}>
-                    <AnnouncementCard announcement={a} variant="compact" />
-                    {isExpired && (
-                      <View style={styles.expiredOverlay} pointerEvents="none">
-                        <View style={styles.expiredBadge}>
-                          <Text style={styles.expiredBadgeText}>EXPIRED</Text>
-                        </View>
-                      </View>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
-          </View>
-        )}
+        <View style={styles.announcementList}>
+          {displayed.length === 0 ? (
+            <Text style={styles.emptyText}>No {activeTab.toLowerCase()} posts.</Text>
+          ) : (
+            displayed.map((a) => <AnnouncementCard key={a.id} announcement={a} variant="compact" />)
+          )}
+        </View>
 
         {/* Contact */}
         <View style={styles.section}>
-          <Text variant="overline" style={styles.sectionLabel}>
-            Contact
-          </Text>
+          <Text style={styles.sectionLabel}>CONTACT</Text>
           <View style={styles.contactList}>
             <ContactRow
               icon="mail-outline"
@@ -321,18 +302,7 @@ export default function ProfessionalProfileScreen() {
                   <ContactRow
                     icon="calendar-outline"
                     label="Book an appointment"
-                    onPress={() => void openLink(link)}
-                  />
-                );
-              })()}
-            {professional.website !== undefined &&
-              (() => {
-                const site = professional.website;
-                return (
-                  <ContactRow
-                    icon="link-outline"
-                    label={site}
-                    onPress={() => void openLink(site)}
+                    onPress={() => void openLink(link!)}
                   />
                 );
               })()}
@@ -343,12 +313,12 @@ export default function ProfessionalProfileScreen() {
   );
 }
 
-// ── Styles ────────────────────────────────────────────────────────────────────
+// ── Styles ─────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.burgundy.deep,
+    backgroundColor: colors.warm.bg,
   },
 
   // Header
@@ -356,16 +326,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing[6],
+    paddingHorizontal: spacing[5],
     paddingVertical: spacing[3],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.warm.border,
+    backgroundColor: colors.warm.bg,
   },
-  headerBtn: {
+  backBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: colors.burgundy.raised,
+    backgroundColor: colors.warm.border,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  headerTitle: {
+    fontFamily: fontFamily.sansSemiBold,
+    fontSize: fontSize.sm,
+    color: colors.warm.title,
   },
 
   // Loading / error
@@ -375,191 +353,224 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[4],
   },
-  errorText: {
-    color: colors.burgundy.muted,
-    textAlign: 'center',
-  },
-  retryBtn: {
-    minWidth: 140,
-  },
+  errorText: { color: colors.warm.muted, textAlign: 'center' },
+  retryBtn: { minWidth: 140 },
 
   // Scroll
   scroll: {
-    paddingHorizontal: spacing[6],
+    paddingHorizontal: spacing[5],
     paddingBottom: spacing[12],
+    paddingTop: spacing[4],
   },
 
-  // Hero
-  hero: {
-    alignItems: 'center',
-    paddingVertical: spacing[8],
-    gap: spacing[3],
-  },
-  avatarCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: colors.burgundy.raised,
-    borderWidth: 2,
-    borderColor: colors.burgundy.mid,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing[2],
-  },
-  avatarInitials: {
-    fontSize: fontSize.xl,
-    fontWeight: '700',
-    color: '#CEC1AE',
-    letterSpacing: 1,
-  },
-  businessName: {
-    color: '#CEC1AE',
-    textAlign: 'center',
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing[2],
-    justifyContent: 'center',
-  },
-  badge: {
-    paddingVertical: spacing[1],
-    paddingHorizontal: spacing[3],
+  // Brand card
+  card: {
+    backgroundColor: colors.warm.surface,
     borderRadius: 20,
-    backgroundColor: colors.burgundy.raised,
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: colors.warm.border,
+    padding: spacing[5],
+    gap: spacing[4],
+    shadowColor: colors.warm.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.07,
+    shadowRadius: 12,
+    elevation: 2,
   },
-  badgePrice: {
-    borderColor: '#CEC1AE',
+  cardTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing[4],
   },
-  badgeText: {
-    fontSize: fontSize.xs,
-    color: '#CEC1AE',
-    fontWeight: '600',
-    letterSpacing: 0.3,
+  logoImage: {
+    width: 72,
+    height: 72,
+    borderRadius: 18,
+    flexShrink: 0,
   },
-
-  // Divider
+  logo: {
+    width: 72,
+    height: 72,
+    borderRadius: 18,
+    backgroundColor: colors.burgundy.deep,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
+  },
+  logoText: {
+    fontSize: fontSize.xl,
+    fontFamily: fontFamily.serifBold,
+    color: '#EDE4D8',
+    letterSpacing: 2,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
+  cardInfo: { flex: 1, gap: 0, paddingTop: spacing[1] },
+  businessName: {
+    fontSize: fontSize.xl,
+    fontFamily: fontFamily.serifBold,
+    color: colors.warm.title,
+    lineHeight: 28,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 0,
+  },
+  locationText: {
+    fontFamily: fontFamily.sansRegular,
+    fontSize: fontSize.base,
+    color: colors.warm.muted,
+  },
+  description: {
+    fontFamily: fontFamily.sansRegular,
+    fontSize: fontSize.sm,
+    color: colors.warm.muted,
+    lineHeight: 21,
+  },
   divider: {
     height: 1,
-    backgroundColor: colors.burgundy.surface,
-    marginBottom: spacing[6],
+    backgroundColor: colors.warm.border,
   },
 
-  // Sections
-  section: {
-    marginBottom: spacing[8],
+  // Stats
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  statItem: { alignItems: 'center' },
+  statValue: {
+    fontSize: fontSize.lg,
+    fontFamily: fontFamily.sansBold,
+    color: colors.warm.title,
+  },
+  statLabel: {
+    fontFamily: fontFamily.sansRegular,
+    fontSize: fontSize.xs,
+    color: colors.warm.muted,
+    marginTop: 2,
+  },
+
+  // Action buttons
+  actionRow: {
+    flexDirection: 'row',
     gap: spacing[3],
   },
-  sectionLabel: {
-    color: '#7b625b',
+  followWrap: { flex: 1 },
+  websiteBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing[1],
+    height: 40,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.burgundy.deep,
+  },
+  websiteBtnText: {
+    fontFamily: fontFamily.sansMedium,
+    fontSize: fontSize.sm,
+    color: colors.burgundy.deep,
   },
 
   // Chips
-  chipRow: {
+  chipsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing[2],
+    marginTop: spacing[4],
   },
   chip: {
     paddingVertical: spacing[1],
     paddingHorizontal: spacing[3],
     borderRadius: 20,
-    backgroundColor: colors.burgundy.raised,
+    backgroundColor: colors.warm.chip,
     borderWidth: 1,
-    borderColor: colors.burgundy.mid,
+    borderColor: colors.warm.border,
   },
   chipAccent: {
-    borderColor: '#CEC1AE',
+    backgroundColor: 'rgba(29, 8, 8, 0.07)',
+    borderColor: 'rgba(29, 8, 8, 0.15)',
   },
   chipText: {
+    fontFamily: fontFamily.sansMedium,
     fontSize: fontSize.xs,
-    color: '#CEC1AE',
-    fontWeight: '500',
+    color: colors.warm.muted,
   },
-  chipTextAccent: {
-    fontWeight: '700',
-  },
+  chipTextAccent: { fontFamily: fontFamily.sansBold, color: colors.warm.title },
 
-  // Location
-  locationRow: {
+  // Tabs
+  tabRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     gap: spacing[2],
+    marginTop: spacing[5],
   },
-  locationText: {
-    color: '#CEC1AE',
+  tab: {
+    paddingVertical: spacing[2],
+    paddingHorizontal: spacing[4],
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.warm.border,
+    backgroundColor: colors.warm.chip,
   },
-  servesText: {
-    color: colors.burgundy.muted,
-    marginTop: spacing[1],
+  tabActive: {
+    backgroundColor: colors.burgundy.deep,
+    borderColor: colors.burgundy.deep,
   },
-
-  // Description
-  description: {
-    color: colors.beige[300],
-    lineHeight: 22,
+  tabLabel: {
+    fontFamily: fontFamily.sansSemiBold,
+    fontSize: fontSize.sm,
+    color: colors.warm.muted,
   },
+  tabLabelActive: { color: '#ffffff' },
 
   // Announcements
   announcementList: {
     gap: spacing[3],
+    marginTop: spacing[4],
   },
-  announcementWrapper: {
-    position: 'relative',
-  },
-  expiredOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  expiredBadge: {
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[1],
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.25)',
-  },
-  expiredBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    color: '#ffffff',
+  emptyText: {
+    fontFamily: fontFamily.sansRegular,
+    fontSize: fontSize.sm,
+    color: colors.warm.muted,
+    textAlign: 'center',
+    paddingVertical: spacing[8],
   },
 
-  // Contact
-  contactList: {
-    gap: spacing[1],
+  // Section / contact
+  section: { marginTop: spacing[8], gap: spacing[3] },
+  sectionLabel: {
+    fontFamily: fontFamily.sansBold,
+    fontSize: fontSize.xs,
+    letterSpacing: 1.5,
+    color: colors.warm.muted,
   },
+  contactList: { gap: spacing[1] },
   contactRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[3],
     paddingVertical: spacing[3],
     paddingHorizontal: spacing[4],
-    backgroundColor: colors.burgundy.surface,
-    borderRadius: 10,
+    backgroundColor: colors.warm.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.warm.border,
   },
-  contactIconWrap: {
+  contactIcon: {
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.burgundy.raised,
+    borderRadius: 10,
+    backgroundColor: colors.warm.chip,
     justifyContent: 'center',
     alignItems: 'center',
   },
   contactLabel: {
     flex: 1,
+    fontFamily: fontFamily.sansMedium,
     fontSize: fontSize.sm,
-    color: '#CEC1AE',
-    fontWeight: '500',
+    color: colors.warm.muted,
   },
 });

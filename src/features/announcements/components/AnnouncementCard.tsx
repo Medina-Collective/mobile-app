@@ -388,6 +388,11 @@ function CompactCard({ announcement }: Readonly<{ announcement: Announcement }>)
       ? undefined
       : format(new Date(announcement.eventStart), 'MMM d, yyyy');
 
+  const deadlineLabel =
+    announcement.eventStart === undefined && announcement.deadline !== undefined
+      ? format(new Date(announcement.deadline), 'MMM d, yyyy')
+      : undefined;
+
   return (
     <TouchableOpacity
       style={compactStyles.card}
@@ -418,20 +423,22 @@ function CompactCard({ announcement }: Readonly<{ announcement: Announcement }>)
         <Text style={compactStyles.title} numberOfLines={1}>
           {announcement.title}
         </Text>
-        {dateLabel !== undefined && (
+        {(dateLabel !== undefined || deadlineLabel !== undefined) && (
           <View style={compactStyles.dateRow}>
             <Ionicons name="calendar-outline" size={10} color={colors.warm.muted} />
-            <Text style={compactStyles.dateText}>{dateLabel}</Text>
+            <Text style={compactStyles.dateText}>{dateLabel ?? deadlineLabel}</Text>
           </View>
         )}
       </View>
 
       {/* Right: bookmark */}
-      <SaveButton
-        announcementId={announcement.id}
-        announcementType={announcement.type}
-        iconType="bookmark"
-      />
+      <View style={compactStyles.saveWrap}>
+        <SaveButton
+          announcementId={announcement.id}
+          announcementType={announcement.type}
+          iconType="bookmark"
+        />
+      </View>
     </TouchableOpacity>
   );
 }
@@ -522,8 +529,8 @@ const defaultStyles = StyleSheet.create({
     marginTop: -4,
   },
   badgeText: {
+    fontFamily: fontFamily.sansSemiBold,
     fontSize: 8,
-    fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 2,
   },
@@ -570,9 +577,9 @@ const defaultStyles = StyleSheet.create({
     alignItems: 'center',
   },
   ctaButtonText: {
+    fontFamily: fontFamily.sansSemiBold,
     color: '#ffffff',
     fontSize: 13,
-    fontWeight: '600',
   },
 });
 
@@ -620,8 +627,8 @@ const featuredStyles = StyleSheet.create({
     borderRadius: 20,
   },
   badgeText: {
+    fontFamily: fontFamily.sansBold,
     fontSize: 10,
-    fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -691,9 +698,9 @@ const featuredStyles = StyleSheet.create({
     alignItems: 'center',
   },
   ctaButtonText: {
+    fontFamily: fontFamily.sansSemiBold,
     color: '#ffffff',
     fontSize: 13,
-    fontWeight: '600',
   },
 });
 
@@ -702,7 +709,7 @@ const featuredStyles = StyleSheet.create({
 const compactStyles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: spacing[3],
     padding: spacing[3],
     backgroundColor: '#ffffff',
@@ -731,24 +738,32 @@ const compactStyles = StyleSheet.create({
   content: {
     flex: 1,
     minWidth: 0,
+    paddingTop: 4,
   },
   brandName: {
-    fontSize: 11,
-    fontWeight: '500',
-    color: colors.warm.muted,
+    fontFamily: fontFamily.sansMedium,
+    fontSize: 13,
+    lineHeight: 16,
+    color: colors.warm.body,
   },
   title: {
     fontFamily: fontFamily.serifSemiBold,
     fontSize: 14,
+    lineHeight: 18,
     color: colors.warm.title,
   },
   dateRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[1],
+    marginTop: 2,
   },
   dateText: {
     fontSize: 11,
+    lineHeight: 14,
     color: colors.warm.muted,
+  },
+  saveWrap: {
+    alignSelf: 'center',
   },
 });

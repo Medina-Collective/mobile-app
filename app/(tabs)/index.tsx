@@ -333,8 +333,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing[1],
   },
   comingUpLabel: {
+    fontFamily: fontFamily.sansSemiBold,
     fontSize: 11,
-    fontWeight: '600',
     letterSpacing: 2,
     color: '#ffffff',
     textTransform: 'uppercase',
@@ -356,8 +356,8 @@ const styles = StyleSheet.create({
     marginTop: spacing[2],
   },
   comingUpViewDetails: {
+    fontFamily: fontFamily.sansMedium,
     fontSize: 13,
-    fontWeight: '500',
     color: 'rgba(255, 255, 255, 0.9)',
   },
 
