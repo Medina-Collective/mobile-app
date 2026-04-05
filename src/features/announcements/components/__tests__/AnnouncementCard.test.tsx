@@ -254,9 +254,7 @@ describe('AnnouncementCard — compact variant', () => {
 
   it('renders cover image in compact variant when coverImageUrl is set', () => {
     const ann = makeAnnouncement({ coverImageUrl: 'https://example.com/img.jpg' });
-    const { toJSON } = renderWithQuery(
-      <AnnouncementCard announcement={ann} variant="compact" />,
-    );
+    const { toJSON } = renderWithQuery(<AnnouncementCard announcement={ann} variant="compact" />);
     expect(toJSON()).toBeTruthy();
   });
 });
